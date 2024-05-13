@@ -1,7 +1,13 @@
 from datetime import datetime
-from app import db
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from app import db, login_manager
 
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
@@ -13,12 +19,27 @@ class User(db.Model):
     location = db.Column(db.String(255))
     profile_picture_url = db.Column(db.String(255))
     joined_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    cohorts_created = db.relationship('Cohort', backref='creator', lazy='dynamic')
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    notifications = db.relationship('Notification', backref='recipient', lazy='dynamic')
+    fundraisers_created = db.relationship('Fundraiser', backref='creator', lazy='dynamic')
+    messages_sent = db.relationship('ChatMessage', backref='sender', lazy='dynamic')
+    cohort_memberships = db.relationship('CohortMember', backref='member', lazy='dynamic')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Cohort(db.Model):
     cohort_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cohort_name = db.Column(db.String(255), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    members = db.relationship('CohortMember', backref='cohort', lazy='dynamic')
+    posts = db.relationship('Post', backref='cohort', lazy='dynamic')
+    fundraisers = db.relationship('Fundraiser', backref='cohort', lazy='dynamic')
 
 class CohortMember(db.Model):
     member_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
