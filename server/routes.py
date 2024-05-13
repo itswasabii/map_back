@@ -84,6 +84,23 @@ def create_post():
     db.session.commit()
     return jsonify({'message': 'Post created successfully'}), 201
 
+def update_post(post_id):
+    data = request.json
+    post = Post.query.get_or_404(post_id)
+    if post.user_id != data['user_id']:
+        return jsonify({'error': 'You are not authorized to update this post'}), 403
+    post.content = data['content']
+    db.session.commit()
+    return jsonify({'message': 'Post updated successfully'})
+
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.user_id != request.json['user_id']:
+        return jsonify({'error': 'You are not authorized to delete this post'}), 403
+    db.session.delete(post)
+    db.session.commit()
+    return jsonify({'message': 'Post deleted successfully'})
+
 @bp.route('/comments', methods=['POST'])
 def create_comment():
     data = request.json
@@ -96,6 +113,24 @@ def create_comment():
     db.session.add(new_comment)
     db.session.commit()
     return jsonify({'message': 'Comment created successfully'}), 201
+
+def update_comment(comment_id):
+    data = request.json
+    comment = Comment.query.get_or_404(comment_id)
+    if comment.user_id != data['user_id']:
+        return jsonify({'error': 'You are not authorized to update this comment'}), 403
+    comment.content = data['content']
+    db.session.commit()
+    return jsonify({'message': 'Comment updated successfully'})
+
+@bp.route('/comments/<int:comment_id>', methods=['DELETE'])
+def delete_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    if comment.user_id != request.json['user_id']:
+        return jsonify({'error': 'You are not authorized to delete this comment'}), 403
+    db.session.delete(comment)
+    db.session.commit()
+    return jsonify({'message': 'Comment deleted successfully'})
 
 # Route: Get all cohorts
 @bp.route('/cohorts', methods=['GET'])

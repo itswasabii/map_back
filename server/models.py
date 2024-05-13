@@ -21,6 +21,7 @@ class User(UserMixin, db.Model):
     joined_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cohorts_created = db.relationship('Cohort', backref='creator', lazy='dynamic')
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
     notifications = db.relationship('Notification', backref='recipient', lazy='dynamic')
     fundraisers_created = db.relationship('Fundraiser', backref='creator', lazy='dynamic')
     messages_sent = db.relationship('ChatMessage', backref='sender', lazy='dynamic')
@@ -53,6 +54,7 @@ class Post(db.Model):
     cohort_id = db.Column(db.Integer, db.ForeignKey('cohort.cohort_id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
 class Comment(db.Model):
     comment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
