@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from models import User, Cohort, CohortMember, Post, Notification, Fundraiser, Advert, AdminNotification, ChatMessage
+from models import User, Cohort, CohortMember, Post, Notification, Fundraiser, Advert, AdminNotification, ChatMessage, Comment
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from models import db  
@@ -56,6 +56,20 @@ def get_posts():
     post_data = [{'post_id': post.post_id, 'content': post.content} for post in posts]
     return jsonify(post_data)
 
+@bp.route('/posts', methods=['GET'])
+def get_posts_with_comments():
+    posts = Post.query.all()
+    post_data = []
+    for post in posts:
+        comments = [comment.content for comment in post.comments]
+        post_data.append({
+            'post_id': post.post_id,
+            'user_id': post.user_id,
+            'content': post.content,
+            'comments': comments
+        })
+    return jsonify(post_data)
+
 # Example route: create a new post
 @bp.route('/posts', methods=['POST'])
 def create_post():
@@ -70,8 +84,18 @@ def create_post():
     db.session.commit()
     return jsonify({'message': 'Post created successfully'}), 201
 
-
-
+@bp.route('/comments', methods=['POST'])
+def create_comment():
+    data = request.json
+    new_comment = Comment(
+        user_id=data['user_id'],
+        post_id=data['post_id'],
+        content=data['content'],
+        created_at=datetime.utcnow()
+    )
+    db.session.add(new_comment)
+    db.session.commit()
+    return jsonify({'message': 'Comment created successfully'}), 201
 
 # Route: Get all cohorts
 @bp.route('/cohorts', methods=['GET'])
@@ -89,21 +113,21 @@ def create_cohort():
     db.session.commit()
     return jsonify({'message': 'Cohort created successfully'}), 201
 
-# Route: Get all posts
-@bp.route('/posts', methods=['GET'])
-def get_posts():
-    posts = Post.query.all()
-    post_data = [{'post_id': post.post_id, 'user_id': post.user_id, 'content': post.content} for post in posts]
-    return jsonify(post_data)
+# # Route: Get all posts
+# @bp.route('/posts', methods=['GET'])
+# def get_posts():
+#     posts = Post.query.all()
+#     post_data = [{'post_id': post.post_id, 'user_id': post.user_id, 'content': post.content} for post in posts]
+#     return jsonify(post_data)
 
-# Route: Create a new post
-@bp.route('/posts', methods=['POST'])
-def create_post():
-    data = request.json
-    post = Post(user_id=data['user_id'], cohort_id=data['cohort_id'], content=data['content'], created_at=datetime.utcnow())
-    db.session.add(post)
-    db.session.commit()
-    return jsonify({'message': 'Post created successfully'}), 201
+# # Route: Create a new post
+# @bp.route('/posts', methods=['POST'])
+# def create_post():
+#     data = request.json
+#     post = Post(user_id=data['user_id'], cohort_id=data['cohort_id'], content=data['content'], created_at=datetime.utcnow())
+#     db.session.add(post)
+#     db.session.commit()
+#     return jsonify({'message': 'Post created successfully'}), 201
 
 # Route: Get all notifications for a user
 @bp.route('/notifications/<int:user_id>', methods=['GET'])
