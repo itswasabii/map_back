@@ -1,11 +1,16 @@
 from flask import Blueprint, jsonify, request
-from models import User, Cohort, CohortMember, Post, Notification, Fundraiser, Advert, AdminNotification, ChatMessage, Comment
+from .models import User, Cohort, Post, Comment, CohortMember
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from models import db  
+from .models import db  
+
 
 # Create a Blueprint object
 bp = Blueprint('routes', __name__)
+
+@bp.route('/', methods=['GET'])
+def home():
+    return jsonify({'message': 'Welcome to the backend of your application!'})
 
 # Example route: get all users
 @bp.route('/users', methods=['GET'])
@@ -33,7 +38,16 @@ def create_user():
 @bp.route('/cohorts', methods=['GET'])
 def get_cohorts():
     cohorts = Cohort.query.all()
-    cohort_data = [{'cohort_id': cohort.cohort_id, 'cohort_name': cohort.cohort_name} for cohort in cohorts]
+    cohort_data = []
+    for cohort in cohorts:
+        member_count = CohortMember.query.filter_by(cohort_id=cohort.cohort_id).count()
+        # data for each cohort
+        cohort_info = {
+            'cohort_id': cohort.cohort_id,
+            'cohort_name': cohort.cohort_name,
+            'members': member_count 
+        }
+        cohort_data.append(cohort_info)
     return jsonify(cohort_data)
 
 # Example route: create a new cohort
@@ -49,28 +63,89 @@ def create_cohort():
     db.session.commit()
     return jsonify({'message': 'Cohort created successfully'}), 201
 
-# Routes for managing posts
+@bp.route('/cohorts/<int:cohort_id>', methods=['DELETE'])
+def delete_cohort(cohort_id):
+    cohort = Cohort.query.get_or_404(cohort_id)
+    
+    # Delete the cohort
+    db.session.delete(cohort)
+    db.session.commit()
+    
+    return jsonify({'message': 'Cohort deleted successfully'})
+
+
+@bp.route('/cohorts/<int:cohort_id>', methods=['PUT'])
+def update_cohort(cohort_id):
+    cohort = Cohort.query.get_or_404(cohort_id)
+
+    data = request.json
+    
+    if 'cohort_name' in data:
+        cohort.cohort_name = data['cohort_name']
+    if 'created_by' in data:
+        cohort.created_by = data['created_by']
+    if 'created_at' in data:
+        cohort.created_at = data['created_at']
+
+    db.session.commit()
+    
+    return jsonify({'message': 'Cohort updated successfully', 'cohort': cohort.serialize()})
+
+
+@bp.route('/cohort_members', methods=['GET'])
+def get_cohort_members():
+    cohort_members = CohortMember.query.all()
+    cohort_member_data = [
+        {
+            'member_id': member.member_id,
+            'cohort_id': member.cohort_id,
+            'user_id': member.user_id,
+            'joined_at': member.joined_at.strftime('%Y-%m-%dT%H:%M:%S')
+        }
+        for member in cohort_members
+    ]
+    return jsonify(cohort_member_data)
+
+@bp.route('/cohort_members/<int:member_id>', methods=['GET'])
+def get_cohort_member(member_id):
+    cohort_member = CohortMember.query.get_or_404(member_id)
+    return jsonify({
+        'member_id': cohort_member.member_id,
+        'cohort_id': cohort_member.cohort_id,
+        'user_id': cohort_member.user_id,
+        'joined_at': cohort_member.joined_at.strftime('%Y-%m-%dT%H:%M:%S')
+    })
+
+@bp.route('/cohort_members', methods=['POST'])
+def create_cohort_member():
+    data = request.json
+    new_member = CohortMember(cohort_id=data['cohort_id'], user_id=data['user_id'])
+    db.session.add(new_member)
+    db.session.commit()
+    return jsonify({'message': 'Cohort member created successfully'}), 201
+
+@bp.route('/cohort_members/<int:member_id>', methods=['PUT'])
+def update_cohort_member(member_id):
+    cohort_member = CohortMember.query.get_or_404(member_id)
+    data = request.json
+    cohort_member.cohort_id = data.get('cohort_id', cohort_member.cohort_id)
+    cohort_member.user_id = data.get('user_id', cohort_member.user_id)
+    db.session.commit()
+    return jsonify({'message': 'Cohort member updated successfully'})
+
+@bp.route('/cohort_members/<int:member_id>', methods=['DELETE'])
+def delete_cohort_member(member_id):
+    cohort_member = CohortMember.query.get_or_404(member_id)
+    db.session.delete(cohort_member)
+    db.session.commit()
+    return jsonify({'message': 'Cohort member deleted successfully'})
+
 @bp.route('/posts', methods=['GET'])
 def get_posts():
     posts = Post.query.all()
     post_data = [{'post_id': post.post_id, 'content': post.content} for post in posts]
     return jsonify(post_data)
 
-@bp.route('/posts', methods=['GET'])
-def get_posts_with_comments():
-    posts = Post.query.all()
-    post_data = []
-    for post in posts:
-        comments = [comment.content for comment in post.comments]
-        post_data.append({
-            'post_id': post.post_id,
-            'user_id': post.user_id,
-            'content': post.content,
-            'comments': comments
-        })
-    return jsonify(post_data)
-
-# Example route: create a new post
 @bp.route('/posts', methods=['POST'])
 def create_post():
     data = request.json
@@ -84,6 +159,7 @@ def create_post():
     db.session.commit()
     return jsonify({'message': 'Post created successfully'}), 201
 
+@bp.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
     data = request.json
     post = Post.query.get_or_404(post_id)
@@ -93,6 +169,7 @@ def update_post(post_id):
     db.session.commit()
     return jsonify({'message': 'Post updated successfully'})
 
+@bp.route('/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     if post.user_id != request.json['user_id']:
@@ -107,6 +184,7 @@ def create_comment():
     new_comment = Comment(
         user_id=data['user_id'],
         post_id=data['post_id'],
+        cohort_id=data['cohort_id'],
         content=data['content'],
         created_at=datetime.utcnow()
     )
@@ -114,6 +192,7 @@ def create_comment():
     db.session.commit()
     return jsonify({'message': 'Comment created successfully'}), 201
 
+@bp.route('/comments/<int:comment_id>', methods=['PUT'])
 def update_comment(comment_id):
     data = request.json
     comment = Comment.query.get_or_404(comment_id)
@@ -131,54 +210,4 @@ def delete_comment(comment_id):
     db.session.delete(comment)
     db.session.commit()
     return jsonify({'message': 'Comment deleted successfully'})
-
-# Route: Get all cohorts
-@bp.route('/cohorts', methods=['GET'])
-def get_cohorts():
-    cohorts = Cohort.query.all()
-    cohort_data = [{'cohort_id': cohort.cohort_id, 'cohort_name': cohort.cohort_name} for cohort in cohorts]
-    return jsonify(cohort_data)
-
-# Route: Create a new cohort
-@bp.route('/cohorts', methods=['POST'])
-def create_cohort():
-    data = request.json
-    cohort = Cohort(cohort_name=data['cohort_name'], created_by=data['created_by'], created_at=datetime.utcnow())
-    db.session.add(cohort)
-    db.session.commit()
-    return jsonify({'message': 'Cohort created successfully'}), 201
-
-# # Route: Get all posts
-# @bp.route('/posts', methods=['GET'])
-# def get_posts():
-#     posts = Post.query.all()
-#     post_data = [{'post_id': post.post_id, 'user_id': post.user_id, 'content': post.content} for post in posts]
-#     return jsonify(post_data)
-
-# # Route: Create a new post
-# @bp.route('/posts', methods=['POST'])
-# def create_post():
-#     data = request.json
-#     post = Post(user_id=data['user_id'], cohort_id=data['cohort_id'], content=data['content'], created_at=datetime.utcnow())
-#     db.session.add(post)
-#     db.session.commit()
-#     return jsonify({'message': 'Post created successfully'}), 201
-
-# Route: Get all notifications for a user
-@bp.route('/notifications/<int:user_id>', methods=['GET'])
-def get_notifications(user_id):
-    notifications = Notification.query.filter_by(user_id=user_id).all()
-    notification_data = [{'notification_id': notification.notification_id, 'content': notification.content} for notification in notifications]
-    return jsonify(notification_data)
-
-# Route: Create a new notification
-@bp.route('/notifications', methods=['POST'])
-def create_notification():
-    data = request.json
-    notification = Notification(user_id=data['user_id'], content=data['content'], created_at=datetime.utcnow())
-    db.session.add(notification)
-    db.session.commit()
-    return jsonify({'message': 'Notification created successfully'}), 201
-
-# Add more routes for other functionalities such as managing notifications, fundraisers, adverts, etc.
 
