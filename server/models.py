@@ -1,7 +1,12 @@
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db, login_manager
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+
+
+db = SQLAlchemy()
+login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -22,10 +27,11 @@ class User(UserMixin, db.Model):
     cohorts_created = db.relationship('Cohort', backref='creator', lazy='dynamic')
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-    notifications = db.relationship('Notification', backref='recipient', lazy='dynamic')
     fundraisers_created = db.relationship('Fundraiser', backref='creator', lazy='dynamic')
     messages_sent = db.relationship('ChatMessage', backref='sender', lazy='dynamic')
     cohort_memberships = db.relationship('CohortMember', backref='member', lazy='dynamic')
+
+    notifications = db.relationship('Notification', backref='recipient', lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
