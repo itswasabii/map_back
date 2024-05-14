@@ -12,14 +12,13 @@ bp = Blueprint('routes', __name__)
 def home():
     return jsonify({'message': 'Welcome to the backend of your application!'})
 
-# Example route: get all users
 @bp.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     user_data = [{'user_id': user.user_id, 'username': user.username} for user in users]
     return jsonify(user_data)
 
-# Example route: create a new user
+
 @bp.route('/users', methods=['POST'])
 def create_user():
     data = request.json
@@ -34,7 +33,7 @@ def create_user():
     db.session.commit()
     return jsonify({'message': 'User created successfully'}), 201
 
-# Routes for managing cohorts
+
 @bp.route('/cohorts', methods=['GET'])
 def get_cohorts():
     cohorts = Cohort.query.all()
@@ -50,7 +49,6 @@ def get_cohorts():
         cohort_data.append(cohort_info)
     return jsonify(cohort_data)
 
-# Example route: create a new cohort
 @bp.route('/cohorts', methods=['POST'])
 def create_cohort():
     data = request.json
@@ -67,12 +65,10 @@ def create_cohort():
 def delete_cohort(cohort_id):
     cohort = Cohort.query.get_or_404(cohort_id)
     
-    # Delete the cohort
     db.session.delete(cohort)
     db.session.commit()
     
     return jsonify({'message': 'Cohort deleted successfully'})
-
 
 @bp.route('/cohorts/<int:cohort_id>', methods=['PUT'])
 def update_cohort(cohort_id):
@@ -90,7 +86,6 @@ def update_cohort(cohort_id):
     db.session.commit()
     
     return jsonify({'message': 'Cohort updated successfully', 'cohort': cohort.serialize()})
-
 
 @bp.route('/cohort_members', methods=['GET'])
 def get_cohort_members():
@@ -141,10 +136,25 @@ def delete_cohort_member(member_id):
     return jsonify({'message': 'Cohort member deleted successfully'})
 
 @bp.route('/posts', methods=['GET'])
-def get_posts():
+def get_posts_with_comments():
     posts = Post.query.all()
-    post_data = [{'post_id': post.post_id, 'content': post.content} for post in posts]
-    return jsonify(post_data)
+    posts_data = []
+    for post in posts:
+        post_data = {
+            'user_id': post.user_id,
+            'content': {
+                'post_content': post.content,
+                'comments': []
+            }
+        }
+        for comment in post.comments:
+            comment_data = {
+                'user_id': comment.user_id,
+                'content': comment.content
+            }
+            post_data['content']['comments'].append(comment_data)
+        posts_data.append(post_data)
+    return jsonify(posts_data)
 
 @bp.route('/posts', methods=['POST'])
 def create_post():
