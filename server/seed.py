@@ -3,6 +3,151 @@
 # from .models import db, User, Cohort, CohortMember, Post, Notification, Fundraiser, Advert, AdminNotification, ChatMessage
 
 # with app.app_context():
+
+
+
+# from datetime import datetime
+from faker import Faker
+from werkzeug.security import generate_password_hash
+from app import app
+from models import db
+from models.user_model import User
+from models.cohort_model import Cohort, CohortMember
+from models.post_model import Post, Comment
+from models.advert_model import Advert
+
+fake = Faker()
+with app.app_context():
+  def generate_fake_users(count=5):
+      for _ in range(count):
+          user = User(
+              username=fake.user_name(),
+              email=fake.email(),
+              password_hash=generate_password_hash(fake.password()),
+              role=fake.random_element(elements=('admin', 'normal')),
+              occupation=fake.job(),
+              qualifications=fake.text(),
+              bio=fake.text(),
+              location=fake.city(),
+              profile_picture_url=fake.image_url(),
+              joined_at=fake.date_time_this_decade()
+          )
+          db.session.add(user)
+      db.session.commit()
+
+  def generate_fake_cohorts(count=5):
+      for _ in range(count):
+          cohort = Cohort(
+              cohort_name=fake.company(),
+              created_by=fake.random_int(min=1, max=5),
+              created_at=fake.date_time_this_decade()
+          )
+          db.session.add(cohort)
+      db.session.commit()
+
+  def generate_fake_cohort_members(count=5):
+      for _ in range(count):
+          cohort_member = CohortMember(
+              cohort_id=fake.random_int(min=1, max=5),
+              user_id=fake.random_int(min=1, max=5),
+              joined_at=fake.date_time_this_decade()
+          )
+          db.session.add(cohort_member)
+      db.session.commit()
+
+  def generate_fake_posts(count=5):
+      for _ in range(count):
+          post = Post(
+              user_id=fake.random_int(min=1, max=5),
+              cohort_id=fake.random_int(min=1, max=5),
+              content=fake.text(),
+              created_at=fake.date_time_this_decade()
+          )
+          db.session.add(post)
+      db.session.commit()
+
+  def generate_fake_comments(count=5):
+      for _ in range(count):
+          comment = Comment(
+              post_id=fake.random_int(min=1, max=5),
+              user_id=fake.random_int(min=1, max=5),
+              cohort_id=fake.random_int(min=1, max=5),
+              content=fake.text(),
+              created_at=fake.date_time_this_decade()
+          )
+          db.session.add(comment)
+      db.session.commit()
+
+  # def generate_fake_notifications(count=5):
+  #     for _ in range(count):
+  #         notification = Notification(
+  #             user_id=fake.random_int(min=1, max=5),
+  #             content=fake.text(),
+  #             activity=fake.random_element(elements=('like', 'comment')),
+  #             activity_id=fake.random_int(min=1, max=5),
+  #             created_at=fake.date_time_this_decade(),
+  #             is_read=fake.boolean()
+  #         )
+  #         db.session.add(notification)
+  #     db.session.commit()
+
+  # # def generate_fake_fundraisers(count=5):
+  #     for _ in range(count):
+  #         fundraiser = Fundraiser(
+  #             cohort_id=fake.random_int(min=1, max=5),
+  #             title=fake.text(),
+  #             description=fake.text(),
+  #             goal_amount=fake.random_int(min=100, max=10000),
+  #             current_amount=fake.random_int(min=0, max=5000),
+  #             created_by=fake.random_int(min=1, max=5),
+  #             created_at=fake.date_time_this_decade()
+  #         )
+  #         db.session.add(fundraiser)
+  #     db.session.commit()
+
+  # def generate_fake_adverts(count=5):
+  #     for _ in range(count):
+  #         advert = Advert(     
+  #             advert_id=fake.random_int(min=1, max=5),
+  #             title=fake.sentence(),
+  #             description=fake.text(),
+  #             image_url=fake.image_url(),
+  #             created_at=fake.date_time_this_decade()
+  #         )
+  #         db.session.add(advert)
+  #     db.session.commit()
+
+  # def generate_fake_admin_notifications(count=5):
+  #     for _ in range(count):
+  #         admin_notification = AdminNotification(
+  #             content=fake.text(),
+  #             created_at=fake.date_time_this_decade()
+  #         )
+  #         db.session.add(admin_notification)
+  #     db.session.commit()
+
+  # def generate_fake_chat_messages(count=5):
+  #     for _ in range(count):
+  #         chat_message = ChatMessage(
+  #             user_id=fake.random_int(min=1, max=5),
+  #             content=fake.text(),
+  #             created_at=fake.date_time_this_decade()
+  #         )
+  #         db.session.add(chat_message)
+  #     db.session.commit()
+
+  if __name__ == '__main__':
+      generate_fake_users()
+      generate_fake_cohorts()
+      generate_fake_cohort_members()
+      generate_fake_posts()
+      generate_fake_comments()
+      # generate_fake_notifications()
+      # generate_fake_fundraisers()
+      # generate_fake_adverts()
+      # generate_fake_admin_notifications()
+      # generate_fake_chat_messages()
+
    
 #     users = [
 #         User(username='user1', email='user1@example.com', password_hash='password', role='normal', joined_at=datetime.utcnow()),
