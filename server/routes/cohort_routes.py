@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_restful import Resource, reqparse
 from datetime import datetime
-from server.models.__init__models import db
+from models import db
 from models.cohort_model import Cohort, CohortMember
 
 
@@ -77,7 +77,7 @@ class CohortMembers(Resource):
         ]
         return jsonify(cohort_member_data)
 
-    def get(self, member_id):
+    def get_one(self, member_id):
         cohort_member = CohortMember.query.get_or_404(member_id)
         return jsonify({
             'member_id': cohort_member.member_id,
@@ -114,3 +114,4 @@ class CohortMembers(Resource):
         db.session.delete(cohort_member)
         db.session.commit()
         return jsonify({'message': 'Cohort member deleted successfully'})
+

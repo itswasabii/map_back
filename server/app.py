@@ -5,11 +5,11 @@ from flask_restful import Api
 
 # from .models import User, Cohort, CohortMember, Post, Notification, Fundraiser, Advert, AdminNotification, ChatMessage
 
-from routes import Users, CohortMembers, Cohorts, Posts, Comments, Home
+from routes import Home
 from models import db, login_manager
-# from routes.user_routes import Users
-# from routes.cohort_routes import Cohorts, CohortMembers
-# from routes.post_routes import Posts, Comments
+from routes.user_routes import Users
+from routes.cohort_routes import Cohorts, CohortMembers
+from routes.post_routes import Posts, Comments
 
 
 app = Flask(__name__)
