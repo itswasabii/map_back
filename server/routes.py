@@ -147,18 +147,16 @@ class Posts(Resource):
         posts_data = []
         for post in posts:
             post_data = {
-                'user_id': post.user_id,
-                'content': {
-                    'post_content': post.content,
-                    'comments': []
+                'post_user_id': post.user_id,
+                'post_content': post.content,
+                'the_comments': []
                 }
-            }
             for comment in post.comments:
                 comment_data = {
                     'user_id': comment.user_id,
                     'content': comment.content
                 }
-                post_data['content']['comments'].append(comment_data)
+                post_data['the_comments'].append(comment_data)
             posts_data.append(post_data)
         return jsonify(posts_data)
 
