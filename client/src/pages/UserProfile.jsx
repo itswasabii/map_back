@@ -28,27 +28,7 @@ const UserProfile = () => {
           </Text>
         </Box>
       </Flex>
-      <Box textAlign={'start'}>
-        <Flex align={'center'} _hover={{ bg: '#EDF2F7' }} pl={3} py={2} borderRadius={'md'}>
-          <ViewIcon mr={2} />
-          <Text lineHeight={'45px'}>View Profile</Text>
-        </Flex>
-        <Flex align={'center'} _hover={{ bg: '#EDF2F7' }} pl={3} py={2} borderRadius={'md'}>
-          <SettingsIcon mr={2} />
-          <Text lineHeight={'45px'}>Settings</Text>
-        </Flex>
-        <Flex _hover={{ bg: '#EDF2F7' }} px={3} py={2} align={'center'} justify={'space-between'} borderRadius={'md'}>
-          <Flex align={'center'}>
-            <BellIcon mr={2} />
-            <Text lineHeight={'45px'}>Notifications</Text>
-          </Flex>
-          <Switch />
-        </Flex>
-        <Flex align={'center'} _hover={{ bg: '#EDF2F7' }} pl={3} py={2} borderRadius={'md'}>
-          <ExternalLinkIcon mr={2} />
-          <Text lineHeight={'45px'}>Logout</Text>
-        </Flex>
-      </Box>
+      
     </Box>
     </>
     
