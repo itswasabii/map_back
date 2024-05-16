@@ -23,3 +23,12 @@ class Fundraiser(db.Model):
         # Update current amount by summing all donations
         self.current_amount = sum(donation.amount for donation in self.donations)
         db.session.commit()
+
+
+
+class Donation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fundraiser_id = db.Column(db.Integer, db.ForeignKey('fundraiser.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    donation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

@@ -5,11 +5,11 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from models import db, login_manager
 from routes import Home
+from routes.donation_routes import  DonationResource
 from routes.user_routes import Users
 from routes.cohort_routes import Cohorts, CohortMembers
 from routes.post_routes import Posts, Comments
-from routes.fundraiser_routes import fundraiser_view
-
+from routes.fundraiser_routes import FundraiserResource
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///map.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -28,9 +28,10 @@ api.add_resource(CohortMembers, '/cohort_members')
 api.add_resource(Posts, '/posts')
 api.add_resource(Comments, '/comments')
 
-# Register FundraiserAPI view
-app.add_url_rule('/fundraisers', view_func=fundraiser_view, methods=['GET', 'POST'])
-app.add_url_rule('/fundraisers/<int:fundraiser_id>', view_func=fundraiser_view, methods=['GET', 'PUT', 'DELETE'])
+
+
+api.add_resource(DonationResource, '/donations/<int:donation_id>')
+api.add_resource(FundraiserResource, '/fundraisers', '/fundraisers/<int:fundraiser_id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
