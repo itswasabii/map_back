@@ -1,8 +1,8 @@
-"""empty message
+"""initial migrations
 
-Revision ID: c458006028c0
+Revision ID: 3097241bd9b5
 Revises: 
-Create Date: 2024-05-15 23:02:26.617973
+Create Date: 2024-05-16 12:24:22.925696
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c458006028c0'
+revision = '3097241bd9b5'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -42,6 +42,27 @@ def upgrade():
     sa.ForeignKeyConstraint(['created_by'], ['user.user_id'], ),
     sa.PrimaryKeyConstraint('cohort_id')
     )
+    op.create_table('success_story',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['user.user_id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('tech_news',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.Column('url', sa.String(length=255), nullable=True),
+    sa.Column('created_by', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['created_by'], ['user.user_id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('cohort_member',
     sa.Column('member_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('cohort_id', sa.Integer(), nullable=False),
@@ -55,6 +76,7 @@ def upgrade():
     sa.Column('post_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('cohort_id', sa.Integer(), nullable=False),
+    sa.Column('category', sa.Enum('SUCCESS_STORY', 'TECH_NEWS', 'GENERAL_DISCUSSION', name='postcategory'), nullable=False),
     sa.Column('content', sa.Text(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['cohort_id'], ['cohort.cohort_id'], ),
@@ -81,6 +103,8 @@ def downgrade():
     op.drop_table('comment')
     op.drop_table('post')
     op.drop_table('cohort_member')
+    op.drop_table('tech_news')
+    op.drop_table('success_story')
     op.drop_table('cohort')
     op.drop_table('user')
     # ### end Alembic commands ###

@@ -3,7 +3,7 @@ from flask_restful import Resource
 from datetime import datetime
 
 from models import db
-from models.post_model import Post, Comment
+from models.post_model import Post, Comment, PostCategory
 
 class Posts(Resource):
     def get(self):
@@ -12,6 +12,7 @@ class Posts(Resource):
         for post in posts:
             post_data = {
                 'post_user_id': post.user_id,
+                'category': post.category.value,
                 'post_content': post.content,
                 'the_comments': []
                 }
@@ -27,10 +28,15 @@ class Posts(Resource):
     
     def post(self):
         data = request.json
+        try:
+            category = PostCategory[data['category'].upper()]  
+        except KeyError:
+            return jsonify({'error': 'Invalid category'}), 400
         new_post = Post(
             user_id=data['user_id'],
             cohort_id=data['cohort_id'],
             content=data['content'],
+            category=category,
             created_at=datetime.utcnow()
         )
         db.session.add(new_post)
@@ -44,6 +50,11 @@ class Posts(Resource):
         if post.user_id != data['user_id']:
             return jsonify({'error': 'You are not authorized to update this post'}), 403
         post.content = data['content']
+        if 'category' in data:
+            try:
+                post.category = PostCategory[data['category'].upper()] 
+            except KeyError:
+                return jsonify({'error': 'Invalid category'}), 400
         db.session.commit()
         return jsonify({'message': 'Post updated successfully'})
 
