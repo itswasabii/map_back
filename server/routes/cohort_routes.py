@@ -27,6 +27,8 @@ class Cohorts(Resource):
         parser.add_argument('cohort_name', type=str, required=True)
         parser.add_argument('created_by', type=str, required=True)
         parser.add_argument('type', type=str, required=True)
+        parser.add_argument('year_of_enrollment', type=int, required=True)
+        parser.add_argument('course_id', type=int, required=True)
         args = parser.parse_args()
         
         cohort_type = args['type'].lower()

@@ -97,4 +97,3 @@ class Comments(Resource):
         db.session.delete(comment)
         db.session.commit()
         return jsonify({'message': 'Comment deleted successfully'})
-
