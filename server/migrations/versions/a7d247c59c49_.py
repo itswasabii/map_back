@@ -7,7 +7,7 @@ Create Date: 2024-05-16 14:31:42.810080
 """
 from alembic import op
 import sqlalchemy as sa
-
+from models.fundraiser_model import Fundraiser  # Import Fundraiser model
 
 # revision identifiers, used by Alembic.
 revision = 'a7d247c59c49'
@@ -106,6 +106,21 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['user.user_id'], ),
     sa.PrimaryKeyConstraint('comment_id')
     )
+     # Add Fundraiser table
+    op.create_table('fundraiser',
+    sa.Column('fundraiser_id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('goal_amount', sa.Float(), nullable=False),
+    sa.Column('current_amount', sa.Float(), nullable=False, default=0.0),
+    sa.Column('start_date', sa.DateTime(), nullable=False),
+    sa.Column('end_date', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.func.now()),
+    sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()),
+    sa.ForeignKeyConstraint(['user_id'], ['user.user_id'], ),
+    sa.PrimaryKeyConstraint('fundraiser_id')
+    )
     # ### end Alembic commands ###
 
 
@@ -119,4 +134,5 @@ def downgrade():
     op.drop_table('cohort')
     op.drop_table('user')
     op.drop_table('course')
+    op.drop_table('fundraiser')  # Drop Fundraiser table
     # ### end Alembic commands ###

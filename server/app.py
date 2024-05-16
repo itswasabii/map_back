@@ -2,15 +2,13 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_restful import Api
-
-# from .models import User, Cohort, CohortMember, Post, Notification, Fundraiser, Advert, AdminNotification, ChatMessage
-
-from routes import Home
+from flask_sqlalchemy import SQLAlchemy
 from models import db, login_manager
+from routes import Home
 from routes.user_routes import Users
 from routes.cohort_routes import Cohorts, CohortMembers
 from routes.post_routes import Posts, Comments
-
+from routes.fundraiser_routes import fundraiser_view
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///map.db'
@@ -30,5 +28,9 @@ api.add_resource(CohortMembers, '/cohort_members')
 api.add_resource(Posts, '/posts')
 api.add_resource(Comments, '/comments')
 
+# Register FundraiserAPI view
+app.add_url_rule('/fundraisers', view_func=fundraiser_view, methods=['GET', 'POST'])
+app.add_url_rule('/fundraisers/<int:fundraiser_id>', view_func=fundraiser_view, methods=['GET', 'PUT', 'DELETE'])
+
 if __name__ == '__main__':
-    app.run(port=5555,debug=True)
+    app.run(port=5555, debug=True)
