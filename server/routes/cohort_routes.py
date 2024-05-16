@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_restful import Resource, reqparse
 from datetime import datetime
 from models import db
-from models.cohort_model import Cohort, CohortMember
+from models.cohort_model import Cohort, CohortMember, CohortType
 
 
 class Cohorts(Resource):
@@ -11,10 +11,12 @@ class Cohorts(Resource):
         cohort_data = []
         for cohort in cohorts:
             member_count = CohortMember.query.filter_by(cohort_id=cohort.cohort_id).count()
+            cohort_type = cohort.type.value
             # data for each cohort
             cohort_info = {
                 'cohort_id': cohort.cohort_id,
                 'cohort_name': cohort.cohort_name,
+                'cohort_type': cohort_type,
                 'members': member_count 
             }
             cohort_data.append(cohort_info)
@@ -24,12 +26,22 @@ class Cohorts(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('cohort_name', type=str, required=True)
         parser.add_argument('created_by', type=str, required=True)
+        parser.add_argument('type', type=str, required=True)
         args = parser.parse_args()
+        
+        cohort_type = args['type'].lower()
+        if cohort_type not in [c.value for c in CohortType]:
+            return jsonify({'error': 'Invalid cohort type. Choose either "public" or "private".'}), 400
         
         new_cohort = Cohort(
             cohort_name=args['cohort_name'],
+            year_of_enrollment=args['year_of_enrollment'],
+            course_id=args['course_id'],
+            # description="Description of the cohort",
+            type=CohortType(cohort_type),
             created_by=args['created_by'],
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
+            
         )
         db.session.add(new_cohort)
         db.session.commit()
