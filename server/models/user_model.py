@@ -28,7 +28,8 @@ class User(UserMixin, db.Model):
     # fundraisers_created = db.relationship('Fundraiser', backref='creator', lazy='dynamic')
     # messages_sent = db.relationship('ChatMessage', backref='sender', lazy='dynamic')
     cohort_memberships = db.relationship('CohortMember', backref='member', lazy='dynamic')
-
+    # tech_news= db.relationship('TechNews', backref= 'tech_news', lazy= 'dynamic')
+    # success_story= db.relationship('SuccesStory', backref= 'story', lazy = 'dynamic')
     # notifications = db.relationship('Notification', backref='recipient', lazy='dynamic')
 
     def set_password(self, password):

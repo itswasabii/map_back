@@ -13,8 +13,9 @@ from app import app
 from models import db
 from models.user_model import User
 from models.cohort_model import Cohort, CohortMember
-from models.post_model import Post, Comment
+from models.post_model import Post, Comment, PostCategory
 from models.advert_model import Advert
+import random
 
 fake = Faker()
 with app.app_context():
@@ -56,11 +57,13 @@ with app.app_context():
       db.session.commit()
 
   def generate_fake_posts(count=5):
+      categories = list(PostCategory)
       for _ in range(count):
           post = Post(
               user_id=fake.random_int(min=1, max=5),
               cohort_id=fake.random_int(min=1, max=5),
               content=fake.text(),
+              category=random.choice(categories),
               created_at=fake.date_time_this_decade()
           )
           db.session.add(post)
