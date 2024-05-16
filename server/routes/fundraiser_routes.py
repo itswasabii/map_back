@@ -1,9 +1,9 @@
 from flask import jsonify, request
-from flask.views import MethodView
+from flask_restful import Resource
 from models import db
 from models.fundraiser_model import Fundraiser
 
-class FundraiserAPI(MethodView):
+class FundraiserResource(Resource):
     def get(self, fundraiser_id=None):
         if fundraiser_id is None:
             # Get all fundraisers
@@ -68,4 +68,4 @@ class FundraiserAPI(MethodView):
         db.session.commit()
         return jsonify({'message': 'Fundraiser deleted successfully'})
 
-fundraiser_view = FundraiserAPI.as_view('fundraiser_api')
+

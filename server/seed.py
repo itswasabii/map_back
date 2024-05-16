@@ -8,6 +8,9 @@ from models.post_model import Post, Comment, PostCategory
 from models.advert_model import Advert
 import random
 from models.fundraiser_model import Fundraiser  # Import Fundraiser model
+from datetime import datetime
+from models.fundraiser_model import Donation
+
 
 fake = Faker()
 with app.app_context():
@@ -221,3 +224,60 @@ with app.app_context():
     "joined_at": "2024-05-14T09:30:00"
   }
 ]
+
+# Function to seed fundraiser and donation data
+def seed_donations():
+    
+  with app.app_context():
+    # Create fundraisers
+    fundraisers = [
+        {
+            'user_id': 1,
+            'title': 'Fundraiser 1',
+            'description': 'Description for Fundraiser 1',
+            'goal_amount': 1000.0,
+            'end_date': datetime(2024, 6, 1)
+        },
+        {
+            'user_id': 2,
+            'title': 'Fundraiser 2',
+            'description': 'Description for Fundraiser 2',
+            'goal_amount': 1500.0,
+            'end_date': datetime(2024, 6, 15)
+        }
+        # Add more fundraisers as needed
+    ]
+
+    # Create donations
+    donations = [
+        {
+            
+            'fundraiser_id': 1,
+            'user_id': 3,
+            'amount': 500.0,
+            'donation_date': datetime(2024, 5, 20)
+        },
+        {
+            'fundraiser_id': 2,
+            'user_id': 4,
+            'amount': 1000.0,
+            'donation_date': datetime(2024, 5, 25)
+        }
+        # Add more donations as needed
+    ]
+
+    # Seed fundraisers
+    for fundraiser_data in fundraisers:
+        fundraiser = Fundraiser(**fundraiser_data)
+        db.session.add(fundraiser)
+
+    # Seed donations
+    for donation_data in donations:
+        donation = Donation(**donation_data)
+        db.session.add(donation)
+
+    # Commit changes to the database
+    db.session.commit()
+
+if __name__ == '__main__':
+    seed_donations()
