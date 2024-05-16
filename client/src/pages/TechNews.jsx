@@ -7,7 +7,7 @@ function TechNews() {
     {
       author: "Lauren Forristal",
       title:
-        "Bye-bye bots: Altera's game-playing AI agents get backing from Eric Schmidt | TechCrunch",
+        "Bye-bye bots: Altera's game-playing AI agents get backing from Eric Schmidt",
       description:
         "Autonomous, AI-based players are coming to a gaming experience near you, and a new startup, Altera, is joining the fray to build this new guard of AI Research company Altera raised $9 million to build AI agents that can play video games alongside other player…",
       url: "https://techcrunch.com/2024/05/08/bye-bye-bots-alteras-game-playing-ai-agents-get-backing-from-eric-schmidt/",
@@ -20,7 +20,7 @@ function TechNews() {
     {
       author: "Alex Wilhelm and Theresa Loconsolo",
       title:
-        "$450M for Noname, two billion-dollar rounds, and good news for crypto startups | TechCrunch",
+        "$450M for Noname, two billion-dollar rounds, and good news for crypto startups",
       description:
         "This morning on Equity, not only do we have good news for crypto founders, we're also digging into Akamai spending $450 million for API security firm Noname, and billion dollar deals from Wiz and Wayve.",
       url: "https://techcrunch.com/2024/05/08/450m-for-noname-two-billion-dollar-rounds-and-good-news-for-crypto-startups/",
@@ -45,7 +45,7 @@ function TechNews() {
     {
       author: "Rebecca Bellan",
       title:
-        "Uber promises member exclusives as Uber One passes $1B run-rate | TechCrunch",
+        "Uber promises member exclusives as Uber One passes $1B run-rate",
       description:
         "Uber plans to deliver more perks to Uber One members, like member-exclusive events, in a bid to gain more revenue through subscriptions.  “You will see",
       url: "https://techcrunch.com/2024/05/08/uber-promises-member-exclusives-as-uber-one-passes-1b-run-rate/",
@@ -58,7 +58,7 @@ function TechNews() {
     {
       author: "Mike Butcher",
       title:
-        "Checkfirst raises $1.5M pre-seed, applying AI to remote inspections and audits | TechCrunch",
+        "Checkfirst raises $1.5M pre-seed, applying AI to remote inspections and audits",
       description:
         "Checkfirst enables businesses to schedule inspectors based on geographical location and qualifications, in addition to allowing for remote inspections.",
       url: "https://techcrunch.com/2024/05/08/checkfirst-raises-1-5m-pre-seed-applying-ai-to-remote-inspections-and-audits/",
@@ -71,7 +71,7 @@ function TechNews() {
     {
       author: "Paul Sawers",
       title:
-        "UK challenger bank Monzo nabs another $190M as US expansion beckons | TechCrunch",
+        "UK challenger bank Monzo nabs another $190M as US expansion beckons",
       description:
         "Monzo has raised another $190 million, as the challenger bank looks to expand its presence internationally — particularly in the U.S.",
       url: "https://techcrunch.com/2024/05/08/uk-challenger-bank-monzo-nabs-another-190m-at-5-2b-valuation/",
@@ -83,7 +83,7 @@ function TechNews() {
     },
     {
       author: "Brian Heater",
-      title: "iRobot names former Timex head Gary Cohen as CEO | TechCrunch",
+      title: "iRobot names former Timex head Gary Cohen as CEO",
       description:
         "iRobot Tuesday announced the successor to longtime CEO, Colin Angle. Gary Cohen, who previous held chief executive role at Timex and Qualitor Automotive,",
       url: "https://techcrunch.com/2024/05/08/irobot-names-former-timex-head-gary-cohen-as-ceo/",
@@ -96,7 +96,7 @@ function TechNews() {
     {
       author: "Devin Coldewey",
       title:
-        "Google Deepmind debuts huge AlphaFold update and free proteomics-as-a-service web app | TechCrunch",
+        "Google Deepmind debuts huge AlphaFold update and free proteomics-as-a-service web app",
       description:
         "Google Deepmind has taken the wraps off a new version AlphaFold, their transformative machine learning model that predicts the shape and behavior of",
       url: "https://techcrunch.com/2024/05/08/google-deepmind-debuts-huge-alphafold-update-and-free-proteomics-as-a-service-web-app/",
@@ -109,7 +109,7 @@ function TechNews() {
     {
       author: "Tim De Chant",
       title:
-        "Mycocycle uses mushrooms to upcycle old tires and construction waste | TechCrunch",
+        "Mycocycle uses mushrooms to upcycle old tires and construction waste",
       description:
         "The startup's fungi use their mycelium to consume oil-based rubbers and plastics, creating new bio-based materials in the process.",
       url: "https://techcrunch.com/2024/05/08/mycocycle-uses-mushrooms-to-upcycle-old-tires-and-construction-waste/",
@@ -122,7 +122,7 @@ function TechNews() {
     {
       author: "Kyle Wiggers",
       title:
-        "Controversial drone company Xtend leans into defense with new $40M round | TechCrunch",
+        "Controversial drone company Xtend leans into defense with new $40M round",
       description:
         "Xtend, a drone company heavily involved with defense customers, has raised a new round of capital to expand its operations.",
       url: "https://techcrunch.com/2024/05/08/controversial-drone-company-xtend-leans-into-defense/",
@@ -135,7 +135,7 @@ function TechNews() {
   ];
 
   return (
-    <Box px={{ base: 5, md: 50 }} py={{ base: 5, md: 50 }}>
+    <Box px={{ base: 5, md: 50 }} py={{ base: 5, md: 50 }}mt={'50px'}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-auto gap-8">
         {articles.map((article, index) => (
           <Box
@@ -143,7 +143,7 @@ function TechNews() {
             position={"relative"}
             className="shadow-[rgba(0, 0, 0, 0.24) 0px 3px 8px]  rounded-[.8rem] bg-[#101F3C] text-[#fff]"
           >
-            <Box>
+            <Box h={{base:'30%',sm:"35%",md:'40%',lg:'50%'}}>
               <Image
                 borderTopRadius={".8rem"}
                 src={article.urlToImage}
@@ -155,7 +155,8 @@ function TechNews() {
               <Heading
                 fontSize={{ base: "1.15rem", md: "1.35rem" }}
                 fontWeight="bold"
-                className="underline"
+                className=""
+                color={'#fa510f'}
               >
                 {article.title}
               </Heading>
@@ -165,18 +166,16 @@ function TechNews() {
                 letterSpacing={1}
                 fontSize={{ base: ".9rem", md: "1rem" }}
               >
-                {article.description}{" "}
-                <Text as={"span"} display={{ base: "none", md: "inline" }}>
-                  {article.content}
-                </Text>
+                {article.content}{" "}                              
                 <Text
                   as={Link}
                   to={article.url}
                   color={"#Fa510f"}
                   className="hover:underline underline-offset-1 "
+                  
                 >
                   {" "}
-                  more
+                  Read article
                 </Text>
               </Text>
 

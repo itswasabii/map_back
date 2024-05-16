@@ -6,7 +6,7 @@ import Testimonials from "../components/Testimonials";
 
 const SuccessStories = () => {
   return (
-    <Box letterSpacing={"1px"}>
+    <Box letterSpacing={"1px"} mt={"60px"}>
       {/* hero section */}
       <Box bg={"#101F3C"} color={"#fff"}>
         <Flex
@@ -107,37 +107,37 @@ const SuccessStories = () => {
           fontSize={{ base: "2rem", md: "3rem" }}
           py={{ base: 2, md: 4, lg: 6 }}
           mt={10}
+          textAlign={"center"}
         >
           History
         </Heading>
         <History />
       </Box>
-      <Box px={{ base: 5, md: 50 }}>
-        {/* <Box>
-          
-          <Text w={{ base: 350, md: 500, lg: 800 }}>
+      <Flex px={{ base: 5, md: 50 }} flexDir={{base:"column",md:'row'}}>
+        <Box>
+          <Heading
+            as={"h1"}
+            fontSize={{ base: "2rem", md: "3rem" }}
+            py={{ base: 2, md: 4, lg: 6 }}
+            mt={10}
+          >
+            Testimonials
+          </Heading>
+          <Text w={{ base: 350, md: 500, lg: 800 }} maxW={"400px"}>
             Discover the success stories of individuals who transformed their
             careers through Moringa School's programs.{" "}
             <Text as={"span"} display={{ base: "none", md: "inline" }}>
-              {" "}
               From diverse backgrounds and skill sets, these alumni and alumnae
               found their paths in tech after completing rigorous training at
               Moringa.
             </Text>
           </Text>
-        </Box> */}
-        <Heading
-          as={"h1"}
-          fontSize={{ base: "2rem", md: "3rem" }}
-          py={{ base: 2, md: 4, lg: 6 }}
-          mt={10}
-        >
-          Testimonials
-        </Heading>
-        <Box mx={"auto"} mt={"40px"} w={{ base: "100%", md: "70%" }}>
+        </Box>
+
+        <Box mx={"auto"} mt={"40px"} w={{ base: "100%", md: "50%" }}>
           <Testimonials />
         </Box>
-      </Box>
+      </Flex>
     </Box>
   );
 };
