@@ -24,4 +24,5 @@ dist-ssr
 *.sw?
 
 node_modules
-package-lock.jsonindex.html node_modules package.json package-lock.json postcss.config.js src tailwind.config.js vite.config.js
+package-lock.json
+

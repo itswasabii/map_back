@@ -25,21 +25,21 @@ function AppContent() {
 
   const shouldDisplayNav = () => {    
     return  !location.pathname.startsWith("/forum/");
-};
+  };
 
   return (
-    <>
+    <Box>
       {shouldDisplayNav() && <Nav />}
       <Routes>
         <Route path="/" element={<SuccessStories />} />
         <Route path="/success-stories" element={<SuccessStories />} />
         <Route path="/tech-news" element={<TechNews />} />
         <Route path="/fundraising&donations" element={<Fundraiser />} />
-        <Route path="/forum" element={<Forum />} />
-        <Route path="/forum/userprofile/:username" element={<UserProfile/>}/>
-        <Route path="/forum/fundraiser/:id" element={<FundraiserById/>} />
+        <Route path="/forum/*" element={<Forum />} />
+        <Route path="/forum/userprofile/:username" element={<UserProfile />} />
+        <Route path="/forum/fundraiser/:id" element={<FundraiserById />} />
       </Routes>
-    </>
+    </Box>
   );
 }
 
