@@ -12,7 +12,7 @@ from werkzeug.security import generate_password_hash
 from app import app
 from models import db
 from models.user_model import User
-from models.cohort_model import Cohort, CohortMember
+from models.cohort_model import Cohort, CohortMember, CohortType
 from models.post_model import Post, Comment, PostCategory
 from models.advert_model import Advert
 import random
@@ -37,14 +37,34 @@ with app.app_context():
       db.session.commit()
 
   def generate_fake_cohorts(count=5):
-      for _ in range(count):
-          cohort = Cohort(
-              cohort_name=fake.company(),
-              created_by=fake.random_int(min=1, max=5),
-              created_at=fake.date_time_this_decade()
-          )
-          db.session.add(cohort)
-      db.session.commit()
+    for _ in range(count):
+        cohort_type = random.choice(['public', 'private'])  # Randomly choose between public and private
+        
+        if cohort_type == 'private':
+            # If private, include year_of_enrollment and course_id
+            cohort = Cohort(
+                cohort_name=fake.company(),
+                year_of_enrollment=fake.random_int(min=2010, max=2022),  # Example range for year of enrollment
+                course_id=fake.random_int(min=1, max=5),
+                type=CohortType.PRIVATE,
+                created_by=fake.random_int(min=1, max=5),
+                created_at=fake.date_time_this_decade(),
+                
+                  # Example course ID
+            )
+        else:
+            # If public, exclude year_of_enrollment and course_id
+            cohort = Cohort(
+                cohort_name=fake.company(),
+                created_by=fake.random_int(min=1, max=5),
+                created_at=fake.date_time_this_decade(),
+                type=CohortType.PUBLIC
+            )
+        
+        db.session.add(cohort)
+    
+    db.session.commit()
+
 
   def generate_fake_cohort_members(count=5):
       for _ in range(count):
