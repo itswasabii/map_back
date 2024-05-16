@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, Container, Heading, Text, Button,Image, Flex } from "@chakra-ui/react";
 import hero_img from "../assets/moringa.jpeg";
 import { Grid, GridItem } from "@chakra-ui/react";
