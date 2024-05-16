@@ -26,10 +26,13 @@
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1",
     "yup": "^1.4.0"
+<<<<<<< HEAD
 =======
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
 >>>>>>> b3012764 (new branch)
+=======
+>>>>>>> bfb1321c (Created,navigations. Fundraising and forum pages that ha)
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

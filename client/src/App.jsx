@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> bfb1321c (Created,navigations. Fundraising and forum pages that ha)
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import SuccessStories from "./pages/SuccessStories";
 import "./App.css";

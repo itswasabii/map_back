@@ -5,6 +5,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+<<<<<<< HEAD
 =======
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -75,3 +76,5 @@ button:focus-visible {
   }
 }
 >>>>>>> b3012764 (new branch)
+=======
+>>>>>>> bfb1321c (Created,navigations. Fundraising and forum pages that ha)
