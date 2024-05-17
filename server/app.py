@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from models import db, login_manager
+from flask_cors import CORS
 from routes import Home
 from routes.donation_routes import  DonationResource
 from routes.user_routes import Users
@@ -18,6 +19,7 @@ app.json.compact = False
 db.init_app(app)
 migrate = Migrate(app, db)
 api = Api(app)
+CORS(app)
 
 login_manager.init_app(app)
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Flex,
@@ -22,7 +22,14 @@ import useToggle from "../utils/useToggle";
 import Profilemodal from "./Profilemodal";
 
 function TopNav() {
-  
+  useEffect(()=>{
+    const getCohorts = async()=>{
+
+    }
+    const getFundraiser= async()=>{
+      
+    }
+  })
   const {navRef,toggleDisclose} = useDisclose()
   const{nodeRef,toggleModal} = useToggle()
   

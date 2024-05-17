@@ -23,7 +23,7 @@ function AppContent() {
   const location = useLocation();
 
   const shouldDisplayNav = () => {    
-    return location.pathname !== "/forum" && !location.pathname.startsWith("/userprofile/");
+    return  !location.pathname.startsWith("/forum/");
 };
 
   return (
@@ -35,7 +35,7 @@ function AppContent() {
         <Route path="/tech-news" element={<TechNews />} />
         <Route path="/fundraising&donations" element={<Fundraiser />} />
         <Route path="/forum" element={<Forum />} />
-        <Route path="/userprofile/:username" element={<UserProfile/>}/>
+        <Route path="/forum/userprofile/:username" element={<UserProfile/>}/>
       </Routes>
     </>
   );

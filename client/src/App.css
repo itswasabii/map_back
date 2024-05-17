@@ -17,3 +17,9 @@
     color: #FA510F;
   }
   
+  @media (min-width: 992) {
+    .custom-width {
+      width: calc(100vw - 250px);
+    }
+  }
+  

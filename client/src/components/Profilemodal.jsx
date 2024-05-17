@@ -21,7 +21,7 @@ function Profilemodal({ nodeRef }) {
       <Box textAlign={"start"}>
         <Flex align={"center"} _hover={{ bg: "#EDF2F7" }} pl={3}>
           <CgProfile fontSize={'1.2rem'} mr={4} />
-          <Text lineHeight={"45px"}ml={2} cursor={'pointer'} as={Link} to={`/userprofile/${user}`} >View Profile</Text>
+          <Text lineHeight={"45px"}ml={2} cursor={'pointer'} as={Link} to={`/forum/userprofile/${user}`} >View Profile</Text>
         </Flex>
 
         <Flex align={"center"} _hover={{ bg: "#EDF2F7" }} pl={3}>

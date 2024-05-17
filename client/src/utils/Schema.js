@@ -28,3 +28,15 @@ export const mpesaValidation={
 };
 
 
+
+export const validationSchema = Yup.object().shape({
+  username: Yup.string().required('Username is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  occupation: Yup.string(),
+  qualifications: Yup.string(),
+  bio: Yup.string(),
+  location: Yup.string(),
+});
+
+
+
