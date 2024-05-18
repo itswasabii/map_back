@@ -8,10 +8,15 @@ class CohortType(Enum):
     PRIVATE = "private"
 
 
+<<<<<<< HEAD
 class Course(db.Model, SerializerMixin ):
+=======
+class Course(db.Model):
+>>>>>>> 7544fdc9 (feat: add username to posts and course to user)
     course_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     course_name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
+  
 
     def __repr__(self):
         return f'<Course {self.course_name}>'
