@@ -8,6 +8,7 @@ import { Box } from "@chakra-ui/react";
 import Fundraiser from "./pages/Fundraiser";
 import Forum from "./pages/Forum";
 import UserProfile from "./pages/UserProfile";
+import FundraiserById from "./pages/FundraiserById";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function AppContent() {
         <Route path="/fundraising&donations" element={<Fundraiser />} />
         <Route path="/forum" element={<Forum />} />
         <Route path="/forum/userprofile/:username" element={<UserProfile/>}/>
+        <Route path="/forum/fundraiser/:id" element={<FundraiserById/>} />
       </Routes>
     </>
   );

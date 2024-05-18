@@ -1,38 +1,49 @@
-import React from "react";
-import { Flex, Text } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import useDisclose from "../utils/useDisclose";
+import PropTypes from "prop-types";
+import { NavLink } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ nodeRef }) {
   const { isOpen, toggleDisclose, navRef } = useDisclose();
+  const [fundraisers, setFundraisers] = useState();
+  const [loading, setLoading] = useState(true);
+  const url = "/api/fundraisers";
+  useEffect(() => {
+    const getFundraiser = async () => {
+      try {
+        const response = await fetch(url);
+        if (!response)
+          throw new Error(`HTTP Error! status: ${response.status}`);
+        const data = await response.json();
+        setFundraisers(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+    getFundraiser();
+  }, [url]);  
   return (
-    <Flex
-      w={"250px"}
-      // flex= "1 2 450px" 
-      // flexBasis={'250px'}
-      display={{ base: "none", xl: "flex" }}
-      flexDir={"column"}
-      py={4}
+    <Box
       as="div"
       bg="#fff"
+      w="250px"
       h="100vh"
       pos="fixed"
       top="0"
       left="0"
       zIndex="1"
       mt={"70px"}
-      className="h-[100vh] flex-1  border border-r-[1px] border-[#e4e4e4]"
-      gap={2}
+      ref={nodeRef}
+      display={{ base: "none", xl: "block" }}
+      className={"border-r-[1px] border-[#e4e4e4]"}
+      flexDir={"column"}
     >
-      <Text
-        _hover={{ bg: "#e4e4e4" }}
-        borderRadius={"md"}
-        pl={3}
-        lineHeight={"40px"}
-        maxW={'220px'}
-      >
+      <NavLink className="leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]" to={"/forum"}>
         Home
-      </Text>
+      </NavLink>
       <Flex
         onClick={toggleDisclose}
         cursor={"pointer"}
@@ -42,7 +53,7 @@ function Sidebar() {
         justify={"space-between"}
         bg={"#e4e4e4"}
       >
-        <Text>Cohort</Text>
+        <Text>Fundraiser</Text>
         <ChevronDownIcon
           fontSize={"1.35rem"}
           display={isOpen ? "none" : "block"}
@@ -53,22 +64,26 @@ function Sidebar() {
         />
       </Flex>
       <Flex
-        className={"border-b-[1px] border-[#e4e4e4]"}
+        className={
+          "border-b-[1px] border-[#e4e4e4] overflow-y-scroll scrollbar overflow-x-hidden text-overflow-ellipsis whitespace-nowrap"
+        }
         ref={navRef}
         flexDir={"column"}
+        h={"500px"}
       >
-        <Text px={4} _hover={{ bg: "#EDF2F7" }} lineHeight={"40px"}>
-          SDF-TF08
-        </Text>
-        <Text px={4} _hover={{ bg: "#EDF2F7" }} lineHeight={"40px"}>
-          SDF-TF02
-        </Text>
-        <Text px={4} _hover={{ bg: "#EDF2F7" }} lineHeight={"40px"}>
-          SDF-TF05
-        </Text>
+        {fundraisers &&
+          fundraisers.map((fundraiser) => (
+            <Flex key={fundraiser.id}>              
+              <NavLink to={`/forum/fundraiser/${fundraiser.id}`} className="truncate leading-[40px] px-4 hover:bg-[#EDF2F7]">{fundraiser.title}</NavLink>
+            </Flex>
+          ))}
       </Flex>
-    </Flex>
+    </Box>
   );
 }
-
+Sidebar.propTypes = {
+  nodeRef: PropTypes.shape({
+    current: PropTypes.instanceOf(Element),
+  }),
+};
 export default Sidebar;

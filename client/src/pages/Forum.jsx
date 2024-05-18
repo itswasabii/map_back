@@ -7,12 +7,13 @@ import EventsNav from "../components/EventsNav";
 import TopNav from "../components/TopNav";
 import Posts from "../components/Posts";
 
+
 function Forum() {
   return (
     <>
     <TopNav />
     <Flex pos={'relative'}>
-      <Sidebar />
+      <Sidebar />      
      <Posts/>
       <EventsNav />
     </Flex>

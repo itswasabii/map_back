@@ -7,7 +7,7 @@ function Comments({ comments, nodeRef }) {
   return (
     <Box
       h={"300px"}
-      className="overflow-y-scroll "
+      className="overflow-y-scroll scrollbar "
       px={4}
       ref={nodeRef} 
       style={{display:'none'}}     

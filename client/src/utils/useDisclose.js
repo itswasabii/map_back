@@ -7,16 +7,12 @@ const useDisclose = () => {
   const toggleDisclose = () => {
     if (navRef.current) {
       if (isOpen) {
-        navRef.current.style.display = "block";
-        console.log('block')
-        
+        navRef.current.style.display = "block";        
       } else {
         navRef.current.style.display = "none";
-        console.log('none')
       }
       setIsOpen(!isOpen);
     }
-    console.log(navRef)
   };
 
   return { isOpen, toggleDisclose, navRef };

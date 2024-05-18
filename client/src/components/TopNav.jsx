@@ -15,21 +15,14 @@ import {
 import { AddIcon, HamburgerIcon, SearchIcon } from "@chakra-ui/icons";
 import logo from "../assets/logo_black.png";
 import logo_two from "../assets/title_logo.png";
-import MobileNav from "./MobileNav";
 import { AiOutlineUser } from "react-icons/ai";
 import useDisclose from "../utils/useDisclose";
 import useToggle from "../utils/useToggle";
 import Profilemodal from "./Profilemodal";
+import Sidebar from "./Sidebar";
 
 function TopNav() {
-  useEffect(()=>{
-    const getCohorts = async()=>{
 
-    }
-    const getFundraiser= async()=>{
-      
-    }
-  })
   const {navRef,toggleDisclose} = useDisclose()
   const{nodeRef,toggleModal} = useToggle()
   
@@ -99,7 +92,8 @@ function TopNav() {
           <Profilemodal nodeRef={nodeRef} />
         </Box>
       </Flex>
-      <MobileNav nodeRef={navRef} />
+      <Sidebar nodeRef={navRef} />
+
     </>
   );
 }
