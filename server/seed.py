@@ -4,7 +4,7 @@ from app import app
 from models import db
 from models.user_model import User
 from models.cohort_model import Cohort, CohortMember, CohortType, Course
-from models.post_model import Post, Comment, PostCategory
+from models.post_model import Post, Comment, PostCategory, Share, Like
 from models.advert_model import Advert
 import random
 from models.fundraiser_model import Fundraiser  # Import Fundraiser model
@@ -53,7 +53,7 @@ with app.app_context():
           db.session.add(user)
       db.session.commit()
 
-  def generate_fake_cohorts(count=5):
+  def generate_fake_cohorts(count=2):
     for _ in range(count):
         cohort_type = random.choice(['public', 'private'])  # Randomly choose between public and private
         
@@ -95,37 +95,47 @@ with app.app_context():
 
   def generate_fake_posts(count=5):
       categories = list(PostCategory)
+      users = User.query.all()
+      cohorts = Cohort.query.all()
       for _ in range(count):
+          user = random.choice(users)
+          cohort = random.choice(cohorts)
           post = Post(
-              user_id=fake.random_int(min=1, max=5),
-              cohort_id=fake.random_int(min=1, max=5),
+              user_id=user.user_id,
+              cohort_id=cohort.cohort_id,
               content=fake.text(),
               category=random.choice(categories),
               created_at=fake.date_time_this_decade()
           )
           db.session.add(post)
-      db.session.commit()
 
-  def generate_fake_comments(count=5):
-      for _ in range(count):
-          comment = Comment(
-              post_id=fake.random_int(min=1, max=5),
-              user_id=fake.random_int(min=1, max=5),
-              cohort_id=fake.random_int(min=1, max=5),
-              content=fake.text(),
-              created_at=fake.date_time_this_decade()
-          )
-          db.session.add(comment)
-      db.session.commit()
+          for _ in range(random.randint(1, 10)):
+                like = Like(user_id=random.choice(users).user_id, post_id=post.post_id)
+                post.likes_count += 1
+                db.session.add(like)
 
-  
+                    # Create comments for each post
+          for _ in range(random.randint(1, 5)):
+                comment = Comment(
+                    user_id=random.choice(users).user_id,
+                    post_id=post.post_id,
+                    content=fake.text(),
+                    created_at=fake.date_time_this_decade()
+                )
+                post.comments_count += 1
+                db.session.add(comment)
+
+
+          for _ in range(random.randint(1, 3)):
+                share = Share(user_id=random.choice(users).user_id, post_id=post.post_id)
+                post.shares_count += 1
+                db.session.add(share)
 
   if __name__ == '__main__':
       generate_fake_users()
       generate_fake_cohorts()
       generate_fake_cohort_members()
       generate_fake_posts()
-      generate_fake_comments()
     #   generate_fake_fundraisers()
 
 

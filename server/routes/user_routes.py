@@ -69,3 +69,14 @@ class Users(Resource):
             return {'error': f'Course "{course_name}" not found'}, 404
 
   
+    def put(self, user_id):
+        data = request.json
+        user = User.query.get_or_404(user_id)
+        
+        user.bio = data.get('bio', user.bio)
+        user.occupation = data.get('occupation', user.occupation)
+        user.qualification = data.get('qualification', user.qualification)
+        user.location = data.get('location', user.location)
+
+        db.session.commit()
+        return {'message': 'User profile updated successfully'}, 200
