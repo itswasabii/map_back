@@ -2,6 +2,7 @@ from . import  db
 from datetime import datetime
 from enum import Enum
 from sqlalchemy import Enum as SqlEnum
+from sqlalchemy_serializer import SerializerMixin
 
 class SuccessStory(db.Model):
     id = db.Column(db.Integer, primary_key=True)

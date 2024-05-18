@@ -15,19 +15,19 @@ from models.fundraiser_model import Donation
 fake = Faker()
 with app.app_context():
 # Function to generate fake fundraisers
-  def generate_fake_fundraisers(count=5):
-        for _ in range(count):
-            fundraiser = Fundraiser(
-                user_id=fake.random_int(min=1, max=5),
-                title=fake.sentence(),
-                description=fake.text(),
-                goal_amount=fake.random_int(min=100, max=1000),
-                current_amount=fake.random_int(min=0, max=1000),
-                start_date=fake.date_time_this_decade(),
-                end_date=fake.date_time_this_decade()
-            )
-            db.session.add(fundraiser)
-        db.session.commit()
+#   def generate_fake_fundraisers(count=5):
+#         for _ in range(count):
+#             fundraiser = Fundraiser(
+#                 user_id=fake.random_int(min=1, max=5),
+#                 title=fake.sentence(),
+#                 description=fake.text(),
+#                 goal_amount=fake.random_int(min=100, max=1000),
+#                 current_amount=fake.random_int(min=0, max=1000),
+#                 start_date=fake.date_time_this_decade(),
+#                 end_date=fake.date_time_this_decade()
+#             )
+#             db.session.add(fundraiser)
+#         db.session.commit()
 
 
   def generate_fake_users(count=5):
@@ -41,9 +41,10 @@ with app.app_context():
               email=fake.email(),
               password_hash=generate_password_hash(fake.password()),
             #   role='normal',
-            #   occupation=fake.job(),
-            #   qualifications=fake.text(),
+              occupation=fake.job(),
+              qualification=fake.text(),
               bio=fake.text(),
+              location=fake.city(),
               joined_at=fake.date_time_this_decade()
 
           )
@@ -125,7 +126,7 @@ with app.app_context():
       generate_fake_cohort_members()
       generate_fake_posts()
       generate_fake_comments()
-      generate_fake_fundraisers()
+    #   generate_fake_fundraisers()
 
 
 # Function to seed fundraiser and donation data

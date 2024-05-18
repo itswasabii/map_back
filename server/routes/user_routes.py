@@ -22,6 +22,9 @@ class Users(Resource):
                 'username': user.username,
                 'email': user.email,
                 'bio': user.bio,
+                'occupation': user.occupation,
+                'qualification':user.qualification,
+                'location':user.location,
                 # 'role':user.role,
                 'cohorts': [
                     {
