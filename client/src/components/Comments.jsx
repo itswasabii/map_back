@@ -18,14 +18,14 @@ function Comments({ comments, nodeRef }) {
           <InputRightAddon><VscSend /></InputRightAddon>
         </InputGroup>
       </Flex>
-
-      {comments && comments.map((comment, index) => (
+      {comments.length>0?<>{comments && comments.map((comment, index) => (
         <Box className="border-b-[1px] border-[#e4e4e4]" key={index}>
           <Text fontSize={"sm"} mb={2}>
             {comment.content}
           </Text>
         </Box>
-      ))}
+      ))}</>:<Text p={4}>No comments yet...</Text>}
+      
     </Box>
   );
 }

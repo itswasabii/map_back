@@ -20,6 +20,7 @@ import useDisclose from "../utils/useDisclose";
 import useToggle from "../utils/useToggle";
 import Profilemodal from "./Profilemodal";
 import Sidebar from "./Sidebar";
+import CreatePost from "./CreatePost";
 
 function TopNav() {
 
@@ -32,7 +33,7 @@ function TopNav() {
       <Flex
         justify="space-between"
         width="100%"
-        px={{ base: 4, md: 50 }}
+        px={{ base: 2, md: 50 }}
         h={70}
         align="center"
         top={0}
@@ -41,8 +42,9 @@ function TopNav() {
         borderBottom="1px"
         borderColor="#E4E4E4"
         bg="#fff"
+        gap={2}
       >
-        <Flex gap={2} align={"center"}>
+        <Flex gap={1} align={"center"}>
           <IconButton
             aria-label="Open Menu"
             icon={<HamburgerIcon />}
@@ -73,13 +75,7 @@ function TopNav() {
           </InputGroup>
         </Box>
         <Box display={"flex"} pos={'relative'} align="center"  gap={4}>
-          <Flex align={"center"} bg={'#EDF2F7'} borderRadius={'md'} p={2} cursor={"pointer"} gap={2}>
-            <Tooltip hasArrow label='create post' placement='top'>
-            <AddIcon />
-            
-            </Tooltip>
-            <Text display={{base:"none",md:"inline"}}>create post</Text>
-          </Flex>
+        <CreatePost />
           <Avatar
             icon={<AiOutlineUser fontSize="1.5rem" />}
             size="sm"

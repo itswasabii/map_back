@@ -38,5 +38,27 @@ export const validationSchema = Yup.object().shape({
   location: Yup.string(),
 });
 
+export const postValidation = Yup.object({
+  category: Yup.string().required('category is required'),
+  content: Yup.string().required('content required'),
+  userId: Yup.string().required('user id is required'),
+  cohortId: Yup.string().required('cohort id is required'),
+  media: Yup.mixed().test(
+    'fileType',
+    'File must be an image or a video',
+    (value) => {
+      if (!value) return true;
+      const supportedFormats = /^image\/.*|^video\/.*$/;
+      return supportedFormats.test(value.type);
+    }
+  ),
+}).test(
+  'content-or-media',
+  'At least one of content or media must be provided',
+  function (value) {
+    const{content,media} = value;
+    return content || media
+  }
 
+);
 
