@@ -12,6 +12,7 @@ class Posts(Resource):
         for post in posts:
             post_data = {
                 'post_user_id': post.user_id,
+                'post_user_name': post.author.username,
                 'category': post.category.value,
                 'post_content': post.content,
                 'the_comments': []
@@ -19,6 +20,7 @@ class Posts(Resource):
             for comment in post.comments:
                 comment_data = {
                     'user_id': comment.user_id,
+                    'user_name': comment.author.username,
                     'content': comment.content
                 }
                 post_data['the_comments'].append(comment_data)
@@ -34,6 +36,7 @@ class Posts(Resource):
             return jsonify({'error': 'Invalid category'}), 400
         new_post = Post(
             user_id=data['user_id'],
+            user_name=data['user_name'],
             cohort_id=data['cohort_id'],
             content=data['content'],
             category=category,
@@ -72,6 +75,7 @@ class Comments(Resource):
         data = request.json
         new_comment = Comment(
             user_id=data['user_id'],
+            user_name=data['user_name'],
             post_id=data['post_id'],
             cohort_id=data['cohort_id'],
             content=data['content'],

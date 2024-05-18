@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash
 from app import app
 from models import db
 from models.user_model import User
-from models.cohort_model import Cohort, CohortMember, CohortType
+from models.cohort_model import Cohort, CohortMember, CohortType, Course
 from models.post_model import Post, Comment, PostCategory
 from models.advert_model import Advert
 import random
@@ -32,18 +32,23 @@ with app.app_context():
 
   def generate_fake_users(count=5):
       for _ in range(count):
+          course_names = ['Data Science', 'Software Engineering', 'DevOps']
+          courses = [Course(course_name=course_name) for course_name in course_names]
+          db.session.add_all(courses)
+          db.session.commit()
           user = User(
               username=fake.user_name(),
               email=fake.email(),
               password_hash=generate_password_hash(fake.password()),
-              role=fake.random_element(elements=('admin', 'normal')),
-              occupation=fake.job(),
-              qualifications=fake.text(),
+            #   role='normal',
+            #   occupation=fake.job(),
+            #   qualifications=fake.text(),
               bio=fake.text(),
-              location=fake.city(),
-              profile_picture_url=fake.image_url(),
               joined_at=fake.date_time_this_decade()
+
           )
+          num_courses = random.randint(1, 3)
+          user.courses.extend(random.sample(courses, num_courses))
           db.session.add(user)
       db.session.commit()
 
@@ -121,109 +126,7 @@ with app.app_context():
       generate_fake_posts()
       generate_fake_comments()
       generate_fake_fundraisers()
-[
-    {
-        "username": "user1",
-        "email": "user1@example.com",
-        "password_hash": "password1",
-        "role": "normal",
-        "joined_at": "2024-05-15T12:00:00"
-    },
-    {
-        "username": "user2",
-        "email": "user2@example.com",
-        "password_hash": "password2",
-        "role": "normal",
-        "joined_at": "2024-05-16T12:00:00"
-    },
-    {
-        "username": "user3",
-        "email": "user3@example.com",
-        "password_hash": "password3",
-        "role": "admin",
-        "joined_at": "2024-05-17T12:00:00"
-    },
-    {
-        "username": "user4",
-        "email": "user4@example.com",
-        "password_hash": "password4",
-        "role": "normal",
-        "joined_at": "2024-05-18T12:00:00"
-    },
-    {
-        "username": "user5",
-        "email": "user5@example.com",
-        "password_hash": "password5",
-        "role": "normal",
-        "joined_at": "2024-05-19T12:00:00"
-    }
-]
 
-
-{
-  "cohort_id": 1,
-  "cohort_name": "Cohort A",
-  "created_by": 1,
-  "created_at": "2024-05-14T13:00:00",
-  "members": [
-    {
-      "member_id": 1,
-      "user_id": 1,
-      "joined_at": "2024-05-14T13:00:00"
-    },
-    {
-      "member_id": 2,
-      "user_id": 2,
-      "joined_at": "2024-05-14T13:30:00"
-    }
-  ],
-  "posts": [
-    {
-      "post_id": 1,
-      "user_id": 1,
-      "content": "Post content 1",
-      "created_at": "2024-05-14T13:10:00"
-    },
-    {
-      "post_id": 2,
-      "user_id": 2,
-      "content": "Post content 2",
-      "created_at": "2024-05-14T13:20:00"
-    }
-  ],
-  "fundraisers": [
-    {
-      "fundraiser_id": 1,
-      "title": "Fundraiser A",
-      "description": "Fundraiser A description",
-      "goal_amount": 1000,
-      "current_amount": 500,
-      "created_by": 1,
-      "created_at": "2024-05-14T13:30:00"
-    }
-  ]
-}
-
-[
-  {
-    "member_id": 1,
-    "cohort_id": 1,
-    "user_id": 1,
-    "joined_at": "2024-05-14T09:00:00"
-  },
-  {
-    "member_id": 2,
-    "cohort_id": 1,
-    "user_id": 2,
-    "joined_at": "2024-05-14T09:15:00"
-  },
-  {
-    "member_id": 3,
-    "cohort_id": 2,
-    "user_id": 3,
-    "joined_at": "2024-05-14T09:30:00"
-  }
-]
 
 # Function to seed fundraiser and donation data
 def seed_donations():
