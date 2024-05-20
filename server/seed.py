@@ -4,11 +4,7 @@ from app import app
 from models import db
 from models.user_model import User
 from models.cohort_model import Cohort, CohortMember, CohortType, Course
-<<<<<<< HEAD
 from models.post_model import Post, Comment, PostCategory, Share, Like
-=======
-from models.post_model import Post, Comment, PostCategory
->>>>>>> 7544fdc9 (feat: add username to posts and course to user)
 from models.advert_model import Advert
 import random
 from models.fundraiser_model import Fundraiser  # Import Fundraiser model
@@ -45,16 +41,10 @@ with app.app_context():
               email=fake.email(),
               password_hash=generate_password_hash(fake.password()),
             #   role='normal',
-<<<<<<< HEAD
               occupation=fake.job(),
               qualification=fake.text(),
               bio=fake.text(),
               location=fake.city(),
-=======
-            #   occupation=fake.job(),
-            #   qualifications=fake.text(),
-              bio=fake.text(),
->>>>>>> 7544fdc9 (feat: add username to posts and course to user)
               joined_at=fake.date_time_this_decade()
 
           )
@@ -146,12 +136,7 @@ with app.app_context():
       generate_fake_cohorts()
       generate_fake_cohort_members()
       generate_fake_posts()
-<<<<<<< HEAD
     #   generate_fake_fundraisers()
-=======
-      generate_fake_comments()
-      generate_fake_fundraisers()
->>>>>>> 7544fdc9 (feat: add username to posts and course to user)
 
 
 # Function to seed fundraiser and donation data

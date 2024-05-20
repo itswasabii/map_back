@@ -22,12 +22,9 @@ class Users(Resource):
                 'username': user.username,
                 'email': user.email,
                 'bio': user.bio,
-<<<<<<< HEAD
                 'occupation': user.occupation,
                 'qualification':user.qualification,
                 'location':user.location,
-=======
->>>>>>> 7544fdc9 (feat: add username to posts and course to user)
                 # 'role':user.role,
                 'cohorts': [
                     {
@@ -72,7 +69,6 @@ class Users(Resource):
             return {'error': f'Course "{course_name}" not found'}, 404
 
   
-<<<<<<< HEAD
     def put(self, user_id):
         data = request.json
         user = User.query.get_or_404(user_id)
@@ -84,5 +80,3 @@ class Users(Resource):
 
         db.session.commit()
         return {'message': 'User profile updated successfully'}, 200
-=======
->>>>>>> 7544fdc9 (feat: add username to posts and course to user)
