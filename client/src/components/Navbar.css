@@ -1,0 +1,50 @@
+/* Base styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+/* Import a techy font (optional) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+/* Navbar styles */
+nav {
+    background: linear-gradient(to right, #17191C, #1A1C1F);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.logo {
+    color: #ddd;
+    text-decoration: none;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+.nav-links a {
+    color: #eef;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #66b3ff;
+    text-decoration: underline 2px #66b3ff;
+}

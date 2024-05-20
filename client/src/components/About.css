@@ -1,0 +1,62 @@
+/* About Us container styles */
+.about-us-container {
+    background-color: #1f222b; /* Dark background */
+    color: #fff; /* White text */
+    padding: 50px; /* Add some padding */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  
+  /* Section styles */
+  section {
+    margin-bottom: 50px;
+  }
+  
+  /* Section headers (h2) */
+  section h2 {
+    font-size: 2em;
+    margin-bottom: 15px;
+    text-transform: uppercase; /* Convert text to uppercase for a techy feel */
+    letter-spacing: 2px; /* Add some spacing between letters */
+    position: relative; /* Required for underline effect */
+  }
+  
+  section h2:after {
+    content: ""; /* Add an empty pseudo-element for the underline */
+    display: block;
+    width: 100%; /* Make the underline span the full width */
+    height: 2px; /* Set the underline height */
+    background-color: #00ADB5; /* Light aqua underline color */
+    position: absolute; /* Position the underline below the text */
+    bottom: 0; /* Align the underline at the bottom */
+    left: 0; /* Align the underline to the left */
+  }
+  
+  /* Section paragraphs (p) */
+  section p {
+    line-height: 1.5; /* Adjust line height for readability */
+    font-size: 16px; /* Adjust paragraph font size */
+  }
+  
+  /* Section list (ul) */
+  .section-values ul {
+    list-style: none; /* Remove default bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+  }
+  
+  .section-values li {
+    margin-bottom: 10px; /* Add spacing between list items */
+    color: #ddd; /* Light gray color for list items */
+    font-weight: bold; /* Make list items bold */
+  }
+  
+  /* Media queries for smaller screens */
+  @media (max-width: 768px) {
+    section h2 {
+      font-size: 1.5em; /* Adjust heading size for smaller screens */
+    }
+    section p {
+      font-size: 14px; /* Adjust paragraph font size for smaller screens */
+    }
+  }
+  
