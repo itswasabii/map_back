@@ -1,13 +1,9 @@
-from . import  db, login_manager
+from . import db
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 user_course_association = db.Table('user_course_association',
     db.Column('user_id', db.Integer, db.ForeignKey('user.user_id')),
@@ -42,5 +38,12 @@ class User(UserMixin, db.Model, SerializerMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
     def __repr__(self):
         return f'<User {self.username}>'
+
+class ResetToken(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    token = db.Column(db.String(100), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
