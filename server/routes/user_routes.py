@@ -4,8 +4,8 @@ from models import db
 from models.user_model import User, ResetToken
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.exc import IntegrityError # Add this import statement
-import secrets
+from sqlalchemy.exc import IntegrityError
+import secrets  # Import secrets here
 import jwt
 import os
 from flask_mail import Message
@@ -99,24 +99,26 @@ class Login(Resource):
         username = data.get('username')
         password = data.get('password')
         user = User.query.filter_by(username=username).first()
-        if not user or not check_password_hash(user.password_hash, password):
+        if user and check_password_hash(user.password_hash, password):
+            token = jwt.encode({
+                'user_id': user.user_id,
+                'exp': datetime.utcnow() + timedelta(hours=24)
+            }, jwt_secret_key)
+            response = make_response({'message': 'User logged in successfully', 'token': token})
+            response.set_cookie('token', token, httponly=True, max_age=24*60*60)
+            return response
+        else:
             return make_response({'error': 'Invalid username or password'}, 401)
-        expiration_time = datetime.utcnow() + timedelta(hours=3)
-        token = jwt.encode({'user_id': user.user_id, 'exp': expiration_time}, jwt_secret_key, algorithm='HS256')
-        # In a real-world application, you should store the session in a more secure way
-        request.environ['auth_token'] = token
-        request.environ['user_id'] = user.user_id
-        return make_response({'message': 'Login successful', 'token': token}, 200)
 
 class Logout(Resource):
     def post(self):
-        request.environ.pop('auth_token', None)
-        request.environ.pop('user_id', None)
-        return make_response({'message': 'User has been logged out'}, 200)
+        response = make_response({'message': 'Logged out successfully'})
+        response.delete_cookie('token')
+        return response
 
 class ForgotPassword(Resource):
     def post(self):
-        data = request.get_json()
+        data = request.json
         email = data.get('email')
         user = User.query.filter_by(email=email).first()
         if user:
@@ -133,7 +135,7 @@ class ForgotPassword(Resource):
 
 class ResetPassword(Resource):
     def post(self):
-        data = request.get_json()
+        data = request.json
         token = data.get('token')
         new_password = data.get('new_password')
         confirm_password = data.get('confirm_password')

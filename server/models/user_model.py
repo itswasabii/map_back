@@ -15,17 +15,12 @@ class User(UserMixin, db.Model, SerializerMixin):
     username = db.Column(db.String(255), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    # role = db.Column(db.Enum('admin', 'normal'), nullable=False)
     bio = db.Column(db.Text)
     occupation = db.Column(db.String(50))
     qualification = db.Column(db.Text)
     location = db.Column(db.String(50))
-    # profile_picture_url = db.Column(db.String(255)) #Gichia
     joined_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    # fundraiser_id = db.Column(db.Integer, db.ForeignKey('fundraiser.id'))
-    # fundraiser = db.relationship('Fundraiser', backref='users')
-   
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
     cohort_memberships = db.relationship('CohortMember', backref='member', lazy='dynamic')
