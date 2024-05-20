@@ -1,42 +1,45 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+
+/* Hide scrollbar for Firefox */
+.overflow-hidden {
+  scrollbar-width: none;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Hide scrollbar for other browsers */
+.overflow-hidden::-webkit-scrollbar {
+  display: none;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.links{
+    font-weight: 700;
+}
+.links:hover,
+  .links.active {
+    color: #FA510F;
   }
-  to {
-    transform: rotate(360deg);
-  }
+  
+/* Target the scrollbar */
+.scrollbar::-webkit-scrollbar {
+  width: 3px; /* Set the width of the scrollbar */
+  height: auto; /* Set the height of the scrollbar */
+  background-color: transparent; /* Set the background color of the scrollbar */
+  border-radius: 5px; 
+  /* Set the border radius of the scrollbar */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Target the thumb of the scrollbar */
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #101f3c5e; /* Set the background color of the thumb */
+  border-radius: 5px; /* Set the border radius of the thumb */  
+  border: none;
+  outline: none; /* Add a shadow to the thumb */
 }
 
-.card {
-  padding: 2em;
+/* Target the track of the scrollbar */
+.scrollbar::-webkit-scrollbar-track {
+  background-color: transparent; /* Set the background color of the track */
+  border-radius: 0px; /* Set the border radius of the track */
+   /* Add a shadow to the track */
+  border: none;
+  outline: none;
 }
-
-.read-the-docs {
-  color: #888;
-}
+  

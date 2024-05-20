@@ -74,4 +74,6 @@ class Share(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
+
         return f'<Share {self.share_id}>'
+
