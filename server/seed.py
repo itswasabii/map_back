@@ -53,7 +53,7 @@ with app.app_context():
           db.session.add(user)
       db.session.commit()
 
-  def generate_fake_cohorts(count=2):
+  def generate_fake_cohorts(count=5):
     for _ in range(count):
         cohort_type = random.choice(['public', 'private'])  # Randomly choose between public and private
         
@@ -66,8 +66,6 @@ with app.app_context():
                 type=CohortType.PRIVATE,
                 created_by=fake.random_int(min=1, max=5),
                 created_at=fake.date_time_this_decade(),
-                
-          
             )
         else:
          
@@ -97,6 +95,10 @@ with app.app_context():
       categories = list(PostCategory)
       users = User.query.all()
       cohorts = Cohort.query.all()
+      
+      if not users or not cohorts:
+        print("No users or cohorts available to create posts")
+        return
       for _ in range(count):
           user = random.choice(users)
           cohort = random.choice(cohorts)
@@ -108,6 +110,7 @@ with app.app_context():
               created_at=fake.date_time_this_decade()
           )
           db.session.add(post)
+          db.session.commit()
 
           for _ in range(random.randint(1, 10)):
                 like = Like(user_id=random.choice(users).user_id, post_id=post.post_id)
@@ -119,17 +122,19 @@ with app.app_context():
                 comment = Comment(
                     user_id=random.choice(users).user_id,
                     post_id=post.post_id,
+                    cohort_id=cohort.cohort_id,
                     content=fake.text(),
                     created_at=fake.date_time_this_decade()
                 )
                 post.comments_count += 1
                 db.session.add(comment)
 
-
           for _ in range(random.randint(1, 3)):
                 share = Share(user_id=random.choice(users).user_id, post_id=post.post_id)
                 post.shares_count += 1
                 db.session.add(share)
+          db.session.commit()
+        
 
   if __name__ == '__main__':
       generate_fake_users()
