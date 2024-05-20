@@ -36,7 +36,7 @@ class Post(db.Model):
     likes_count = db.Column(db.Integer, default=0)
     comments_count = db.Column(db.Integer, default=0)
     shares_count = db.Column(db.Integer, default=0)
-    # post_url = db.Column(db.String(255),default='')
+
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     likes= db.relationship('Like', backref='post', lazy='dynamic')
     shares= db.relationship('Share', backref='post', lazy='dynamic')
@@ -46,7 +46,6 @@ class Post(db.Model):
         self.likes_count = 0
         self.comments_count = 0
         self.shares_count = 0
-        self.post_url = ''
 
     def __repr__(self):
         return f'<Post {self.post_id}>'
