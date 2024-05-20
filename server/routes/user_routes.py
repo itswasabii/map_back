@@ -1,16 +1,16 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response
-from models import db
-from models.user_model import User, ResetToken
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.exc import IntegrityError # Add this import statement
+from sqlalchemy.exc import IntegrityError
 import secrets
 import jwt
 import os
-from flask_mail import Message
-from app import mail  # Ensure mail is imported from your app instance
 from dotenv import load_dotenv
+
+from models import db
+from models.user_model import User, ResetToken
+from models.cohort_model import Course
 
 load_dotenv()
 
@@ -45,7 +45,7 @@ class Users(Resource):
                 ]
             }
             user_data.append(user_dict)
-        return user_data, 200
+        return jsonify(user_data), 200
 
     def post(self):
         data = request.json
@@ -63,9 +63,9 @@ class Users(Resource):
         if course:
             new_user.courses.append(course)
             db.session.commit()
-            return {'message': 'User created and associated with the course successfully'}, 201
+            return jsonify({'message': 'User created and associated with the course successfully'}), 201
         else:
-            return {'error': f'Course "{course_name}" not found'}, 404
+            return jsonify({'error': f'Course "{course_name}" not found'}), 404
 
     def put(self, user_id):
         data = request.json
@@ -75,7 +75,7 @@ class Users(Resource):
         user.qualification = data.get('qualification', user.qualification)
         user.location = data.get('location', user.location)
         db.session.commit()
-        return {'message': 'User profile updated successfully'}, 200
+        return jsonify({'message': 'User profile updated successfully'}), 200
 
 class Register(Resource):
     def post(self):
@@ -103,15 +103,10 @@ class Login(Resource):
             return make_response({'error': 'Invalid username or password'}, 401)
         expiration_time = datetime.utcnow() + timedelta(hours=3)
         token = jwt.encode({'user_id': user.user_id, 'exp': expiration_time}, jwt_secret_key, algorithm='HS256')
-        # In a real-world application, you should store the session in a more secure way
-        request.environ['auth_token'] = token
-        request.environ['user_id'] = user.user_id
         return make_response({'message': 'Login successful', 'token': token}, 200)
 
 class Logout(Resource):
     def post(self):
-        request.environ.pop('auth_token', None)
-        request.environ.pop('user_id', None)
         return make_response({'message': 'User has been logged out'}, 200)
 
 class ForgotPassword(Resource):
@@ -124,6 +119,8 @@ class ForgotPassword(Resource):
             reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token)
             db.session.add(reset_token_entry)
             db.session.commit()
+            from flask_mail import Message
+            from app import mail  # Local import to avoid circular dependency
             msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
             msg.body = f"Click the following link to reset your password: http://localhost:5173/reset_password?token={reset_token}"
             mail.send(msg)
