@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage, VStack, Text, Link } from "@chakra-ui/react";
@@ -63,27 +64,28 @@ const ForgotPassword = () => {
                   <ErrorMessage name="email" component={FormErrorMessage} />
                 </FormControl>
 
-            {error && <Text color="red.500">{error}</Text>}
-            {resetToken && (
-              <>
-                <Text color="green.500">
-                  An email with reset instructions has been sent to <strong>{email}</strong>.
-                </Text>
-                <Link as={RouterLink} to="/reset-password" color="teal.500">
-                  Proceed to Reset Password
-                </Link>
-              </>
-            )}
+                {error && <Text color="red.500">{error}</Text>}
+                {resetToken && (
+                  <Text color="green.500">
+                    An email with reset instructions has been sent to <strong>{email}</strong>.
+                  </Text>
+                )}
 
-            <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
-              Submit
-            </Button>
-          </VStack>
-        </Form>
-      )}
-    </Formik>
-  </Box>
-</Box>
+                <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
+                  Submit
+                </Button>
+              </VStack>
+            </Form>
+          )}
+        </Formik>
+        <Text mt={4}>
+          Proceed to{" "}
+          <Link as={RouterLink} to="/reset-password" color="teal.500">
+            Reset Password
+          </Link>
+        </Text>
+      </Box>
+    </Box>
   );
 };
 

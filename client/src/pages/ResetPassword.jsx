@@ -6,34 +6,41 @@ import * as Yup from "yup";
 import { toast } from 'react-toastify';
 
 const ResetPasswordSchema = Yup.object().shape({
-  password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
-  confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], "Passwords must match").required("Confirm Password is required"),
+  token: Yup.string().required("Token is required"),
+  newPassword: Yup.string()
+    .required("New Password is required")
+    .min(8, "Password must be at least 8 characters"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
+    .required("Confirm Password is required"),
 });
 
-const ResetPassword = () => {
-  const { token } = useParams();
+const ResetPasswordForm = () => {
   const [error, setError] = useState("");
 
   const handleResetPassword = async (values, { setSubmitting }) => {
     try {
       const { password } = values;
+      const { token, newPassword, confirmPassword } = values;
       const response = await fetch("http://localhost:5555/reset_password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ token, new_password: newPassword, confirm_password: confirmPassword }),
       });
       if (response.ok) {
-        const data = await response.json();
-        setError("");
         toast.success('Password has been reset successfully', {
           position: 'top-right',
           autoClose: 3000,
         });
+        setError("");
       } else {
         const data = await response.json();
         setError(data.error || "An error occurred");
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to reset password. Please try again.");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -49,16 +56,23 @@ const ResetPassword = () => {
         <Text as="h1" fontSize="2xl" mb={4}>Reset Password</Text>
         <Formik
           initialValues={{ password: "", confirmPassword: "" }}
+          initialValues={{ token: "", newPassword: "", confirmPassword: "" }}
           validationSchema={ResetPasswordSchema}
           onSubmit={handleResetPassword}
         >
           {({ isSubmitting, errors, touched }) => (
             <Form>
               <VStack spacing={4}>
-                <FormControl isInvalid={errors.password && touched.password}>
-                  <FormLabel htmlFor="password">New Password</FormLabel>
-                  <Field as={Input} id="password" name="password" type="password" />
-                  <ErrorMessage name="password" component={FormErrorMessage} />
+                <FormControl isInvalid={errors.token && touched.token}>
+                  <FormLabel htmlFor="token">Token</FormLabel>
+                  <Field as={Input} id="token" name="token" />
+                  <ErrorMessage name="token" component={FormErrorMessage} />
+                </FormControl>
+
+                <FormControl isInvalid={errors.newPassword && touched.newPassword}>
+                  <FormLabel htmlFor="newPassword">New Password</FormLabel>
+                  <Field as={Input} id="newPassword" name="newPassword" type="password" />
+                  <ErrorMessage name="newPassword" component={FormErrorMessage} />
                 </FormControl>
 
                 <FormControl isInvalid={errors.confirmPassword && touched.confirmPassword}>
@@ -68,6 +82,7 @@ const ResetPassword = () => {
                 </FormControl>
 
                 {error && <Text color="red.500">{error}</Text>}
+
                 <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
                   Reset Password
                 </Button>
