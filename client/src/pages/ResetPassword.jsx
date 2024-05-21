@@ -55,7 +55,7 @@ const ResetPasswordForm = () => {
       <Box className="reset-password-form" p={6} boxShadow="lg" borderRadius="md">
         <Text as="h1" fontSize="2xl" mb={4}>Reset Password</Text>
         <Formik
-          initialValues={{ password: "", confirmPassword: "" }}
+
           initialValues={{ token: "", newPassword: "", confirmPassword: "" }}
           validationSchema={ResetPasswordSchema}
           onSubmit={handleResetPassword}

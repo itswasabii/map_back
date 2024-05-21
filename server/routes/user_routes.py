@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 jwt_secret_key = os.getenv('JWT_SECRET_KEY')
-mail = Mail()
+mail = mail()
 
 
 class Users(Resource):
