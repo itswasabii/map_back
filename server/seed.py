@@ -119,8 +119,10 @@ with app.app_context():
 
                     # Create comments for each post
           for _ in range(random.randint(1, 5)):
+                random_user = random.choice(users)
                 comment = Comment(
-                    user_id=random.choice(users).user_id,
+                    user_id=random_user.user_id,
+                    user_name=random_user.username,
                     post_id=post.post_id,
                     cohort_id=cohort.cohort_id,
                     content=fake.text(),
@@ -141,6 +143,7 @@ with app.app_context():
       generate_fake_cohorts()
       generate_fake_cohort_members()
       generate_fake_posts()
+    
     #   generate_fake_fundraisers()
 
 
