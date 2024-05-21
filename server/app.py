@@ -8,7 +8,7 @@ from routes import Home
 from routes.donation_routes import  DonationResource
 from routes.user_routes import Users
 from routes.cohort_routes import Cohorts, CohortMembers
-from routes.post_routes import Posts, Comments
+from routes.post_routes import Posts, Comments, Likes, Shares, OnePost
 from routes.fundraiser_routes import FundraiserResource
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///map.db'
@@ -25,8 +25,11 @@ api.add_resource(Home, '/')
 api.add_resource(Users, '/users')
 api.add_resource(Cohorts, '/cohorts')
 api.add_resource(CohortMembers, '/cohort_members')
-api.add_resource(Posts, '/posts')
-api.add_resource(Comments, '/comments')
+api.add_resource(Posts, '/posts', '/posts/<int:post_id>')
+api.add_resource(OnePost,'/post/<int:post_id>')
+api.add_resource(Comments, '/comments/<int:post_id>', '/comments/<int:comment_id>')
+api.add_resource(Likes, '/likes')
+api.add_resource(Shares, '/shares')
 
 
 
