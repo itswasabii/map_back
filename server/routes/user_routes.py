@@ -9,8 +9,7 @@ from sqlalchemy.exc import IntegrityError
 import secrets
 import jwt
 import os
-from flask_mail import Message
-from app import mail  # Import the mail object from app.py
+from flask_mail import Mail, Message
 from dotenv import load_dotenv
 
 # Configure logging
@@ -20,7 +19,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 jwt_secret_key = os.getenv('JWT_SECRET_KEY')
-mail = mail()
+mail = Mail()
 
 
 class Users(Resource):
@@ -135,15 +134,35 @@ class ForgotPassword(Resource):
         user = User.query.filter_by(email=email).first()
         
         if user:
-            reset_token = secrets.token_urlsafe(32)
-            expires_at = datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
-            reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token, expires_at=expires_at)
-            db.session.add(reset_token_entry)
-            db.session.commit()
-            msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
-            msg.body = f"Your password reset token is: {reset_token}. It will expire in 1 hour."
-            mail.send(msg)
-            return jsonify({'message': 'Password reset token sent to your email'}), 200
+            try:
+                reset_token = secrets.token_urlsafe(32)
+                reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token)
+                db.session.add(reset_token_entry)
+                db.session.commit()
+                
+                reset_link = f"http://localhost:5173/reset_password?token={reset_token}"
+                
+                # Plain text message
+                text_body = f"Click the following link to reset your password: {reset_link}"
+                
+                # HTML message
+                html_body = f"<p>Click the following link to reset your password:</p> <a href='{reset_link}'>{reset_link}</a>"
+                
+                msg = Message('Password Reset Request',
+                              sender=os.getenv('MAIL_USERNAME'),
+                              recipients=[user.email])
+                
+                # Set both plain text and HTML body
+                msg.body = text_body
+                msg.html = html_body
+                
+                mail.send(msg)
+                
+                return make_response(jsonify({'message': 'Password reset link sent to your email'}), 200)
+            except Exception as e:
+                logger.error(f"Error sending password reset email: {e}")
+                db.session.rollback()
+                return make_response(jsonify({'error': 'An error occurred while sending the email. Please try again later.'}), 500)
         else:
             return make_response(jsonify({'error': 'Email not found'}), 404)
 
@@ -154,15 +173,13 @@ class ResetPassword(Resource):
         new_password = data.get('new_password')
         confirm_password = data.get('confirm_password')
         if new_password != confirm_password:
-            return jsonify({'error': 'Passwords do not match'}), 400
+            return make_response ( jsonify({'error': 'Passwords do not match'}), 400)
         reset_token_entry = ResetToken.query.filter_by(token=token).first()
         if reset_token_entry:
-            if datetime.utcnow() > reset_token_entry.expires_at:
-                return jsonify({'error': 'Token has expired'}), 400
             user = User.query.filter_by(user_id=reset_token_entry.user_id).first()
             user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha512')
             db.session.delete(reset_token_entry)
             db.session.commit()
-            return jsonify({'message': 'Password has been reset successfully'}), 200
+            return make_response(jsonify({'message': 'Password has been reset successfully'}), 200)
         else:
-            return jsonify({'error': 'Invalid or expired token'}), 400
+            return make_response(jsonify({'error': 'Invalid or expired token'}), 400)
