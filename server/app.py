@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_restful import Api
@@ -9,11 +9,14 @@ from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
 
+from routes import Home
+
 # Load environment variables from .env file
 load_dotenv()
 
 # Initialize Flask application
 app = Flask(__name__)
+CORS(app)
 
 # Configuration
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -36,7 +39,7 @@ migrate = Migrate(app, db)
 api = Api(app)
 mail = Mail(app)
 jwt = JWTManager(app)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://localhost:5173"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": [ "http://localhost:5173"]}}, supports_credentials=True)
 
 # Initialize login manager
 login_manager.init_app(app)
@@ -48,7 +51,9 @@ from routes.post_routes import Posts, Comments
 from routes.donation_routes import DonationResource
 from routes.fundraiser_routes import FundraiserResource
 
+
 # Register resources with Flask-RESTful
+api.add_resource(Home, '/')
 api.add_resource(Users, '/users')
 api.add_resource(Register, '/register')
 api.add_resource(Login, '/login')
@@ -61,6 +66,10 @@ api.add_resource(Posts, '/posts')
 api.add_resource(Comments, '/comments')
 api.add_resource(DonationResource, '/donations/<int:donation_id>')
 api.add_resource(FundraiserResource, '/fundraisers', '/fundraisers/<int:fundraiser_id>')
+
+# Create the database tables on launch
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

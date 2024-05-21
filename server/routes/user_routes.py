@@ -11,8 +11,9 @@ import secrets
 import jwt
 import os
 from flask_mail import Message
-from app import mail  # Ensure mail is imported from your app instance
+
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -61,7 +62,7 @@ class Users(Resource):
         db.session.add(new_user)
         db.session.commit()
         course_name = data['course']
-        course = Course.query.filter_by(course_name=course_name).first()
+        course = course.query.filter_by(course_name=course_name).first()
         if course:
             new_user.courses.append(course)
             db.session.commit()
@@ -130,7 +131,7 @@ class ForgotPassword(Resource):
             db.session.commit()
             msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
             msg.body = f"Click the following link to reset your password: http://localhost:5173/reset_password?token={reset_token}"
-            mail.send(msg)
+            email.send(msg)
             return jsonify({'message': 'Password reset link sent to your email'}), 200
         else:
             return jsonify({'error': 'Email not found'}), 404
