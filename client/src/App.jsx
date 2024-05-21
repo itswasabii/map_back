@@ -16,16 +16,18 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import "./App.css";
 
-function App() {
+
+const App = () => {
   return (
-    <Box pos={"relative"}>
-      <Router>
-        <AppContent />
-      </Router>
-      <ToastContainer />
-    </Box>
+    <Router>
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route path="/forgot_password" component={ForgotPassword} />
+        <Route path="/reset_password/:token" component={ResetPassword} />
+      </Switch>
+    </Router>
   );
-}
+};
 
 function AppContent() {
   const location = useLocation();

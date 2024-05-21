@@ -1,23 +1,26 @@
-# user_routes.py
-
+import logging
 from flask_restful import Resource
-from flask import request, jsonify, make_response
+from flask import  request, jsonify, make_response
 from models import db
-from models.user_model import User, ResetToken  # Ensure Course is imported if it's a model
+from models.user_model import User, ResetToken
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
 import secrets
 import jwt
 import os
-from flask_mail import Message
-
+from flask_mail import Mail, Message
 from dotenv import load_dotenv
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
 jwt_secret_key = os.getenv('JWT_SECRET_KEY')
+mail = Mail()
+
 
 class Users(Resource):
     def get(self):
@@ -119,22 +122,49 @@ class Logout(Resource):
         response.delete_cookie('token')
         return response
 
+
 class ForgotPassword(Resource):
     def post(self):
         data = request.json
         email = data.get('email')
+        
+        if not email:
+            return make_response(jsonify({'error': 'Email is required'}), 400)
+        
         user = User.query.filter_by(email=email).first()
+        
         if user:
-            reset_token = secrets.token_urlsafe(32)
-            reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token)
-            db.session.add(reset_token_entry)
-            db.session.commit()
-            msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
-            msg.body = f"Click the following link to reset your password: http://localhost:5173/reset_password?token={reset_token}"
-            email.send(msg)
-            return jsonify({'message': 'Password reset link sent to your email'}), 200
+            try:
+                reset_token = secrets.token_urlsafe(32)
+                reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token)
+                db.session.add(reset_token_entry)
+                db.session.commit()
+                
+                reset_link = f"http://localhost:5173/reset_password?token={reset_token}"
+                
+                # Plain text message
+                text_body = f"Click the following link to reset your password: {reset_link}"
+                
+                # HTML message
+                html_body = f"<p>Click the following link to reset your password:</p> <a href='{reset_link}'>{reset_link}</a>"
+                
+                msg = Message('Password Reset Request',
+                              sender=os.getenv('MAIL_USERNAME'),
+                              recipients=[user.email])
+                
+                # Set both plain text and HTML body
+                msg.body = text_body
+                msg.html = html_body
+                
+                mail.send(msg)
+                
+                return make_response(jsonify({'message': 'Password reset link sent to your email'}), 200)
+            except Exception as e:
+                logger.error(f"Error sending password reset email: {e}")
+                db.session.rollback()
+                return make_response(jsonify({'error': 'An error occurred while sending the email. Please try again later.'}), 500)
         else:
-            return jsonify({'error': 'Email not found'}), 404
+            return make_response(jsonify({'error': 'Email not found'}), 404)
 
 class ResetPassword(Resource):
     def post(self):
