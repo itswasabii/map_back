@@ -23,7 +23,7 @@ import { ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
 import logo from "../assets/logo_black.png";
 
 const ResetPasswordSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required"),
+  token: Yup.string().required("Token is required"),
   newPassword: Yup.string()
     .required("New Password is required")
     .min(8, "Password must be at least 8 characters"),
@@ -33,18 +33,17 @@ const ResetPasswordSchema = Yup.object().shape({
 });
 
 const ResetPasswordForm = () => {
-  const [resetToken, setResetToken] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      const { username, newPassword } = values;
+      const { token, newPassword, confirmPassword } = values;
       const response = await fetch("http://localhost:5555/reset_password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, newPassword }),
+        body: JSON.stringify({ token, new_password: newPassword, confirm_password: confirmPassword }),
       });
       if (response.ok) {
         const data = await response.json();
@@ -54,8 +53,10 @@ const ResetPasswordForm = () => {
           position: "top-right",
           autoClose: 3000,
         });
+        history.push(`/${data.reset_token}`);
       } else {
-        setError("Username not found");
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to reset password. Please try again.");
       }
     } catch (error) {
       console.error("Error:", error);
