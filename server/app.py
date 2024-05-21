@@ -1,3 +1,5 @@
+# app.py
+
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -59,7 +61,7 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}}, supports_cr
 login_manager.init_app(app)
 
 # Import routes
-from routes.user_routes import Users, Register, Login, Logout, ForgotPassword, ResetPassword
+from routes.user_routes import Users, Register, Login, Logout, ForgotPassword, ResetPassword, UserProfile
 from routes.cohort_routes import Cohorts, CohortMembers
 from routes.post_routes import Posts, Comments
 from routes.donation_routes import DonationResource
@@ -73,6 +75,7 @@ api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(ForgotPassword, '/forgot_password')
 api.add_resource(ResetPassword, '/reset_password')
+api.add_resource(UserProfile, '/users/<int:user_id>')
 api.add_resource(Cohorts, '/cohorts')
 api.add_resource(CohortMembers, '/cohort_members')
 
