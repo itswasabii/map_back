@@ -1,4 +1,4 @@
-# user_routes.py
+# routes/user_routes.py
 
 from flask_restful import Resource
 from flask import request, jsonify, make_response
@@ -13,7 +13,6 @@ import os
 from flask_mail import Message
 from app import mail  # Import the mail object from app.py
 from dotenv import load_dotenv
-
 
 load_dotenv()
 
@@ -32,6 +31,7 @@ class Users(Resource):
                 'occupation': user.occupation,
                 'qualification': user.qualification,
                 'location': user.location,
+                'profile_picture_url': user.profile_picture_url,
                 'cohorts': [
                     {
                         'cohort_id': member.cohort.cohort_id,
@@ -62,13 +62,42 @@ class Users(Resource):
         db.session.add(new_user)
         db.session.commit()
         course_name = data['course']
-        course = course.query.filter_by(course_name=course_name).first()
+        course = Course.query.filter_by(course_name=course_name).first()
         if course:
             new_user.courses.append(course)
             db.session.commit()
             return {'message': 'User created and associated with the course successfully'}, 201
         else:
             return {'error': f'Course "{course_name}" not found'}, 404
+
+class UserProfile(Resource):
+    def get(self, user_id):
+        user = User.query.get_or_404(user_id)
+        user_data = {
+            'user_id': user.user_id,
+            'username': user.username,
+            'email': user.email,
+            'bio': user.bio,
+            'occupation': user.occupation,
+            'qualification': user.qualification,
+            'location': user.location,
+            'profile_picture_url': user.profile_picture_url,
+            'cohorts': [
+                {
+                    'cohort_id': member.cohort.cohort_id,
+                    'cohort_name': member.cohort.cohort_name,
+                } for member in user.cohort_memberships
+            ],
+            'course': [course.course_name for course in user.courses],
+            'joined_at': user.joined_at.isoformat(),
+            'posts': [
+                {
+                    'content': post.content,
+                    'created_at': post.created_at.isoformat(),
+                } for post in user.posts
+            ]
+        }
+        return user_data, 200
 
     def put(self, user_id):
         data = request.json
@@ -77,6 +106,7 @@ class Users(Resource):
         user.occupation = data.get('occupation', user.occupation)
         user.qualification = data.get('qualification', user.qualification)
         user.location = data.get('location', user.location)
+        user.profile_picture_url = data.get('profile_picture_url', user.profile_picture_url)
         db.session.commit()
         return {'message': 'User profile updated successfully'}, 200
 
@@ -88,7 +118,7 @@ class Register(Resource):
         email = data.get('email')
         hashed_pass = generate_password_hash(password, method='pbkdf2:sha512')
         try:
-            new_user = User(username=username, password_hash=hashed_pass, email=email, bio='', occupation='', qualification='', location='', joined_at=datetime.utcnow())
+            new_user = User(username=username, password_hash=hashed_pass, email=email, bio='', occupation='', qualification='', location='', profile_picture_url='', joined_at=datetime.utcnow())
             db.session.add(new_user)
             db.session.commit()
             return make_response({'message': 'User has been registered'}, 200)
