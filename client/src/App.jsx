@@ -31,7 +31,7 @@ function AppContent() {
   const location = useLocation();
 
   const shouldDisplayNav = () => {    
-    return !location.pathname.startsWith("/forum/");
+    return !location.pathname.startsWith("/forum/") && !location.pathname.startsWith("/user/");
   };
 
   return (
@@ -39,16 +39,16 @@ function AppContent() {
       {shouldDisplayNav() && <Nav />}
       <Routes>
         <Route path="/" element={<SuccessStories />} />
-        <Route path="/success-stories" element={<SuccessStories />} />
+        {/* <Route path="/success-stories" element={<SuccessStories />} /> */}
         <Route path="/tech-news" element={<TechNews />} />
         <Route path="/fundraising&donations" element={<Fundraiser />} />
         <Route path="/forum/*" element={<Forum />} />
         <Route path="/forum/userprofile/:username" element={<UserProfile />} />
         <Route path="/forum/fundraiser/:id" element={<FundraiserById />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/user/login" element={<Login />} />
+        <Route path="/user/signup" element={<Signup />} />
+        <Route path="user/forgot-password" element={<ForgotPassword />} />
+        <Route path="user/reset-password" element={<ResetPassword />} />
       </Routes>
     </Box>
   );

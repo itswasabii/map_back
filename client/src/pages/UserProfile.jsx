@@ -31,42 +31,43 @@ const UserProfile = () => {
           gap={2}
           className="max-w-[800px] px-4 py-4 mt-[10px] border border-[#E4e4e4] mb-4 rounded-t-lg border-b-0"
         >
-          <Box gap={2} ml={4} w="50%">
-            <Flex gap={2}>
+          <Flex flexDir={'column'} gap={1} ml={4} w="50%">
+            
               <Avatar
-                size="xl"
+                size="2xl"
                 icon={<CgProfile />}
                 bg="#101f3c"
                 src="https://www.redditstatic.com/avatars/defaults/v2/avatar_default_1.png"
+                mb={'10px'}
               />
-              <Box px={2}>
+              
                 <Text fontSize="xl" fontWeight="bold">
                   John Doe
                 </Text>
                 <Text fontSize="md" >
                   johndoe@example.com
                 </Text>
-              </Box>
-            </Flex>
-            <Text  pt={4}>
-              Bio: <br />
-              It is possible to force an ignored file to be committed to the
-              repository.
-            </Text>
-          </Box>
+                <p>Nairobi, Joined : Sat 12 May 2024</p>      
+            
+          </Flex>
           <Flex gap={3} flexDir="column"  w="50%">
             <Text>
               <strong>Occupation:</strong> Software Developer
             </Text>
+            <Text >
+             <strong> Bio: </ strong>
+              It is possible to force an ignored file to be committed to the
+              repository.
+            </Text>
             <Text>
-              <strong>Qualification:</strong> <br />
+              <strong>Qualification: </strong>
               Nature as instead family good box management green. House
               everything democratic factor someone. Play memory defense
               consider.
             </Text>
             <Text>
-              <strong>Location:</strong> - <strong>Joined at:</strong>
-            </Text>
+              
+            </Text>           
           </Flex>
         </Flex>
 
