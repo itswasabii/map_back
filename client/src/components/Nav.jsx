@@ -7,10 +7,12 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  ButtonGroup,
+  Button,
 } from "@chakra-ui/react";
 import React from "react";
 import logo from "../assets/logo_black.png";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { HamburgerIcon } from "@chakra-ui/icons";
 
 function Nav() {
@@ -31,8 +33,9 @@ function Nav() {
       <Box h={"70px"}>
         <Image h={"100%"} w={"100%"} src={logo} />
       </Box>
-      <Flex gap={8} display={{ base: "none", md: "flex" }} color={"#101f3c"}>
-        <NavLink className="links" to={"/success-stories"}>
+      <Flex gap={4} alignItems={'center'}>
+         <Flex gap={8} display={{ base: "none", lg: "flex" }} color={"#101f3c"}>
+        <NavLink className="links" to={"/"}>
           Success Stories
         </NavLink>
         <NavLink className="links" to={"/tech-news"}>
@@ -43,9 +46,12 @@ function Nav() {
         </NavLink>
         <NavLink className="links" to={"/forum"}>
           Forum
-        </NavLink>
+        </NavLink>       
       </Flex>
-      <Box display={{ base: "flex", md: "none" }}>
+      
+          <Box as={Link} bg={'#fa510f'} p={'4px'} px={4} borderRadius={'3rem'} color={'#fff'} to={'/user/login'}>Get started</Box>
+      
+      <Box display={{ base: "flex", lg: "none" }}>
         {" "}
         <Menu>
           <MenuButton
@@ -56,7 +62,7 @@ function Nav() {
           />
           <MenuList>
             <MenuItem>
-              <NavLink to={"/success-stories"}>Success Stories</NavLink>
+              <NavLink to={"/"}>Success Stories</NavLink>
             </MenuItem>
             <MenuItem>
               <NavLink to={"/tech-news"}>Tech News</NavLink>
@@ -71,6 +77,8 @@ function Nav() {
         </Menu>
       </Box>
     </Flex>
+      </Flex>
+     
   );
 }
 

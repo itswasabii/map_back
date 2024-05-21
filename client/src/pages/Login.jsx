@@ -79,8 +79,8 @@ const Login = () => {
       >
         <Box className="login-form" p={6} borderRadius="md">
         <Image src={logo}/>  
-          <Text as="h1" fontSize="2xl" mb={4}>
-            
+          <Text as="h1" fontSize={"1.7rem"} textAlign={'center'} className="underline underline-offset-[8px]" color={'#101f3c'} fontWeight={'bold'} my={4}>
+            Login
           </Text>
           <Formik
             initialValues={{ username: "", password: "" }}
@@ -116,7 +116,7 @@ const Login = () => {
                     Don't have an account?
                     <Link
                       as="span"
-                      to="/signup"
+                      to="/user/signup"
                       className="login-link text-[#fa510f] mx-2 underline"
                     >
                       Signup
@@ -124,7 +124,7 @@ const Login = () => {
                     |
                     <Link
                       as="span"
-                      to="/forgot-password"
+                      to="/user/forgot-password"
                       className="mx-2 login-link"
                       style={{ color: "teal.500" }}
                     >

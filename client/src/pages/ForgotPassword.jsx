@@ -75,8 +75,8 @@ const ForgotPassword = () => {
       >
         <Box className="forgot-password-form" p={6} borderRadius="md">
           <Image src={logo} />
-          <Text as="h1" fontSize="lg" py={8}>
-            Forgot Password
+          <Text as="h1" fontSize={"1.7rem"} textAlign={'center'} className="underline underline-offset-[8px]" color={'#101f3c'} fontWeight={'bold'} my={4}>
+            
           </Text>
           <Formik
             initialValues={{ email: "" }}

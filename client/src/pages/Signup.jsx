@@ -83,7 +83,7 @@ const Signup = () => {
       >
         <Box className="signup-form" p={6}  borderRadius="md">
           <Image src={logo} />
-          <Text as="h1" fontSize="2xl" mb={4}></Text>
+          <Text as="h1" fontSize={"1.7rem"} textAlign={'center'} className="underline underline-offset-[8px]" color={'#101f3c'} fontWeight={'bold'} my={4}>Sign Up</Text>
           <Formik
             initialValues={{ username: "", email: "", password: "" }}
             validationSchema={SignupSchema}
@@ -128,7 +128,7 @@ const Signup = () => {
                   <Text>
                     Already have an account?{" "}
                     <Link
-                      to="/login"
+                      to="/user/login"
                       className="login-link text-[#fa510f] underline"
                     >
                       Login
