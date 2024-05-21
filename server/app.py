@@ -66,9 +66,9 @@ api.add_resource(Cohorts, '/cohorts')
 api.add_resource(CohortMembers, '/cohort_members')
 api.add_resource(Posts, '/posts')
 api.add_resource(Comments, '/comments')
-api.add_resource(DonationResource, '/donations/<int:donation_id>')
 api.add_resource(FundraiserResource, '/fundraisers', '/fundraisers/<int:fundraiser_id>')
-
+# Registering the endpoint for retrieving, updating, or deleting a specific donation
+api.add_resource(DonationResource, '/api/donations', '/api/donations/<int:donation_id>')
 # Create the database tables on launch
 with app.app_context():
     db.create_all()
