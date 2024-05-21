@@ -126,13 +126,14 @@ class ForgotPassword(Resource):
         user = User.query.filter_by(email=email).first()
         if user:
             reset_token = secrets.token_urlsafe(32)
-            reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token)
+            expires_at = datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
+            reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token, expires_at=expires_at)
             db.session.add(reset_token_entry)
             db.session.commit()
             msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
-            msg.body = f"Click the following link to reset your password: http://localhost:5173/reset_password?token={reset_token}"
-            email.send(msg)
-            return jsonify({'message': 'Password reset link sent to your email'}), 200
+            msg.body = f"Your password reset token is: {reset_token}. It will expire in 1 hour."
+            mail.send(msg)
+            return jsonify({'message': 'Password reset token sent to your email'}), 200
         else:
             return jsonify({'error': 'Email not found'}), 404
 
@@ -146,6 +147,8 @@ class ResetPassword(Resource):
             return jsonify({'error': 'Passwords do not match'}), 400
         reset_token_entry = ResetToken.query.filter_by(token=token).first()
         if reset_token_entry:
+            if datetime.utcnow() > reset_token_entry.expires_at:
+                return jsonify({'error': 'Token has expired'}), 400
             user = User.query.filter_by(user_id=reset_token_entry.user_id).first()
             user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha512')
             db.session.delete(reset_token_entry)
