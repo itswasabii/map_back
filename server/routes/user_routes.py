@@ -11,7 +11,7 @@ import secrets
 import jwt
 import os
 from flask_mail import Message
-
+from app import mail  # Import the mail object from app.py
 from dotenv import load_dotenv
 
 
