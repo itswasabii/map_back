@@ -1,20 +1,26 @@
+import logging
 from flask_restful import Resource
-from flask import request, jsonify, make_response
+from flask import  request, jsonify, make_response
 from models import db
 from models.user_model import User, ResetToken
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.exc import IntegrityError # Add this import statement
+from sqlalchemy.exc import IntegrityError
 import secrets
 import jwt
 import os
-from flask_mail import Message
-from app import mail  # Ensure mail is imported from your app instance
+from flask_mail import Mail, Message
 from dotenv import load_dotenv
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
 jwt_secret_key = os.getenv('JWT_SECRET_KEY')
+mail = Mail()
+
 
 class Users(Resource):
     def get(self):
@@ -59,7 +65,7 @@ class Users(Resource):
         db.session.add(new_user)
         db.session.commit()
         course_name = data['course']
-        course = Course.query.filter_by(course_name=course_name).first()
+        course = course.query.filter_by(course_name=course_name).first()
         if course:
             new_user.courses.append(course)
             db.session.commit()
@@ -99,52 +105,81 @@ class Login(Resource):
         username = data.get('username')
         password = data.get('password')
         user = User.query.filter_by(username=username).first()
-        if not user or not check_password_hash(user.password_hash, password):
+        if user and check_password_hash(user.password_hash, password):
+            token = jwt.encode({
+                'user_id': user.user_id,
+                'exp': datetime.utcnow() + timedelta(hours=24)
+            }, jwt_secret_key)
+            response = make_response({'message': 'User logged in successfully', 'token': token})
+            response.set_cookie('token', token, httponly=True, max_age=24*60*60)
+            return response
+        else:
             return make_response({'error': 'Invalid username or password'}, 401)
-        expiration_time = datetime.utcnow() + timedelta(hours=3)
-        token = jwt.encode({'user_id': user.user_id, 'exp': expiration_time}, jwt_secret_key, algorithm='HS256')
-        # In a real-world application, you should store the session in a more secure way
-        request.environ['auth_token'] = token
-        request.environ['user_id'] = user.user_id
-        return make_response({'message': 'Login successful', 'token': token}, 200)
 
 class Logout(Resource):
     def post(self):
-        request.environ.pop('auth_token', None)
-        request.environ.pop('user_id', None)
-        return make_response({'message': 'User has been logged out'}, 200)
+        response = make_response({'message': 'Logged out successfully'})
+        response.delete_cookie('token')
+        return response
+
 
 class ForgotPassword(Resource):
     def post(self):
-        data = request.get_json()
+        data = request.json
         email = data.get('email')
+        
+        if not email:
+            return make_response(jsonify({'error': 'Email is required'}), 400)
+        
         user = User.query.filter_by(email=email).first()
+        
         if user:
-            reset_token = secrets.token_urlsafe(32)
-            reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token)
-            db.session.add(reset_token_entry)
-            db.session.commit()
-            msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
-            msg.body = f"Click the following link to reset your password: http://localhost:5173/reset_password?token={reset_token}"
-            mail.send(msg)
-            return jsonify({'message': 'Password reset link sent to your email'}), 200
+            try:
+                reset_token = secrets.token_urlsafe(32)
+                reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token)
+                db.session.add(reset_token_entry)
+                db.session.commit()
+                
+                reset_link = f"http://localhost:5173/reset_password?token={reset_token}"
+                
+                # Plain text message
+                text_body = f"Click the following link to reset your password: {reset_link}"
+                
+                # HTML message
+                html_body = f"<p>Click the following link to reset your password:</p> <a href='{reset_link}'>{reset_link}</a>"
+                
+                msg = Message('Password Reset Request',
+                              sender=os.getenv('MAIL_USERNAME'),
+                              recipients=[user.email])
+                
+                # Set both plain text and HTML body
+                msg.body = text_body
+                msg.html = html_body
+                
+                mail.send(msg)
+                
+                return make_response(jsonify({'message': 'Password reset link sent to your email'}), 200)
+            except Exception as e:
+                logger.error(f"Error sending password reset email: {e}")
+                db.session.rollback()
+                return make_response(jsonify({'error': 'An error occurred while sending the email. Please try again later.'}), 500)
         else:
-            return jsonify({'error': 'Email not found'}), 404
+            return make_response(jsonify({'error': 'Email not found'}), 404)
 
 class ResetPassword(Resource):
     def post(self):
-        data = request.get_json()
+        data = request.json
         token = data.get('token')
         new_password = data.get('new_password')
         confirm_password = data.get('confirm_password')
         if new_password != confirm_password:
-            return jsonify({'error': 'Passwords do not match'}), 400
+            return make_response ( jsonify({'error': 'Passwords do not match'}), 400)
         reset_token_entry = ResetToken.query.filter_by(token=token).first()
         if reset_token_entry:
             user = User.query.filter_by(user_id=reset_token_entry.user_id).first()
             user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha512')
             db.session.delete(reset_token_entry)
             db.session.commit()
-            return jsonify({'message': 'Password has been reset successfully'}), 200
+            return make_response(jsonify({'message': 'Password has been reset successfully'}), 200)
         else:
-            return jsonify({'error': 'Invalid or expired token'}), 400
+            return make_response(jsonify({'error': 'Invalid or expired token'}), 400)

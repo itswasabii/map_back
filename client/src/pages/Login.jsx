@@ -23,7 +23,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
+        credentials: "omit",
         body: JSON.stringify({ username, password }),
       });
       if (response.ok) {
