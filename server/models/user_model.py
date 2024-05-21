@@ -1,13 +1,10 @@
-from . import  db, login_manager
-from datetime import datetime
+# models/user_model.py
+from . import db
+from datetime import datetime, timedelta
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 user_course_association = db.Table('user_course_association',
     db.Column('user_id', db.Integer, db.ForeignKey('user.user_id')),
@@ -19,17 +16,13 @@ class User(UserMixin, db.Model, SerializerMixin):
     username = db.Column(db.String(255), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    # role = db.Column(db.Enum('admin', 'normal'), nullable=False)
     bio = db.Column(db.Text)
     occupation = db.Column(db.String(50))
     qualification = db.Column(db.Text)
     location = db.Column(db.String(50))
-    # profile_picture_url = db.Column(db.String(255)) #Gichia
+    profile_picture_url = db.Column(db.String(255))
     joined_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    # fundraiser_id = db.Column(db.Integer, db.ForeignKey('fundraiser.id'))
-    # fundraiser = db.relationship('Fundraiser', backref='users')
-   
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
     cohort_memberships = db.relationship('CohortMember', backref='member', lazy='dynamic')
@@ -42,5 +35,15 @@ class User(UserMixin, db.Model, SerializerMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
     def __repr__(self):
         return f'<User {self.username}>'
+
+class ResetToken(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    token = db.Column(db.String(255), nullable=False, unique=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.utcnow() + timedelta(hours=1))
+
+    user = db.relationship('User', backref=db.backref('reset_tokens', lazy=True))
