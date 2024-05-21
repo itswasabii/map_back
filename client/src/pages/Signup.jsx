@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import gif from '../assets/nerd.png'
-import logo from '../assets/logo_black.png'
+import gif from "../assets/nerd.png";
+import logo from "../assets/logo_black.png";
 import * as Yup from "yup";
 import {
   Box,
@@ -69,75 +69,21 @@ const Signup = () => {
 
   return (
     <Flex
-      align={"stretch"}
-      flexDir={{ base: "column", md: "row" }}
+      align={{base:'center',md:"stretch"}}
+      flexDir={{ base: "column", md: "row-reverse" }}
       className="h-screen"
     >
-      <Flex
-        w={{ base: "100%", md: "50%" }}
-        color={"#fff"}
-        minW={"md"}        
-        className=" bg-[#101f3c] flex-col"        
-        justify={'center'}
-        px={4}        
-      >
-        <Heading as="h1" size="xl"  mb={4}>
-          Moringa Alumnus Community!
-        </Heading>
-        <Text fontSize="md" maxW='2xl' mb={8}>
-          Connect with a diverse network of innovative minds from Moringa
-          School.As a member of our alumni community,<Text as='span' display={{base:'none',md:'inline'}}>  you gain access to a wealth of resources and opportunities designed to help you thrive, engage in lifelong learning, build meaningful connections, and take advantage of exclusive career services,</Text> you gain access to:
-          
-        </Text>
-        <List spacing={3} px={{base:2,md:8}}>
-          <ListItem>
-            <ListIcon as={CheckIcon} color="#FA510F" />
-            Lifelong learning opportunities through workshops and webinars.
-          </ListItem>
-          <ListItem>
-            <ListIcon as={CheckIcon} color="#FA510F" />
-            Networking events to forge new connections and collaborations.
-          </ListItem>
-          <ListItem>
-            <ListIcon as={CheckIcon} color="#FA510F" />
-            Exclusive job postings and career advancement resources.
-          </ListItem>
-          <ListItem>
-            <ListIcon as={CheckIcon} color="#FA510F" />
-            Mentorship programs to guide your professional growth.
-          </ListItem>
-          <ListItem>
-            <ListIcon as={CheckIcon} color="#FA510F" />
-            Opportunities to give back by mentoring current students.
-          </ListItem>
-        </List>
-        <Box
-              cursor={"pointer"}
-              my={"20px"}
-              bg={"#FA510F"}
-              color={"#fff"}
-              w={"220px"}
-              borderRadius={"md"}
-              textAlign={"center"}
-              lineHeight={"40px"}
-              mx={{base:2,md:8}}
-            >
-              Fill the form to signup <ArrowForwardIcon/>
-            </Box>
-            <Image px={{base:2,md:8}}  w={'400px'} src={gif} />
-      </Flex>
       <Flex
         flexDir={"column"}
         w={{ base: "100%", md: "50%" }}
         className="login-signup"
         p={4}
         maxW="lg"
-        m="auto"
+        m={'auto'}
       >
-        <Box className="signup-form" p={6} borderRadius="md">
-          <Text as="h1" fontSize="2xl" mb={4}>
-            Signup
-          </Text>
+        <Box className="signup-form" p={6}  borderRadius="md">
+          <Image src={logo} />
+          <Text as="h1" fontSize="2xl" mb={4}></Text>
           <Formik
             initialValues={{ username: "", email: "", password: "" }}
             validationSchema={SignupSchema}
@@ -148,7 +94,12 @@ const Signup = () => {
                 <VStack spacing={4}>
                   <FormControl isInvalid={errors.username && touched.username}>
                     <FormLabel htmlFor="username">Username</FormLabel>
-                    <Field as={Input} className="bg-[#EDF2F7]" id="username" name="username" />
+                    <Field
+                      as={Input}
+                      className="bg-[#EDF2F7]"
+                      id="username"
+                      name="username"
+                    />
                     <ErrorMessage
                       name="username"
                       component={FormErrorMessage}
@@ -174,12 +125,11 @@ const Signup = () => {
                       component={FormErrorMessage}
                     />
                   </FormControl>
-                  <Text mt={4}>
+                  <Text>
                     Already have an account?{" "}
                     <Link
                       to="/login"
                       className="login-link text-[#fa510f] underline"
-                      
                     >
                       Login
                     </Link>
@@ -188,12 +138,14 @@ const Signup = () => {
                   {signupError && <Text color="red.500">{signupError}</Text>}
 
                   <Button
+                    w={"100%"}
                     type="submit"
-                    bg={'#101f3c'}
-                    color={'#fff'}
+                    bg={"#101f3c"}
+                    _hover={{ bg: "101f3c" }}
+                    color={"#fff"}
                     isLoading={isSubmitting}
                   >
-                    Submit
+                    Signup
                   </Button>
                 </VStack>
               </Form>
@@ -201,6 +153,67 @@ const Signup = () => {
           </Formik>
         </Box>
       </Flex>
+      <Flex
+        w={{ base: "100%", md: "50%" }}
+        color={"#fff"}
+        
+        className=" bg-[#101f3c] flex-col"
+        justify={"center"}
+        px={4}
+      >
+        <Heading as="h1" size="xl" mb={4}>
+          Moringa Alumnus Community!
+        </Heading>
+        <Text fontSize="md" maxW="2xl" mb={8}>
+          Connect with a diverse network of innovative minds from Moringa
+          School.As a member of our alumni community,
+          <Text as="span" display={{ base: "none", md: "inline" }}>
+            {" "}
+            you gain access to a wealth of resources and opportunities designed
+            to help you thrive, engage in lifelong learning, build meaningful
+            connections, and take advantage of exclusive career services,
+          </Text>{" "}
+          you gain access to:
+        </Text>
+        <List spacing={3} px={{ base: 0, md: 8 }}>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Lifelong learning opportunities through workshops and webinars.
+          </ListItem>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Networking events to forge new connections and collaborations.
+          </ListItem>
+
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Exclusive job postings and career advancement resources.
+          </ListItem>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Mentorship programs to guide your professional growth.
+          </ListItem>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Opportunities to give back by mentoring current students.
+          </ListItem>
+        </List>
+        <Box
+          cursor={"pointer"}
+          my={"20px"}
+          bg={"#FA510F"}
+          color={"#fff"}
+          w={"220px"}
+          borderRadius={"md"}
+          textAlign={"center"}
+          lineHeight={"40px"}
+          mx={{ base: 2, md: 8 }}
+        >
+          Fill the form to signup <ArrowForwardIcon />
+        </Box>
+        <Image px={{ base: 2, md: 8 }} w={"400px"} />
+      </Flex>
+      
     </Flex>
   );
 };
