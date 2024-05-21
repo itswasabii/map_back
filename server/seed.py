@@ -1,38 +1,55 @@
-# from datetime import datetime
-# from .app import app
-# from .models import db, User, Cohort, CohortMember, Post, Notification, Fundraiser, Advert, AdminNotification, ChatMessage
-
-# with app.app_context():
-
-
-
-# from datetime import datetime
 from faker import Faker
 from werkzeug.security import generate_password_hash
 from app import app
 from models import db
 from models.user_model import User
-from models.cohort_model import Cohort, CohortMember, CohortType
-from models.post_model import Post, Comment, PostCategory
+from models.cohort_model import Cohort, CohortMember, CohortType, Course
+from models.post_model import Post, Comment, PostCategory, Share, Like
 from models.advert_model import Advert
 import random
+from models.fundraiser_model import Fundraiser  # Import Fundraiser model
+from datetime import datetime
+from models.fundraiser_model import Donation
+
 
 fake = Faker()
 with app.app_context():
+# Function to generate fake fundraisers
+#   def generate_fake_fundraisers(count=5):
+#         for _ in range(count):
+#             fundraiser = Fundraiser(
+#                 user_id=fake.random_int(min=1, max=5),
+#                 title=fake.sentence(),
+#                 description=fake.text(),
+#                 goal_amount=fake.random_int(min=100, max=1000),
+#                 current_amount=fake.random_int(min=0, max=1000),
+#                 start_date=fake.date_time_this_decade(),
+#                 end_date=fake.date_time_this_decade()
+#             )
+#             db.session.add(fundraiser)
+#         db.session.commit()
+
+
   def generate_fake_users(count=5):
       for _ in range(count):
+          course_names = ['Data Science', 'Software Engineering', 'DevOps']
+          courses = [Course(course_name=course_name) for course_name in course_names]
+          db.session.add_all(courses)
+          db.session.commit()
           user = User(
               username=fake.user_name(),
               email=fake.email(),
               password_hash=generate_password_hash(fake.password()),
-              role=fake.random_element(elements=('admin', 'normal')),
+            #   role='normal',
               occupation=fake.job(),
-              qualifications=fake.text(),
+              qualification=fake.text(),
               bio=fake.text(),
               location=fake.city(),
-              profile_picture_url=fake.image_url(),
               joined_at=fake.date_time_this_decade()
+
           )
+          num_courses = random.randint(1, 3)
+          user.courses.extend(random.sample(courses, num_courses))
           db.session.add(user)
       db.session.commit()
 
@@ -41,7 +58,7 @@ with app.app_context():
         cohort_type = random.choice(['public', 'private'])  # Randomly choose between public and private
         
         if cohort_type == 'private':
-            # If private, include year_of_enrollment and course_id
+        
             cohort = Cohort(
                 cohort_name=fake.company(),
                 year_of_enrollment=fake.random_int(min=2010, max=2022),  # Example range for year of enrollment
@@ -49,11 +66,9 @@ with app.app_context():
                 type=CohortType.PRIVATE,
                 created_by=fake.random_int(min=1, max=5),
                 created_at=fake.date_time_this_decade(),
-                
-                  # Example course ID
             )
         else:
-            # If public, exclude year_of_enrollment and course_id
+         
             cohort = Cohort(
                 cohort_name=fake.company(),
                 created_by=fake.random_int(min=1, max=5),
@@ -78,272 +93,113 @@ with app.app_context():
 
   def generate_fake_posts(count=5):
       categories = list(PostCategory)
+      users = User.query.all()
+      cohorts = Cohort.query.all()
+      
+      if not users or not cohorts:
+        print("No users or cohorts available to create posts")
+        return
       for _ in range(count):
+          user = random.choice(users)
+          cohort = random.choice(cohorts)
           post = Post(
-              user_id=fake.random_int(min=1, max=5),
-              cohort_id=fake.random_int(min=1, max=5),
+              user_id=user.user_id,
+              cohort_id=cohort.cohort_id,
               content=fake.text(),
               category=random.choice(categories),
               created_at=fake.date_time_this_decade()
           )
           db.session.add(post)
-      db.session.commit()
+          db.session.commit()
 
-  def generate_fake_comments(count=5):
-      for _ in range(count):
-          comment = Comment(
-              post_id=fake.random_int(min=1, max=5),
-              user_id=fake.random_int(min=1, max=5),
-              cohort_id=fake.random_int(min=1, max=5),
-              content=fake.text(),
-              created_at=fake.date_time_this_decade()
-          )
-          db.session.add(comment)
-      db.session.commit()
+          for _ in range(random.randint(1, 10)):
+                like = Like(user_id=random.choice(users).user_id, post_id=post.post_id)
+                post.likes_count += 1
+                db.session.add(like)
 
-  # def generate_fake_notifications(count=5):
-  #     for _ in range(count):
-  #         notification = Notification(
-  #             user_id=fake.random_int(min=1, max=5),
-  #             content=fake.text(),
-  #             activity=fake.random_element(elements=('like', 'comment')),
-  #             activity_id=fake.random_int(min=1, max=5),
-  #             created_at=fake.date_time_this_decade(),
-  #             is_read=fake.boolean()
-  #         )
-  #         db.session.add(notification)
-  #     db.session.commit()
+                    # Create comments for each post
+          for _ in range(random.randint(1, 5)):
+                random_user = random.choice(users)
+                comment = Comment(
+                    user_id=random_user.user_id,
+                    user_name=random_user.username,
+                    post_id=post.post_id,
+                    cohort_id=cohort.cohort_id,
+                    content=fake.text(),
+                    created_at=fake.date_time_this_decade()
+                )
+                post.comments_count += 1
+                db.session.add(comment)
 
-  # # def generate_fake_fundraisers(count=5):
-  #     for _ in range(count):
-  #         fundraiser = Fundraiser(
-  #             cohort_id=fake.random_int(min=1, max=5),
-  #             title=fake.text(),
-  #             description=fake.text(),
-  #             goal_amount=fake.random_int(min=100, max=10000),
-  #             current_amount=fake.random_int(min=0, max=5000),
-  #             created_by=fake.random_int(min=1, max=5),
-  #             created_at=fake.date_time_this_decade()
-  #         )
-  #         db.session.add(fundraiser)
-  #     db.session.commit()
-
-  # def generate_fake_adverts(count=5):
-  #     for _ in range(count):
-  #         advert = Advert(     
-  #             advert_id=fake.random_int(min=1, max=5),
-  #             title=fake.sentence(),
-  #             description=fake.text(),
-  #             image_url=fake.image_url(),
-  #             created_at=fake.date_time_this_decade()
-  #         )
-  #         db.session.add(advert)
-  #     db.session.commit()
-
-  # def generate_fake_admin_notifications(count=5):
-  #     for _ in range(count):
-  #         admin_notification = AdminNotification(
-  #             content=fake.text(),
-  #             created_at=fake.date_time_this_decade()
-  #         )
-  #         db.session.add(admin_notification)
-  #     db.session.commit()
-
-  # def generate_fake_chat_messages(count=5):
-  #     for _ in range(count):
-  #         chat_message = ChatMessage(
-  #             user_id=fake.random_int(min=1, max=5),
-  #             content=fake.text(),
-  #             created_at=fake.date_time_this_decade()
-  #         )
-  #         db.session.add(chat_message)
-  #     db.session.commit()
+          for _ in range(random.randint(1, 3)):
+                share = Share(user_id=random.choice(users).user_id, post_id=post.post_id)
+                post.shares_count += 1
+                db.session.add(share)
+          db.session.commit()
+        
 
   if __name__ == '__main__':
       generate_fake_users()
       generate_fake_cohorts()
       generate_fake_cohort_members()
       generate_fake_posts()
-      generate_fake_comments()
-      # generate_fake_notifications()
-      # generate_fake_fundraisers()
-      # generate_fake_adverts()
-      # generate_fake_admin_notifications()
-      # generate_fake_chat_messages()
-
-   
-#     users = [
-#         User(username='user1', email='user1@example.com', password_hash='password', role='normal', joined_at=datetime.utcnow()),
-#         User(username='user2', email='user2@example.com', password_hash='password', role='normal', joined_at=datetime.utcnow()),
-#         User(username='admin', email='admin@example.com', password_hash='password', role='admin', joined_at=datetime.utcnow())
-#     ]
-
-#     db.session.add_all(users)
-#     db.session.commit()
-
-#     cohorts = [
-#         Cohort(cohort_name='Cohort 1', created_by=1, created_at=datetime.utcnow()),
-#         Cohort(cohort_name='Cohort 2', created_by=2, created_at=datetime.utcnow())
-#     ]
-
-#     db.session.add_all(cohorts)
-#     db.session.commit()
-
-#     cohort_members = [
-#         CohortMember(cohort_id=1, user_id=1, joined_at=datetime.utcnow()),
-#         CohortMember(cohort_id=1, user_id=2, joined_at=datetime.utcnow()),
-#         CohortMember(cohort_id=2, user_id=1, joined_at=datetime.utcnow())
-#     ]
-
-#     db.session.add_all(cohort_members)
-#     db.session.commit()
-
-#     posts = [
-#         Post(user_id=1, cohort_id=1, content='Post 1 content', created_at=datetime.utcnow()),
-#         Post(user_id=2, cohort_id=1, content='Post 2 content', created_at=datetime.utcnow())
-#     ]
-
-#     db.session.add_all(posts)
-#     db.session.commit()
-
-#     notifications = [
-#         Notification(user_id=1, content='Notification 1 content', activity='like', activity_id=1, created_at=datetime.utcnow(), is_read=False),
-#         Notification(user_id=2, content='Notification 2 content', activity='comment', activity_id=2, created_at=datetime.utcnow(), is_read=True)
-#     ]
-
-#     db.session.add_all(notifications)
-#     db.session.commit()
-
-#     fundraisers = [
-#         Fundraiser(cohort_id=1, title='Fundraiser 1', description='Fundraiser 1 description', goal_amount=1000, current_amount=500, created_by=1, created_at=datetime.utcnow())
-#     ]
-
-#     db.session.add_all(fundraisers)
-#     db.session.commit()
-
-#     adverts = [
-#         Advert(title='Advert 1', description='Advert 1 description', image_url='https://example.com/image.jpg', created_at=datetime.utcnow())
-#     ]
-
-#     db.session.add_all(adverts)
-#     db.session.commit()
-
-#     admin_notifications = [
-#         AdminNotification(content='Admin notification 1', created_at=datetime.utcnow())
-#     ]
-
-#     db.session.add_all(admin_notifications)
-#     db.session.commit()
-
-#     chat_messages = [
-#         ChatMessage(user_id=1, content='Message 1', created_at=datetime.utcnow())
-#     ]
-
-#     db.session.add_all(chat_messages)
-#     db.session.commit()
-
-#     print('Sample data has been seeded successfully!')
-
-[
-    {
-        "username": "user1",
-        "email": "user1@example.com",
-        "password_hash": "password1",
-        "role": "normal",
-        "joined_at": "2024-05-15T12:00:00"
-    },
-    {
-        "username": "user2",
-        "email": "user2@example.com",
-        "password_hash": "password2",
-        "role": "normal",
-        "joined_at": "2024-05-16T12:00:00"
-    },
-    {
-        "username": "user3",
-        "email": "user3@example.com",
-        "password_hash": "password3",
-        "role": "admin",
-        "joined_at": "2024-05-17T12:00:00"
-    },
-    {
-        "username": "user4",
-        "email": "user4@example.com",
-        "password_hash": "password4",
-        "role": "normal",
-        "joined_at": "2024-05-18T12:00:00"
-    },
-    {
-        "username": "user5",
-        "email": "user5@example.com",
-        "password_hash": "password5",
-        "role": "normal",
-        "joined_at": "2024-05-19T12:00:00"
-    }
-]
+    
+    #   generate_fake_fundraisers()
 
 
-{
-  "cohort_id": 1,
-  "cohort_name": "Cohort A",
-  "created_by": 1,
-  "created_at": "2024-05-14T13:00:00",
-  "members": [
-    {
-      "member_id": 1,
-      "user_id": 1,
-      "joined_at": "2024-05-14T13:00:00"
-    },
-    {
-      "member_id": 2,
-      "user_id": 2,
-      "joined_at": "2024-05-14T13:30:00"
-    }
-  ],
-  "posts": [
-    {
-      "post_id": 1,
-      "user_id": 1,
-      "content": "Post content 1",
-      "created_at": "2024-05-14T13:10:00"
-    },
-    {
-      "post_id": 2,
-      "user_id": 2,
-      "content": "Post content 2",
-      "created_at": "2024-05-14T13:20:00"
-    }
-  ],
-  "fundraisers": [
-    {
-      "fundraiser_id": 1,
-      "title": "Fundraiser A",
-      "description": "Fundraiser A description",
-      "goal_amount": 1000,
-      "current_amount": 500,
-      "created_by": 1,
-      "created_at": "2024-05-14T13:30:00"
-    }
-  ]
-}
+# Function to seed fundraiser and donation data
+def seed_donations():
+    
+  with app.app_context():
+    # Create fundraisers
+    fundraisers = [
+        {
+            'user_id': 1,
+            'title': 'Fundraiser 1',
+            'description': 'Description for Fundraiser 1',
+            'goal_amount': 1000.0,
+            'end_date': datetime(2024, 6, 1)
+        },
+        {
+            'user_id': 2,
+            'title': 'Fundraiser 2',
+            'description': 'Description for Fundraiser 2',
+            'goal_amount': 1500.0,
+            'end_date': datetime(2024, 6, 15)
+        }
+        # Add more fundraisers as needed
+    ]
 
-[
-  {
-    "member_id": 1,
-    "cohort_id": 1,
-    "user_id": 1,
-    "joined_at": "2024-05-14T09:00:00"
-  },
-  {
-    "member_id": 2,
-    "cohort_id": 1,
-    "user_id": 2,
-    "joined_at": "2024-05-14T09:15:00"
-  },
-  {
-    "member_id": 3,
-    "cohort_id": 2,
-    "user_id": 3,
-    "joined_at": "2024-05-14T09:30:00"
-  }
-]
+    # Create donations
+    donations = [
+        {
+            
+            'fundraiser_id': 1,
+            'user_id': 3,
+            'amount': 500.0,
+            'donation_date': datetime(2024, 5, 20)
+        },
+        {
+            'fundraiser_id': 2,
+            'user_id': 4,
+            'amount': 1000.0,
+            'donation_date': datetime(2024, 5, 25)
+        }
+        # Add more donations as needed
+    ]
+
+    # Seed fundraisers
+    for fundraiser_data in fundraisers:
+        fundraiser = Fundraiser(**fundraiser_data)
+        db.session.add(fundraiser)
+
+    # Seed donations
+    for donation_data in donations:
+        donation = Donation(**donation_data)
+        db.session.add(donation)
+
+    # Commit changes to the database
+    db.session.commit()
+
+if __name__ == '__main__':
+    seed_donations()
