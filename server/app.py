@@ -3,6 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_restful import Api
+
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_jwt_extended import JWTManager
@@ -13,6 +14,7 @@ import os
 load_dotenv()
 
 # Initialize Flask application
+
 from flask_sqlalchemy import SQLAlchemy
 from models import db, login_manager
 from routes import Home
@@ -21,6 +23,7 @@ from routes.user_routes import Users
 from routes.cohort_routes import Cohorts, CohortMembers
 from routes.post_routes import Posts, Comments, Likes, Shares, OnePost
 from routes.fundraiser_routes import FundraiserResource
+
 app = Flask(__name__)
 
 # Configuration
@@ -65,11 +68,16 @@ api.add_resource(ForgotPassword, '/forgot_password')
 api.add_resource(ResetPassword, '/reset_password')
 api.add_resource(Cohorts, '/cohorts')
 api.add_resource(CohortMembers, '/cohort_members')
+
+api.add_resource(Posts, '/posts')
+api.add_resource(Comments, '/comments')
+
 api.add_resource(Posts, '/posts', '/posts/<int:post_id>')
 api.add_resource(OnePost,'/post/<int:post_id>')
 api.add_resource(Comments, '/comments/<int:post_id>', '/comments/<int:comment_id>')
 api.add_resource(Likes, '/likes')
 api.add_resource(Shares, '/shares')
+
 
 
 
