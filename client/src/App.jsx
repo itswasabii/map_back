@@ -18,6 +18,7 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
 import "./App.css";
 
+import "./App.css";
 function App() {
   return (
     <AuthProvider>
@@ -54,7 +55,13 @@ function AppContent() {
         <Route path="/user/login" element={token ? <Navigate to="/forum" /> : <Login />} />
         <Route path="/user/signup" element={token ? <Navigate to="/forum" /> : <Signup />} />
         <Route path="/user/forgot-password" element={token ? <Navigate to="/forum" /> : <ForgotPassword />} />
-        <Route path="/user/reset-password" element={token ? <Navigate to="/forum" /> : <ResetPassword />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+
+<Route path="/user/reset-password" element={token ? <Navigate to="/forum" /> : <ResetPassword />} />
       </Routes>
     </Box>
   );
