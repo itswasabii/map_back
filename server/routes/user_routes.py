@@ -1,23 +1,30 @@
 # routes/user_routes.py
 
+from venv import logger
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restful import Resource
-from flask import request, jsonify, make_response
+from flask import  request, jsonify, make_response,current_app
 from models import db
-from models.user_model import User, ResetToken # Ensure Course is imported if it's a model
+from models.user_model import User, ResetToken
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
 import secrets
 import jwt
 import os
-from flask_mail import Message
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from app import mail  # Import the mail object from app.py
+from flask_mail import Mail, Message
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+
+from models.cohort_model import Course
+
 
 load_dotenv()
 
 jwt_secret_key = os.getenv('JWT_SECRET_KEY')
+mail = Mail()
+
 
 class Users(Resource):
     def get(self):
@@ -100,21 +107,42 @@ class UserProfile(Resource):
                 } for post in user.posts
             ]
         }
-        return make_response(jsonify(user_data), 200)
+        return user_data,200
+    
 
-    @jwt_required()
-    def put(self):
-        user_id = get_jwt_identity()
-        data = request.json
+    def patch(self, user_id):
+        cloudinary.config(
+            cloud_name=os.getenv('CLOUD_NAME'),
+            api_key=os.getenv('API_KEY'),
+            api_secret=os.getenv('API_SECRET')
+        )
+
         user = User.query.get_or_404(user_id)
-        user.bio = data.get('bio', user.bio)
-        user.occupation = data.get('occupation', user.occupation)
-        user.qualification = data.get('qualification', user.qualification)
-        user.location = data.get('location', user.location)
-        user.profile_picture_url = data.get('profile_picture_url', user.profile_picture_url)
-        db.session.commit()
-        return make_response(jsonify({'message': 'User profile updated successfully'}), 200)
+        
+        user.bio = request.form.get('bio', user.bio)
+        user.occupation = request.form.get('occupation', user.occupation)
+        user.qualification = request.form.get('qualification', user.qualification)
+        user.location = request.form.get('location', user.location)
+        
+        upload_result = None
+        if 'profilePic' in request.files:
+            print('Profile pic found in request files')  # Add this
+            file_to_upload = request.files['profilePic']
+            print('Image')  # Add this
+            print(file_to_upload)  # Add this
+            current_app.logger.info('File to upload: %s', file_to_upload)
+            if file_to_upload:
+                upload_result = cloudinary.uploader.upload(file_to_upload)
+                current_app.logger.info('Upload result: %s', upload_result)
+                user.profile_picture_url = upload_result.get('secure_url')
+            else:
+                print('No file to upload')  # Add this
+        else:
+            print('Profile pic not found in request files')  # Add this
 
+
+        db.session.commit()
+        return jsonify({'message': 'User profile updated successfully'})
 class Register(Resource):
     def post(self):
         data = request.json
@@ -138,9 +166,13 @@ class Login(Resource):
         password = data.get('password')
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password_hash, password):
-            role = user.role
-            access_token = create_access_token(identity={'user_id': user.user_id, 'role': role}, expires_delta=timedelta(hours=24))
-            return make_response(jsonify({'message': 'User logged in successfully', 'access_token': access_token, 'role': role}), 200)
+            token = jwt.encode({
+                'user_id': user.user_id,
+                'exp': datetime.utcnow() + timedelta(hours=24)
+            }, jwt_secret_key)
+            response = make_response({'message': 'User logged in successfully', 'token': token,"userId":user.user_id})
+            response.set_cookie('token', token, httponly=True, max_age=24*60*60)
+            return response
         else:
             return make_response(jsonify({'error': 'Invalid username or password'}), 401)
 
@@ -150,21 +182,47 @@ class Logout(Resource):
         response.delete_cookie('token')
         return response
 
+
 class ForgotPassword(Resource):
     def post(self):
         data = request.json
         email = data.get('email')
+        
+        if not email:
+            return make_response(jsonify({'error': 'Email is required'}), 400)
+        
         user = User.query.filter_by(email=email).first()
+        
         if user:
-            reset_token = secrets.token_urlsafe(32)
-            expires_at = datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
-            reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token, expires_at=expires_at)
-            db.session.add(reset_token_entry)
-            db.session.commit()
-            msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
-            msg.body = f"Your password reset token is: {reset_token}. It will expire in 1 hour."
-            mail.send(msg)
-            return make_response(jsonify({'message': 'Password reset token sent to your email'}), 200)
+            try:
+                reset_token = secrets.token_urlsafe(32)
+                reset_token_entry = ResetToken(user_id=user.user_id, token=reset_token)
+                db.session.add(reset_token_entry)
+                db.session.commit()
+                
+                reset_link = f"http://localhost:5173/reset_password?token={reset_token}"
+                
+                # Plain text message
+                text_body = f"Click the following link to reset your password: {reset_link}"
+                
+                # HTML message
+                html_body = f"<p>Click the following link to reset your password:</p> <a href='{reset_link}'>{reset_link}</a>"
+                
+                msg = Message('Password Reset Request',
+                              sender=os.getenv('MAIL_USERNAME'),
+                              recipients=[user.email])
+                
+                # Set both plain text and HTML body
+                msg.body = text_body
+                msg.html = html_body
+                
+                mail.send(msg)
+                
+                return make_response(jsonify({'message': 'Password reset link sent to your email'}), 200)
+            except Exception as e:
+                logger.error(f"Error sending password reset email: {e}")
+                db.session.rollback()
+                return make_response(jsonify({'error': 'An error occurred while sending the email. Please try again later.'}), 500)
         else:
             return make_response(jsonify({'error': 'Email not found'}), 404)
 
@@ -175,11 +233,9 @@ class ResetPassword(Resource):
         new_password = data.get('new_password')
         confirm_password = data.get('confirm_password')
         if new_password != confirm_password:
-            return make_response(jsonify({'error': 'Passwords do not match'}), 400)
+            return make_response ( jsonify({'error': 'Passwords do not match'}), 400)
         reset_token_entry = ResetToken.query.filter_by(token=token).first()
         if reset_token_entry:
-            if datetime.utcnow() > reset_token_entry.expires_at:
-                return make_response(jsonify({'error': 'Token has expired'}), 400)
             user = User.query.filter_by(user_id=reset_token_entry.user_id).first()
             user.password_hash = generate_password_hash(new_password, method='pbkdf:sha512')
             db.session.delete(reset_token_entry)

@@ -1,42 +1,59 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage, VStack, Text } from "@chakra-ui/react";
-import { toast } from 'react-toastify';
+import {
+  Box,
+  Button,
+  Input,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  VStack,
+  Text,
+  Flex,
+  Heading,
+  List,
+  ListItem,
+  ListIcon,
+  Image,
+} from "@chakra-ui/react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
+import logo from "../assets/logo_black.png";
+import { useNavigate, Link as RouterLink, Link } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 
-const ResetPasswordSchema = Yup.object().shape({
-  token: Yup.string().required("Token is required"),
-  newPassword: Yup.string()
-    .required("New Password is required")
-    .min(8, "Password must be at least 8 characters"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
-    .required("Confirm Password is required"),
+const ForgotPasswordSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Email is required"),
 });
 
-const ResetPasswordForm = () => {
+const ForgotPassword = () => {
+  const [resetToken, setResetToken] = useState("");
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
 
-  const handleSubmit = async (values, { setSubmitting }) => {
+  const handleForgotPassword = async (values, { setSubmitting }) => {
     try {
-      const { token, newPassword, confirmPassword } = values;
-      const response = await fetch("http://localhost:5555/reset_password", {
+      const { email } = values;
+      const response = await fetch("http://localhost:5555/forgot_password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ token, new_password: newPassword, confirm_password: confirmPassword }),
+        body: JSON.stringify({ email }),
       });
       if (response.ok) {
-        toast.success('Password has been reset successfully', {
+        const data = await response.json();
+        setResetToken(data.reset_token);
+        setError("");
+        setEmail(email);
+        toast.success('An email with reset instructions has been sent', {
           position: 'top-right',
           autoClose: 3000,
         });
-        setError("");
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || "Failed to reset password. Please try again.");
+        setError("Email not found");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -47,47 +64,119 @@ const ResetPasswordForm = () => {
   };
 
   return (
-    <Box className="reset-password" p={4} maxW="md" mx="auto">
-      <Box className="reset-password-form" p={6} boxShadow="lg" borderRadius="md">
-        <Text as="h1" fontSize="2xl" mb={4}>Reset Password</Text>
+    <Flex
+      align={{ base: "center", md: "stretch" }}
+      flexDir={{ base: "column", md: "row-reverse" }}
+      className="h-screen"
+    >
+      <Flex
+        className="reset-password"
+        flexDir={"column"}
+        w={{ base: "100%", md: "50%" }}
+        p={4}
+        maxW="lg"
+        m="auto"
+      >
+        <Box className="forgot-password-form" p={6} boxShadow="lg" borderRadius="md">
+        <Text as="h1" fontSize="2xl" mb={4}>Forgot Password</Text>
         <Formik
-          initialValues={{ token: "", newPassword: "", confirmPassword: "" }}
-          validationSchema={ResetPasswordSchema}
-          onSubmit={handleSubmit}
+          initialValues={{ email: "" }}
+          validationSchema={ForgotPasswordSchema}
+          onSubmit={handleForgotPassword}
         >
           {({ isSubmitting, errors, touched }) => (
             <Form>
               <VStack spacing={4}>
-                <FormControl isInvalid={errors.token && touched.token}>
-                  <FormLabel htmlFor="token">Token</FormLabel>
-                  <Field as={Input} id="token" name="token" />
-                  <ErrorMessage name="token" component={FormErrorMessage} />
+                <FormControl isInvalid={errors.email && touched.email}>
+                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <Field as={Input} id="email" name="email" type="email" />
+                  <ErrorMessage name="email" component={FormErrorMessage} />
                 </FormControl>
 
-                <FormControl isInvalid={errors.newPassword && touched.newPassword}>
-                  <FormLabel htmlFor="newPassword">New Password</FormLabel>
-                  <Field as={Input} id="newPassword" name="newPassword" type="password" />
-                  <ErrorMessage name="newPassword" component={FormErrorMessage} />
-                </FormControl>
+            {error && <Text color="red.500">{error}</Text>}
+            {resetToken && (
+              <Text color="green.500">
+                An email with reset instructions has been sent to <strong>{email}</strong>.
+              </Text>
+            )}
 
-                <FormControl isInvalid={errors.confirmPassword && touched.confirmPassword}>
-                  <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
-                  <Field as={Input} id="confirmPassword" name="confirmPassword" type="password" />
-                  <ErrorMessage name="confirmPassword" component={FormErrorMessage} />
-                </FormControl>
+            <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
+              Submit
+            </Button>
+          </VStack>
+        </Form>
+      )}
+    </Formik>
+    <Text mt={4}>
+      Proceed to{" "}
+      <Link as={RouterLink} to="/reset-password" color="teal.500">
+        Reset Password
+      </Link>
+    </Text>
+  </Box>
+      </Flex>
+      <Flex
+        w={{ base: "100%", md: "50%" }}
+        color={"#fff"}
+        className=" bg-[#101f3c] flex-col"
+        justify={"center"}
+        px={4}
+      >
+        <Heading as="h1" size="xl" mb={4}>
+          Moringa Alumnus Community!
+        </Heading>
+        <Text fontSize="md" maxW="2xl" mb={8}>
+          Connect with a diverse network of innovative minds from Moringa
+          School.As a member of our alumni community,
+          <Text as="span" display={{ base: "none", md: "inline" }}>
+            {" "}
+            you gain access to a wealth of resources and opportunities designed
+            to help you thrive, engage in lifelong learning, build meaningful
+            connections, and take advantage of exclusive career services,
+          </Text>{" "}
+          you gain access to:
+        </Text>
+        <List spacing={3} px={{ base: 0, md: 8 }}>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Lifelong learning opportunities through workshops and webinars.
+          </ListItem>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Networking events to forge new connections and collaborations.
+          </ListItem>
 
-                {error && <Text color="red.500">{error}</Text>}
-
-                <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
-                  Submit
-                </Button>
-              </VStack>
-            </Form>
-          )}
-        </Formik>
-      </Box>
-    </Box>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Exclusive job postings and career advancement resources.
+          </ListItem>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Mentorship programs to guide your professional growth.
+          </ListItem>
+          <ListItem>
+            <ListIcon as={CheckIcon} color="#FA510F" />
+            Opportunities to give back by mentoring current students.
+          </ListItem>
+        </List>
+        <Box
+          cursor={"pointer"}
+          my={"20px"}
+          bg={"#FA510F"}
+          color={"#fff"}
+          w={"220px"}
+          borderRadius={"md"}
+          textAlign={"center"}
+          lineHeight={"40px"}
+          mx={{ base: 2, md: 8 }}
+        >
+          Reset password
+          <ArrowForwardIcon />
+        </Box>
+        <Image px={{ base: 2, md: 8 }} w={"400px"} />
+      </Flex>
+    </Flex>
   );
 };
 
-export default ResetPasswordForm;
+export default ForgotPassword;
