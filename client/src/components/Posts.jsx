@@ -4,6 +4,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { RiShareForwardLine } from "react-icons/ri";
 import { PiChatsLight } from "react-icons/pi";
 import { BsThreeDots } from "react-icons/bs";
+import CreatePost from "./CreatePost"; // Import the CreatePost component
 
 const Comments = lazy(() => import('./Comments'));
 
@@ -43,6 +44,7 @@ function Posts() {
 
   return (
     <>
+      <CreatePost />
       {loading ? (
         <Spinner />
       ) : (
@@ -66,8 +68,9 @@ function Posts() {
                     <Avatar
                       bg={"#101f3c"}
                       name={post.username}
-                      src={post.avatar_url || ""}
+                      src={post.profile_picture_url || ""}
                     />
+                    <Text>{post.username}</Text>
                   </Flex>
                   <BsThreeDots fontSize={"1.4rem"} />
                 </Flex>
@@ -110,16 +113,16 @@ function Posts() {
                   </Flex>
                 </Flex>
                 <Suspense fallback={<Text>Loading...</Text>}>
-                  {post.the_comments !== undefined ? (
-                    <Comments
-                      nodeRef={(el) => (commentsRefs.current[index] = el)}
-                      comments={post.the_comments} 
-                      postId={post.id} // Pass postId here
-                    />
-                  ) : (
-                    <Text p={4}>No comments yet...</Text>
-                  )}
-                </Suspense>
+  {post.the_comments !== undefined ? (
+    <Comments
+      nodeRef={(el) => (commentsRefs.current[index] = el)}
+      comments={post.the_comments} 
+      postId={post.post_id} // Pass postId correctly
+    />
+  ) : (
+    <Text p={4}>No comments yet...</Text>
+  )}
+</Suspense>
               </Box>
             </Box>
           ))}

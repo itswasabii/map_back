@@ -69,9 +69,8 @@ api.add_resource(UpdateComment, '/posts/<int:post_id>/comments/<int:comment_id>'
 api.add_resource(DeleteComment, '/posts/<int:post_id>/comments/<int:comment_id>')
 api.add_resource(Likes, '/likes')
 api.add_resource(Shares, '/shares')
-api.add_resource(DonationResource, '/donations/<int:donation_id>')
 api.add_resource(FundraiserResource, '/fundraisers', '/fundraisers/<int:fundraiser_id>')
-# api.add_resource(DonationResource, '/api/donations', '/api/donations/<int:donation_id>')
+api.add_resource(DonationResource, '/api/donations', '/api/donations/<int:donation_id>')
 
 # Create the database tables on launch
 with app.app_context():

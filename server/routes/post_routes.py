@@ -1,12 +1,15 @@
-from flask import jsonify,request, make_response
+from flask import app, jsonify, request
 from flask_restful import Resource
 from datetime import datetime
-
 from models import db
 from models.post_model import Post, Comment, PostCategory, Like, Share
 
 class Posts(Resource):
+    """
+    Resource for managing posts.
+    """
     def get(self):
+        """Get all posts."""
         posts = Post.query.all()
         posts_data = []
         for post in posts:
@@ -31,25 +34,30 @@ class Posts(Resource):
             posts_data.append(post_data)
         return jsonify(posts_data)
 
-    
     def post(self):
-        data = request.json
-        try:
-            category = PostCategory[data['category'].upper()]  
-        except KeyError:
-            return jsonify({'error': 'Invalid category'}), 400
+        """Create a new post."""
+        data = request.form
+        content = data.get("content")
+        category = data.get("category")
+        media = request.files.get("media")
+
+        # Ensure required fields are present
+        if not content:
+            return jsonify({'error': 'Content is required'}), 400
+
         new_post = Post(
             user_id=data['user_id'],
             content=data['content'],
             category=category,
+            media=media,
             created_at=datetime.utcnow()
         )
         db.session.add(new_post)
         db.session.commit()
         return jsonify({'message': 'Post created successfully'}), 201
 
-    
     def put(self, post_id):
+        """Update an existing post."""
         data = request.json
         post = Post.query.get_or_404(post_id)
         if post.user_id != data['user_id']:
@@ -63,8 +71,8 @@ class Posts(Resource):
         db.session.commit()
         return jsonify({'message': 'Post updated successfully'})
 
-    
     def delete(self, post_id):
+        """Delete a post."""
         post = Post.query.get_or_404(post_id)
         if post.user_id != request.json['user_id']:
             return jsonify({'error': 'You are not authorized to delete this post'}), 403
@@ -73,7 +81,11 @@ class Posts(Resource):
         return jsonify({'message': 'Post deleted successfully'})
 
 class OnePost(Resource):
+    """
+    Resource for fetching a single post.
+    """
     def get(self, post_id):
+        """Get details of a single post."""
         post = Post.query.get_or_404(post_id)
         post_data = {
             'post_id': post.post_id,
@@ -96,9 +108,12 @@ class OnePost(Resource):
             post_data['the_comments'].append(comment_data)
         return jsonify(post_data)
 
-
 class Comments(Resource):
+    """
+    Resource for managing comments.
+    """
     def post(self, post_id):
+        """Create a new comment."""
         data = request.json
         new_comment = Comment(
             post_id=post_id,
@@ -141,7 +156,11 @@ class DeleteComment(Resource):
         return make_response(jsonify({'message': 'Comment deleted successfully'}), 201)
     
 class Likes(Resource):
+    """
+    Resource for managing likes.
+    """
     def post(self):
+        """Add a like to a post."""
         data = request.json
         new_like = Like(
             user_id=data['user_id'],
@@ -153,7 +172,11 @@ class Likes(Resource):
         return jsonify({'message': 'Like added successfully'}), 201
 
 class Shares(Resource):
+    """
+    Resource for managing shares.
+    """
     def post(self):
+        """Share a post."""
         data = request.json
         new_share = Share(
             user_id=data['user_id'],

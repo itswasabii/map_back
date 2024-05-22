@@ -1,4 +1,3 @@
-# models/user_model.py
 from . import db
 from datetime import datetime, timedelta
 from flask_login import UserMixin

@@ -7,28 +7,13 @@ from models.cohort_model import Cohort, CohortMember, CohortType, Course
 from models.post_model import Post, Comment, PostCategory, Share, Like
 from models.advert_model import Advert
 import random
-from models.fundraiser_model import Fundraiser  # Import Fundraiser model
-from datetime import datetime
+from models.fundraiser_model import Fundraiser
 from models.fundraiser_model import Donation
-
+from datetime import datetime
 
 fake = Faker()
-with app.app_context():
-# Function to generate fake fundraisers
-#   def generate_fake_fundraisers(count=5):
-#         for _ in range(count):
-#             fundraiser = Fundraiser(
-#                 user_id=fake.random_int(min=1, max=5),
-#                 title=fake.sentence(),
-#                 description=fake.text(),
-#                 goal_amount=fake.random_int(min=100, max=1000),
-#                 current_amount=fake.random_int(min=0, max=1000),
-#                 start_date=fake.date_time_this_decade(),
-#                 end_date=fake.date_time_this_decade()
-#             )
-#             db.session.add(fundraiser)
-#         db.session.commit()
 
+with app.app_context():
 
   def generate_fake_users(count=5):
       for _ in range(count):
@@ -66,7 +51,9 @@ with app.app_context():
                 course_id=fake.random_int(min=1, max=5),
                 type=CohortType.PRIVATE,
                 created_by=fake.random_int(min=1, max=5),
-                created_at=fake.date_time_this_decade(), 
+                created_at=fake.date_time_this_decade(),
+                
+          
             )
         else:
          
@@ -81,16 +68,15 @@ with app.app_context():
     
     db.session.commit()
 
-
-  def generate_fake_cohort_members(count=5):
-      for _ in range(count):
-          cohort_member = CohortMember(
-              cohort_id=fake.random_int(min=1, max=5),
-              user_id=fake.random_int(min=1, max=5),
-              joined_at=fake.date_time_this_decade()
-          )
-          db.session.add(cohort_member)
-      db.session.commit()
+    def generate_fake_cohort_members(count=5):
+        for _ in range(count):
+            cohort_member = CohortMember(
+                cohort_id=fake.random_int(min=1, max=5),
+                user_id=fake.random_int(min=1, max=5),
+                joined_at=fake.date_time_this_decade()
+            )
+            db.session.add(cohort_member)
+        db.session.commit()
 
   def generate_fake_posts(count=5):
       categories = list(PostCategory)
@@ -101,12 +87,12 @@ with app.app_context():
           cohort = random.choice(cohorts)
           post = Post(
               user_id=user.user_id,
+              cohort_id=cohort.cohort_id,
               content=fake.text(),
               category=random.choice(categories),
               created_at=fake.date_time_this_decade()
           )
           db.session.add(post)
-          db.session.commit()
 
           for _ in range(random.randint(1, 10)):
                 like = Like(user_id=random.choice(users).user_id, post_id=post.post_id)
@@ -118,7 +104,7 @@ with app.app_context():
                 random_user = random.choice(users)
                 comment = Comment(
                     user_id=random_user.user_id,
-                    user_name=random_user.user_name,
+                    user_name=random_user.username,
                     post_id=post.post_id,
                     content=fake.text(),
                     created_at=fake.date_time_this_decade()
@@ -131,7 +117,6 @@ with app.app_context():
                 share = Share(user_id=random.choice(users).user_id, post_id=post.post_id)
                 post.shares_count += 1
                 db.session.add(share)
-          db.session.commit()
 
   if __name__ == '__main__':
       generate_fake_users()
@@ -196,5 +181,9 @@ def seed_donations():
     # Commit changes to the database
     db.session.commit()
 
-if __name__ == '__main__':
-    seed_donations()
+    if __name__ == '__main__':
+        generate_fake_users()
+        generate_fake_cohorts()
+        generate_fake_cohort_members()
+        generate_fake_posts()
+        seed_donations()
