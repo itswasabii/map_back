@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -14,12 +14,30 @@ import {
 import { CgProfile } from "react-icons/cg";
 import TopNav from "../components/TopNav";
 import Sidebar from "../components/Sidebar";
+import { useAuth } from "../AuthContext";
 
 const UserPosts = React.lazy(() => import("../components/UserPosts"));
 const EditProfile = React.lazy(() => import("../components/EditProfile"));
 const UserComments = React.lazy(() => import("../components/UserComments"));
 
 const UserProfile = () => {
+  const [userData,setUserData] = useState([])
+  const{userId} = useAuth()
+  const url =`/api/users/${userId}`
+  useEffect(()=>{
+    const getUser = async ()=>{
+      try {
+        const response = await fetch(url)
+        if(!response.ok) throw new Error("HTTP Error ! Status: ",response.status)
+        const data = await response.json() 
+        
+        setUserData(data)
+      } catch (error) {
+        console.log(error.message)
+      }
+    }; getUser()
+  },[url])
+  
   return (
     <>
       <TopNav />
@@ -31,39 +49,35 @@ const UserProfile = () => {
           gap={2}
           className="max-w-[800px] px-4 py-4 mt-[10px] border border-[#E4e4e4] mb-4 rounded-t-lg border-b-0"
         >
-          <Flex flexDir={'column'} gap={1} ml={4} w="50%">
+          
+            <Flex flexDir={'column'} gap={1} ml={4} w="50%">
             
-              <Avatar
-                size="2xl"
-                icon={<CgProfile />}
-                bg="#101f3c"
-                src="https://www.redditstatic.com/avatars/defaults/v2/avatar_default_1.png"
-                mb={'10px'}
-              />
-              
-                <Text fontSize="xl" fontWeight="bold">
-                  John Doe
-                </Text>
-                <Text fontSize="md" >
-                  johndoe@example.com
-                </Text>
-                <p>Nairobi, Joined : Sat 12 May 2024</p>      
+            <Avatar
+              size="2xl"
+              icon={<CgProfile />}
+              bg="#101f3c"
+              src="https://www.redditstatic.com/avatars/defaults/v2/avatar_default_1.png"
+              mb={'10px'}
+            />
             
-          </Flex>
+              <Text fontSize="xl" fontWeight="bold">
+                {userData.username}
+              </Text>
+              <Text fontSize="md" >
+                {userData.email}
+              </Text>
+              <p>{userData.location}, Joined : {new Date(userData.joined).toDateString()}</p>      
+          
+        </Flex>
           <Flex gap={3} flexDir="column"  w="50%">
             <Text>
-              <strong>Occupation:</strong> Software Developer
+              <strong>Occupation:</strong>{userData.occupation}
             </Text>
             <Text >
-             <strong> Bio: </ strong>
-              It is possible to force an ignored file to be committed to the
-              repository.
+             <strong> Bio: </ strong>{userData.bio}             
             </Text>
             <Text>
-              <strong>Qualification: </strong>
-              Nature as instead family good box management green. House
-              everything democratic factor someone. Play memory defense
-              consider.
+              <strong>Qualification: </strong>{userData.qualification}
             </Text>
             <Text>
               

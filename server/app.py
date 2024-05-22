@@ -1,10 +1,7 @@
-# app.py
-
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_restful import Api
-
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_jwt_extended import JWTManager
@@ -12,21 +9,17 @@ from dotenv import load_dotenv
 import os
 
 from routes import Home
+from routes.donation_routes import DonationResource
+from routes.user_routes import Users, Register, Login, Logout, ForgotPassword, ResetPassword, UserProfile
+from routes.cohort_routes import Cohorts, CohortMembers
+from routes.post_routes import Posts, Comments, Likes, Shares, OnePost
+from routes.fundraiser_routes import FundraiserResource
+from models import db, login_manager
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Initialize Flask application
-
-from flask_sqlalchemy import SQLAlchemy
-from models import db, login_manager
-from routes import Home
-from routes.donation_routes import  DonationResource
-from routes.user_routes import Users
-from routes.cohort_routes import Cohorts, CohortMembers
-from routes.post_routes import Posts, Comments, Likes, Shares, OnePost
-from routes.fundraiser_routes import FundraiserResource
-
 app = Flask(__name__)
 CORS(app)
 
@@ -48,8 +41,6 @@ print(f"MAIL_USERNAME: {os.getenv('MAIL_USERNAME')}")
 print(f"MAIL_PASSWORD: {os.getenv('MAIL_PASSWORD')}")
 
 # Initialize extensions
-from models import db, login_manager
-
 db.init_app(app)
 migrate = Migrate(app, db)
 api = Api(app)
@@ -59,13 +50,6 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}}, supports_cr
 
 # Initialize login manager
 login_manager.init_app(app)
-
-# Import routes
-from routes.user_routes import Users, Register, Login, Logout, ForgotPassword, ResetPassword, UserProfile
-from routes.cohort_routes import Cohorts, CohortMembers
-from routes.post_routes import Posts, Comments
-from routes.donation_routes import DonationResource
-from routes.fundraiser_routes import FundraiserResource
 
 # Register resources with Flask-RESTful
 api.add_resource(Home, '/')
@@ -78,25 +62,15 @@ api.add_resource(ResetPassword, '/reset_password')
 api.add_resource(UserProfile, '/users/<int:user_id>')
 api.add_resource(Cohorts, '/cohorts')
 api.add_resource(CohortMembers, '/cohort_members')
-
-api.add_resource(Posts, '/posts')
-api.add_resource(Comments, '/comments')
-
 api.add_resource(Posts, '/posts', '/posts/<int:post_id>')
-api.add_resource(OnePost,'/post/<int:post_id>')
-api.add_resource(Comments, '/comments/<int:post_id>', '/comments/<int:comment_id>')
+api.add_resource(OnePost, '/post/<int:post_id>')
+api.add_resource(Comments, '/comment/<int:post_id>', '/comments/<int:comment_id>')
 api.add_resource(Likes, '/likes')
 api.add_resource(Shares, '/shares')
-
-
-
-
 api.add_resource(DonationResource, '/donations/<int:donation_id>')
-api.add_resource(Posts, '/posts')
-api.add_resource(Comments, '/comments')
 api.add_resource(FundraiserResource, '/fundraisers', '/fundraisers/<int:fundraiser_id>')
-# Registering the endpoint for retrieving, updating, or deleting a specific donation
-api.add_resource(DonationResource, '/api/donations', '/api/donations/<int:donation_id>')
+# api.add_resource(DonationResource, '/api/donations', '/api/donations/<int:donation_id>')
+
 # Create the database tables on launch
 with app.app_context():
     db.create_all()

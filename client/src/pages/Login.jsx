@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import logo from "../assets/logo_black.png";
 import * as Yup from "yup";
 import {
   Box,
@@ -22,6 +21,8 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
+import { useAuth } from "../AuthContext";
+import logo from "../assets/logo_black.png"; // Hardcoded logo import
 
 const LoginSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -29,38 +30,25 @@ const LoginSchema = Yup.object().shape({
 });
 
 const Login = () => {
+  const { login } = useAuth(); // Use the login function from AuthContext
   const history = useNavigate();
   const [loginError, setLoginError] = useState("");
 
   const handleLogin = async (values, { setSubmitting }) => {
-    try {
-      const { username, password } = values;
-      const response = await fetch("http://localhost:5555/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "omit",
-        body: JSON.stringify({ username, password }),
+    const { username, password } = values;
+    const result = await login(username, password);
+    
+    if (result.success) {
+      toast.success("Welcome Back!!", {
+        position: "top-right",
+        autoClose: 3000,
       });
-      if (response.ok) {
-        response.json().then((data) => {
-          console.log(data.message);
-          history("/");
-          toast.success("Welcome Back!!", {
-            position: "top-right",
-            autoClose: 3000,
-          });
-        });
-      } else {
-        setLoginError("Invalid username or password.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoginError("An error occurred. Please try again later.");
-    } finally {
-      setSubmitting(false);
+      history("/forum");
+    } else {
+      setLoginError(result.message);
     }
+
+    setSubmitting(false);
   };
 
   return (
@@ -78,8 +66,16 @@ const Login = () => {
         m="auto"
       >
         <Box className="login-form" p={6} borderRadius="md">
-        <Image src={logo}/>  
-          <Text as="h1" fontSize={"1.7rem"} textAlign={'center'} className="underline underline-offset-[8px]" color={'#101f3c'} fontWeight={'bold'} my={4}>
+          <Image src={logo} alt="Logo" />
+          <Text
+            as="h1"
+            fontSize={"1.7rem"}
+            textAlign={"center"}
+            className="underline underline-offset-[8px]"
+            color={"#101f3c"}
+            fontWeight={"bold"}
+            my={4}
+          >
             Login
           </Text>
           <Formik
@@ -134,7 +130,7 @@ const Login = () => {
                   {loginError && <Text color="red.500">{loginError}</Text>}
 
                   <Button
-                  w={'100%'}
+                    w={"100%"}
                     type="submit"
                     bg={"#101f3c"}
                     _hover={{ bg: "101f3c" }}
@@ -151,7 +147,7 @@ const Login = () => {
       </Flex>
       <Flex
         w={{ base: "100%", md: "50%" }}
-        color={"#fff"}        
+        color={"#fff"}
         className=" bg-[#101f3c] flex-col"
         justify={"center"}
         px={4}
@@ -161,7 +157,7 @@ const Login = () => {
         </Heading>
         <Text fontSize="md" maxW="2xl" mb={8}>
           Connect with a diverse network of innovative minds from Moringa
-          School.As a member of our alumni community,
+          School. As a member of our alumni community,
           <Text as="span" display={{ base: "none", md: "inline" }}>
             {" "}
             you gain access to a wealth of resources and opportunities designed
@@ -207,7 +203,6 @@ const Login = () => {
         </Box>
         <Image px={{ base: 2, md: 8 }} w={"400px"} />
       </Flex>
-      
     </Flex>
   );
 };

@@ -52,7 +52,7 @@ const Signup = () => {
           position: "top-right",
           autoClose: 6000,
         });
-        navigate("/login");
+        navigate("/user/login");
       } else {
         const errorData = await response.json();
         setSignupError(

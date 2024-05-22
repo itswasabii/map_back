@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import {
@@ -22,9 +21,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
 import logo from "../assets/logo_black.png";
-import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage, VStack, Text, Link } from "@chakra-ui/react";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const ForgotPasswordSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -33,7 +29,6 @@ const ForgotPasswordSchema = Yup.object().shape({
 const ForgotPassword = () => {
   const [resetToken, setResetToken] = useState("");
   const [error, setError] = useState("");
-  const [email, setEmail] = useState("");
 
   const handleForgotPassword = async (values, { setSubmitting }) => {
     try {
@@ -49,9 +44,6 @@ const ForgotPassword = () => {
         const data = await response.json();
         setResetToken(data.reset_token);
         setError("");
-        setEmail(email);
-        toast.success('An email with reset instructions has been sent', {
-          position: 'top-right',
         toast.success("An email with reset instructions has been sent", {
           position: "top-right",
           autoClose: 3000,
@@ -100,12 +92,6 @@ const ForgotPassword = () => {
                     <ErrorMessage name="email" component={FormErrorMessage} />
                   </FormControl>
 
-            {error && <Text color="red.500">{error}</Text>}
-            {resetToken && (
-              <Text color="green.500">
-                An email with reset instructions has been sent to <strong>{email}</strong>.
-              </Text>
-            )}
                   {error && <Text color="red.500">{error}</Text>}
                   {resetToken && (
                     <Text color="green.500">
@@ -114,21 +100,6 @@ const ForgotPassword = () => {
                     </Text>
                   )}
 
-            <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
-              Submit
-            </Button>
-          </VStack>
-        </Form>
-      )}
-    </Formik>
-    <Text mt={4}>
-      Proceed to{" "}
-      <Link as={RouterLink} to="/reset-password" color="teal.500">
-        Reset Password
-      </Link>
-    </Text>
-  </Box>
-</Box>
                   <Button
                     w={"100%"}
                     type="submit"

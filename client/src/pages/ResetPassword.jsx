@@ -21,42 +21,39 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
 import logo from "../assets/logo_black.png";
+import { useNavigate, Link as RouterLink, Link } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
 
-const ResetPasswordSchema = Yup.object().shape({
-  token: Yup.string().required("Token is required"),
-  newPassword: Yup.string()
-    .required("New Password is required")
-    .min(8, "Password must be at least 8 characters"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
-    .required("Confirm Password is required"),
+const ForgotPasswordSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Email is required"),
 });
 
-const ResetPasswordForm = () => {
+const ForgotPassword = () => {
+  const [resetToken, setResetToken] = useState("");
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
 
-  const handleSubmit = async (values, { setSubmitting }) => {
+  const handleForgotPassword = async (values, { setSubmitting }) => {
     try {
-      const { token, newPassword, confirmPassword } = values;
-      const response = await fetch("http://localhost:5555/reset_password", {
+      const { email } = values;
+      const response = await fetch("http://localhost:5555/forgot_password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ token, new_password: newPassword, confirm_password: confirmPassword }),
+        body: JSON.stringify({ email }),
       });
       if (response.ok) {
         const data = await response.json();
         setResetToken(data.reset_token);
         setError("");
-        toast.success("Password has been reset successfully", {
-          position: "top-right",
+        setEmail(email);
+        toast.success('An email with reset instructions has been sent', {
+          position: 'top-right',
           autoClose: 3000,
         });
-        history.push(`/${data.reset_token}`);
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || "Failed to reset password. Please try again.");
+        setError("Email not found");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -80,94 +77,43 @@ const ResetPasswordForm = () => {
         maxW="lg"
         m="auto"
       >
-        <Box
-          className="reset-password-form"
-          p={6}          
-          borderRadius="md"
+        <Box className="forgot-password-form" p={6} boxShadow="lg" borderRadius="md">
+        <Text as="h1" fontSize="2xl" mb={4}>Forgot Password</Text>
+        <Formik
+          initialValues={{ email: "" }}
+          validationSchema={ForgotPasswordSchema}
+          onSubmit={handleForgotPassword}
         >
-          <Image src={logo} />
-          <Text as="h1" fontSize="lg" mb={4}>
-            Reset Password
-          </Text>
-          <Formik
-            initialValues={{
-              username: "",
-              newPassword: "",
-              confirmPassword: "",
-            }}
-            validationSchema={ResetPasswordSchema}
-            onSubmit={handleSubmit}
-          >
-            {({ isSubmitting, errors, touched }) => (
-              <Form>
-                <VStack spacing={4}>
-                  <FormControl isInvalid={errors.username && touched.username}>
-                    <FormLabel htmlFor="username">Username</FormLabel>
-                    <Field as={Input} id="username" name="username" />
-                    <ErrorMessage
-                      name="username"
-                      component={FormErrorMessage}
-                    />
-                  </FormControl>
+          {({ isSubmitting, errors, touched }) => (
+            <Form>
+              <VStack spacing={4}>
+                <FormControl isInvalid={errors.email && touched.email}>
+                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <Field as={Input} id="email" name="email" type="email" />
+                  <ErrorMessage name="email" component={FormErrorMessage} />
+                </FormControl>
 
-                  <FormControl
-                    isInvalid={errors.newPassword && touched.newPassword}
-                  >
-                    <FormLabel htmlFor="newPassword">New Password</FormLabel>
-                    <Field
-                      as={Input}
-                      id="newPassword"
-                      name="newPassword"
-                      type="password"
-                    />
-                    <ErrorMessage
-                      name="newPassword"
-                      component={FormErrorMessage}
-                    />
-                  </FormControl>
-
-                  <FormControl
-                    isInvalid={
-                      errors.confirmPassword && touched.confirmPassword
-                    }
-                  >
-                    <FormLabel htmlFor="confirmPassword">
-                      Confirm Password
-                    </FormLabel>
-                    <Field
-                      as={Input}
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                    />
-                    <ErrorMessage
-                      name="confirmPassword"
-                      component={FormErrorMessage}
-                    />
-                  </FormControl>
-
-                  {error && <Text color="red.500">{error}</Text>}
-                  {resetToken && (
-                    <Text color="green.500">
-                      Your reset token: <strong>{resetToken}</strong>
-                    </Text>
-                  )}
-
-                  <Button
-                    w={"100%"}
-                    type="submit"
-                    bg={"#101f3c"}
-                    _hover={{ bg: "101f3c" }}
-                    color={"#fff"}
-                    isLoading={isSubmitting}
-                  >
-                    Reset password
-                  </Button>
-                </VStack>
-              </Form>
+            {error && <Text color="red.500">{error}</Text>}
+            {resetToken && (
+              <Text color="green.500">
+                An email with reset instructions has been sent to <strong>{email}</strong>.
+              </Text>
             )}
-          </Formik>
-        </Box>
+
+            <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
+              Submit
+            </Button>
+          </VStack>
+        </Form>
+      )}
+    </Formik>
+    <Text mt={4}>
+      Proceed to{" "}
+      <Link as={RouterLink} to="/reset-password" color="teal.500">
+        Reset Password
+      </Link>
+    </Text>
+  </Box>
       </Flex>
       <Flex
         w={{ base: "100%", md: "50%" }}
@@ -233,4 +179,4 @@ const ResetPasswordForm = () => {
   );
 };
 
-export default ResetPasswordForm;
+export default ForgotPassword;
