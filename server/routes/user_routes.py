@@ -1,7 +1,8 @@
 # routes/user_routes.py
 
+from venv import logger
 from flask_restful import Resource
-from flask import  request, jsonify, make_response
+from flask import  request, jsonify, make_response,current_app
 from models import db
 from models.user_model import User, ResetToken
 from datetime import datetime, timedelta
@@ -12,6 +13,11 @@ import jwt
 import os
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+
+from models.cohort_model import Course
+
 
 load_dotenv()
 
@@ -98,19 +104,42 @@ class UserProfile(Resource):
                 } for post in user.posts
             ]
         }
-        return user_data, 200
+        return user_data,200
+    
 
-    def put(self, user_id):
-        data = request.json
+    def patch(self, user_id):
+        cloudinary.config(
+            cloud_name=os.getenv('CLOUD_NAME'),
+            api_key=os.getenv('API_KEY'),
+            api_secret=os.getenv('API_SECRET')
+        )
+
         user = User.query.get_or_404(user_id)
-        user.bio = data.get('bio', user.bio)
-        user.occupation = data.get('occupation', user.occupation)
-        user.qualification = data.get('qualification', user.qualification)
-        user.location = data.get('location', user.location)
-        user.profile_picture_url = data.get('profile_picture_url', user.profile_picture_url)
-        db.session.commit()
-        return {'message': 'User profile updated successfully'}, 200
+        
+        user.bio = request.form.get('bio', user.bio)
+        user.occupation = request.form.get('occupation', user.occupation)
+        user.qualification = request.form.get('qualification', user.qualification)
+        user.location = request.form.get('location', user.location)
+        
+        upload_result = None
+        if 'profilePic' in request.files:
+            print('Profile pic found in request files')  # Add this
+            file_to_upload = request.files['profilePic']
+            print('Image')  # Add this
+            print(file_to_upload)  # Add this
+            current_app.logger.info('File to upload: %s', file_to_upload)
+            if file_to_upload:
+                upload_result = cloudinary.uploader.upload(file_to_upload)
+                current_app.logger.info('Upload result: %s', upload_result)
+                user.profile_picture_url = upload_result.get('secure_url')
+            else:
+                print('No file to upload')  # Add this
+        else:
+            print('Profile pic not found in request files')  # Add this
 
+
+        db.session.commit()
+        return jsonify({'message': 'User profile updated successfully'})
 class Register(Resource):
     def post(self):
         data = request.json
@@ -138,7 +167,7 @@ class Login(Resource):
                 'user_id': user.user_id,
                 'exp': datetime.utcnow() + timedelta(hours=24)
             }, jwt_secret_key)
-            response = make_response({'message': 'User logged in successfully', 'token': token})
+            response = make_response({'message': 'User logged in successfully', 'token': token,"userId":user.user_id})
             response.set_cookie('token', token, httponly=True, max_age=24*60*60)
             return response
         else:
