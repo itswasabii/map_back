@@ -47,7 +47,7 @@ function Comments({ postId, comments, nodeRef }) {
   };
 
   return (
-    <Box h={"300px"} className="overflow-y-scroll scrollbar" px={4} ref={nodeRef}>
+    <Box h={"300px"} className="hidden overflow-y-scroll scrollbar" px={4} ref={nodeRef}>
       <Flex mb={4}>
         <InputGroup>
           <Input
@@ -79,7 +79,7 @@ function Comments({ postId, comments, nodeRef }) {
         comments.map((comment, index) => (
           <Box
             key={index}
-            className="border-b-[1px] border-[#e4e4e4]"
+            className="border-b-[1px]  border-[#e4e4e4]"
             mb={2}
             p={2}
           >
