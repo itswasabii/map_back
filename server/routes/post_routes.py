@@ -97,20 +97,19 @@ class OnePost(Resource):
             post_data['the_comments'].append(comment_data)
         return jsonify(post_data)
 
-class Comments(Resource):  
+
+class Comments(Resource):
     def post(self, post_id):
         data = request.json
         new_comment = Comment(
-            user_id=data['user_id'],
-            user_name=data['user_name'],
+            user_id=data['user_id'],  # Ensure 'user_id' is included in the JSON
             post_id=post_id,
-            cohort_id=data['cohort_id'],
             content=data['content'],
             created_at=datetime.utcnow()
         )
         db.session.add(new_comment)
         db.session.commit()
-        return make_response(jsonify(data), 200)
+        return jsonify(new_comment.serialize()), 201
     
     def put(self, comment_id):
         data = request.json
