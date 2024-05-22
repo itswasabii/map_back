@@ -54,6 +54,7 @@ function Nav() {
           About
         </NavLink>
       </Flex>
+      <Box as={Link} bg={'#fa510f'} p={'4px'} px={4} borderRadius={'3rem'} color={'#fff'} to={'/user/login'}>Get started</Box>
       <Box display={{ base: "flex", md: "none" }}>
         <Menu>
           <MenuButton
