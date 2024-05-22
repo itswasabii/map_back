@@ -110,11 +110,14 @@ function Posts() {
                   </Flex>
                 </Flex>
                 <Suspense fallback={<Text>Loading...</Text>}>
-                  {post.the_comments && (
+                  {post.the_comments !== undefined ? (
                     <Comments
                       nodeRef={(el) => (commentsRefs.current[index] = el)}
-                      comments={post.the_comments}
+                      comments={post.the_comments} 
+                      postId={post.id} // Pass postId here
                     />
+                  ) : (
+                    <Text p={4}>No comments yet...</Text>
                   )}
                 </Suspense>
               </Box>
