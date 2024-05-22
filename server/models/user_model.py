@@ -1,3 +1,4 @@
+# models/user_model.py
 from . import db
 from datetime import datetime, timedelta
 from flask_login import UserMixin
@@ -19,6 +20,7 @@ class User(UserMixin, db.Model, SerializerMixin):
     occupation = db.Column(db.String(50))
     qualification = db.Column(db.Text)
     location = db.Column(db.String(50))
+    profile_picture_url = db.Column(db.String(255))
     joined_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
