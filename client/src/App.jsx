@@ -12,7 +12,11 @@ import UserProfile from "./pages/UserProfile";
 import FundraiserById from "./pages/FundraiserById";
 import Cohort from "./components/Cohort"; 
 import About from "./components/About";
-
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import "./App.css";
 function App() {
   return (
     <Box pos={"relative"}>
@@ -43,7 +47,13 @@ function AppContent() {
         <Route path="/forum/fundraiser/:id" element={<FundraiserById />} />
         <Route path="/cohorts" element={<Cohort />} /> 
         <Route path="/about" element={<About />} />
-        
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+
+
       </Routes>
     </Box>
   );
