@@ -56,7 +56,7 @@ const UserProfile = () => {
               size="2xl"
               icon={<CgProfile />}
               bg="#101f3c"
-              src="https://www.redditstatic.com/avatars/defaults/v2/avatar_default_1.png"
+              src={userData.profile_picture_url}
               mb={'10px'}
             />
             
@@ -66,7 +66,7 @@ const UserProfile = () => {
               <Text fontSize="md" >
                 {userData.email}
               </Text>
-              <p>{userData.location}, Joined : {new Date(userData.joined).toDateString()}</p>      
+              <p>{userData.location}, Joined : {new Date(userData.joined_at).toDateString()}</p>      
           
         </Flex>
           <Flex gap={3} flexDir="column"  w="50%">

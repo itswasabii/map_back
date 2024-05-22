@@ -104,22 +104,22 @@ class UserProfile(Resource):
         return user_data,200
     
 
-    def put(self, user_id):
-        
-        cloudinary.config(cloud_name = os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'), 
-        api_secret=os.getenv('API_SECRET'))
+    def patch(self, user_id):
+        cloudinary.config(
+            cloud_name=os.getenv('CLOUD_NAME'),
+            api_key=os.getenv('API_KEY'),
+            api_secret=os.getenv('API_SECRET')
+        )
 
-        data = request.json
         user = User.query.get_or_404(user_id)
-        user.bio = data.get('bio', user.bio)
-        user.occupation = data.get('occupation', user.occupation)
-        user.qualification = data.get('qualifications', user.qualification)
-        user.location = data.get('location', user.location)
-        # user.profile_picture_url = data.get('profile_picture_url', user.profile_picture_url)
+        
+        user.bio = request.form.get('bio', user.bio)
+        user.occupation = request.form.get('occupation', user.occupation)
+        user.qualification = request.form.get('qualification', user.qualification)
+        user.location = request.form.get('location', user.location)
         
         upload_result = None
-        file_to_upload = request.files.get('profilePic')
-        if file_to_upload:
+        if 'profilePic' in request.files:
             print('Profile pic found in request files')  # Add this
             file_to_upload = request.files['profilePic']
             print('Image')  # Add this
@@ -135,10 +135,8 @@ class UserProfile(Resource):
             print('Profile pic not found in request files')  # Add this
 
 
-                        
         db.session.commit()
-        return {'message': 'User profile updated successfully'}, 200
-
+        return jsonify({'message': 'User profile updated successfully'})
 class Register(Resource):
     def post(self):
         data = request.json

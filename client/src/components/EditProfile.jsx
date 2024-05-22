@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Input,
-  Textarea,
-  Button,
-  Text,
-  Flex,
-  useToast,
-} from '@chakra-ui/react';
+import { Input, Textarea, Button, Text, Flex, useToast } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useAuth } from '../AuthContext';
 
@@ -19,8 +12,8 @@ const EditProfile = () => {
     qualifications: '',
     bio: '',
     location: '',
+    profilePic: null,
   });
-  const [profilePic, setProfilePic] = useState(null);
   const [filename, setFilename] = useState('');
 
   const handleChange = (e) => {
@@ -34,33 +27,35 @@ const EditProfile = () => {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setProfilePic(file);
+      setFormData({
+        ...formData,
+        profilePic: file,
+      });
       setFilename(file.name);
     }
   };
 
+  const url = `/api/users/${userId}`;
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formDataObj = new FormData();
-    Object.keys(formData).forEach((key) => {
+    Object.keys(formData).forEach(key => {
       formDataObj.append(key, formData[key]);
     });
-    if (profilePic) {
-      formDataObj.append('profilePic', profilePic);
-    }
 
-    const url = `/api/users/${userId}`;
     try {
       const response = await fetch(url, {
-        method: 'PUT',
+        method: 'PATCH',
         body: formDataObj,
-        // No need to set content-type header when using FormData
       });
 
       if (!response.ok) {
         throw new Error('Failed to update profile');
       }
+
+      const data = await response.json();
+      console.log(data);
 
       toast({
         title: 'Profile updated',
@@ -69,24 +64,11 @@ const EditProfile = () => {
         duration: 3000,
         isClosable: true,
       });
-
-      // Clear the form data and filename after successful update
-      setFormData({
-        username: '',
-        occupation: '',
-        qualifications: '',
-        bio: '',
-        location: '',
-      });
-      setProfilePic(null);
-      setFilename('');
-
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
         title: 'An error occurred',
-        description:
-          'Failed to update your profile. Please try again later.',
+        description: 'Failed to update your profile. Please try again later.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -95,7 +77,7 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="max-w-lg p-6 mx-auto mt-8 bg-white rounded-lg shadow-lg">
+    <div className="p-6 mx-auto mt-8 bg-white">
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <Text fontSize="sm" fontWeight="medium" color="gray.700">
@@ -108,14 +90,14 @@ const EditProfile = () => {
             value={formData.username}
             onChange={handleChange}
             placeholder="Username"
-            className="input-field"
+            className="block w-full px-3 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div className="mb-4">
           <Text fontSize="sm" fontWeight="medium" color="gray.700">
             Profile Picture
           </Text>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center">
             <Input
               id="profilePic"
               name="profilePic"
@@ -126,15 +108,15 @@ const EditProfile = () => {
             />
             <label
               htmlFor="profilePic"
-              className="flex items-center justify-center h-10 px-4 py-2 font-bold text-white bg-blue-500 rounded cursor-pointer hover:bg-blue-600"
+              className="flex items-center px-4 py-2 font-bold text-white h-[100px] rounded cursor-pointer w-[100%] border-dashed border-2 border-[#cae5ff] bg-[#EDF2F7]"
             >
-              <AddIcon mr={2} />
-              Choose File
+              <Flex color={'#101f3c'} flexDir={'column'} gap={2} align={'center'} mx={'auto'}>
+                <AddIcon alignSelf={'center'} />
+                <Text>Choose file</Text>
+              </Flex>
             </label>
-            <Text as="sup" color="gray.500">
-              {filename}
-            </Text>
           </div>
+          <Text as={'sup'} color={'#101f3c'}>{filename}</Text>
         </div>
         <div className="mb-4">
           <Text fontSize="sm" fontWeight="medium" color="gray.700">
@@ -147,7 +129,7 @@ const EditProfile = () => {
             value={formData.occupation}
             onChange={handleChange}
             placeholder="Occupation"
-            className="input-field"
+            className="block w-full px-3 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div className="mb-4">
@@ -160,7 +142,7 @@ const EditProfile = () => {
             value={formData.qualifications}
             onChange={handleChange}
             placeholder="Qualifications"
-            className="input-field"
+            className="block w-full px-3 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             resize="vertical"
             rows={3}
           />
@@ -175,7 +157,7 @@ const EditProfile = () => {
             value={formData.bio}
             onChange={handleChange}
             placeholder="Bio"
-            className="input-field"
+            className="block w-full px-3 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             resize="vertical"
             rows={3}
           />
@@ -191,21 +173,21 @@ const EditProfile = () => {
             value={formData.location}
             onChange={handleChange}
             placeholder="Location"
-            className="input-field"
+            className="block w-full px-3 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
 
         <Button
           type="submit"
           mt={4}
-          bg="blue.500"
-          _hover={{ bg: 'blue.600' }}
+          bg="#101F3C"
+          _hover={{ bg: '#101f3c' }}
           color="white"
           fontWeight="bold"
           px={4}
           py={2}
           rounded="md"
-          w="100%"
+          w={'100%'}
         >
           Update Profile
         </Button>
