@@ -46,13 +46,15 @@ function Nav() {
         </NavLink>
         <NavLink className="links" to={"/forum"}>
           Forum
-        </NavLink>       
+        </NavLink>
+        <NavLink className="links" to={"/cohorts"}>
+          Cohorts
+        </NavLink>
+        <NavLink className="links" to={"/about"}>
+          About
+        </NavLink>
       </Flex>
-      
-          <Box as={Link} bg={'#fa510f'} p={'4px'} px={4} borderRadius={'3rem'} color={'#fff'} to={'/user/login'}>Get started</Box>
-      
-      <Box display={{ base: "flex", lg: "none" }}>
-        {" "}
+      <Box display={{ base: "flex", md: "none" }}>
         <Menu>
           <MenuButton
             as={IconButton}
@@ -72,6 +74,12 @@ function Nav() {
             </MenuItem>
             <MenuItem>
               <NavLink to={"/forum"}>Forum</NavLink>
+            </MenuItem>
+            <MenuItem>
+              <NavLink to={"/cohorts"}>Cohorts</NavLink>
+            </MenuItem>
+            <MenuItem>
+              <NavLink to={"/about"}>About</NavLink>
             </MenuItem>
           </MenuList>
         </Menu>

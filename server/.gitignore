@@ -1,7 +1,0 @@
-migrations/
-instance/
-
-models/__pycache__/
-routes/__pycache__/
-*.py[cod]
-
