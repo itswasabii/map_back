@@ -11,6 +11,6 @@ from models.post_model import Post, Comment
   
 class Home(Resource):
     def get(self):
-        return {'message': 'Welcome!'}
+        return {'message': 'Welcome to the backend of your application!'}
     
 

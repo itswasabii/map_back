@@ -10,11 +10,8 @@ import Fundraiser from "./pages/Fundraiser";
 import Forum from "./pages/Forum";
 import UserProfile from "./pages/UserProfile";
 import FundraiserById from "./pages/FundraiserById";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import "./App.css";
+import Cohort from "./components/Cohort"; 
+import About from "./components/About";
 
 function App() {
   return (
@@ -44,10 +41,9 @@ function AppContent() {
         <Route path="/forum/*" element={<Forum />} />
         <Route path="/forum/userprofile/:username" element={<UserProfile />} />
         <Route path="/forum/fundraiser/:id" element={<FundraiserById />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/cohorts" element={<Cohort />} /> 
+        <Route path="/about" element={<About />} />
+        
       </Routes>
     </Box>
   );
