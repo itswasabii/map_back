@@ -1,7 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import SuccessStories from "./pages/SuccessStories";
-import "./App.css";
 import TechNews from "./pages/TechNews";
 import Nav from "./components/Nav";
 import { Box } from "@chakra-ui/react";
@@ -18,10 +19,10 @@ function App() {
       <Router>
         <AppContent />
       </Router>
+      <ToastContainer />
     </Box>
   );
 }
-
 function AppContent() {
   const location = useLocation();
 
