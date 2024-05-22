@@ -24,7 +24,7 @@ class Posts(Resource):
                 comment_data = {
                     'comment_id': comment.comment_id,
                     'user_id': comment.user_id,
-                    'user_name': comment.author.username,
+                    'user_name': comment.user_name,
                     'content': comment.content
                 }
                 post_data['the_comments'].append(comment_data)
@@ -101,10 +101,10 @@ class Comments(Resource):
     def post(self, post_id):
         data = request.json
         new_comment = Comment(
+            post_id=post_id,
             user_id=data['user_id'],
             user_name=data['user_name'],
-            post_id=post_id,
-            cohort_id=data['cohort_id'],
+            cohort_id=data.get('cohort_id'),
             content=data['content'],
             created_at=datetime.utcnow()
         )
