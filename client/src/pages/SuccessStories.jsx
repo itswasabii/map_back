@@ -72,19 +72,7 @@ const SuccessStories = () => {
                   Students/alumni in mentoring
                 </Text>
               </Box>
-            </Flex>
-            <Box
-              cursor={"pointer"}
-              my={"20px"}
-              bg={"#FA510F"}
-              color={"#fff"}
-              w={"220px"}
-              borderRadius={"md"}
-              textAlign={"center"}
-              lineHeight={"40px"}
-            >
-              Connect with Aluminis
-            </Box>
+            </Flex>         
           </Box>
           <Box
             w={{ base: "100%", lg: "50%", xl: "40%" }}

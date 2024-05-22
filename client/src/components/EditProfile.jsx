@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Input, Textarea, Button, Text, Flex, useToast } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
+import { useAuth } from '../AuthContext';
 
 const EditProfile = () => {
+  const { userId } = useAuth();
   const toast = useToast();
   const [formData, setFormData] = useState({
     username: '',
@@ -10,7 +12,7 @@ const EditProfile = () => {
     qualifications: '',
     bio: '',
     location: '',
-    profilePic: '',
+    profilePic: null,
   });
   const [filename, setFilename] = useState('');
 
@@ -25,25 +27,27 @@ const EditProfile = () => {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      console.log(file)
       setFormData({
         ...formData,
-        'profilePic': file,
+        profilePic: file,
       });
-      setFilename(file.name); // Set the file name
+      setFilename(file.name);
     }
   };
 
-  const handleSubmit = async (e) => {    
+  const url = `/api/users/${userId}`;
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formDataObj = new FormData();
+    Object.keys(formData).forEach(key => {
+      formDataObj.append(key, formData[key]);
+    });
+
     try {
-      const response = await fetch('http://localhost:5555/users', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const response = await fetch(url, {
+        method: 'PATCH',
+        body: formDataObj,
       });
 
       if (!response.ok) {
@@ -109,9 +113,8 @@ const EditProfile = () => {
               <Flex color={'#101f3c'} flexDir={'column'} gap={2} align={'center'} mx={'auto'}>
                 <AddIcon alignSelf={'center'} />
                 <Text>Choose file</Text>
-              </Flex>              
+              </Flex>
             </label>
-            
           </div>
           <Text as={'sup'} color={'#101f3c'}>{filename}</Text>
         </div>
