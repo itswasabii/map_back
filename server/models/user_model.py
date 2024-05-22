@@ -13,7 +13,8 @@ user_course_association = db.Table('user_course_association',
 
 class User(UserMixin, db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
+    user_name = db.Column(db.String(255), unique=True, nullable=False)
+    cohort_id = db.Column(db.Integer, db.ForeignKey('cohort.cohort_id'))
     email = db.Column(db.String(255), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     bio = db.Column(db.Text)

@@ -12,7 +12,7 @@ class Posts(Resource):
         for post in posts:
             post_data = {
                 'post_user_id': post.user_id,
-                'post_user_name': post.author.username,
+                'post_user_name': post.author.user_name,
                 'category': post.category.value,
                 'post_content': post.content,
                 'comments_count': post.comments.count(),
@@ -40,7 +40,6 @@ class Posts(Resource):
             return jsonify({'error': 'Invalid category'}), 400
         new_post = Post(
             user_id=data['user_id'],
-            cohort_id=data['cohort_id'],
             content=data['content'],
             category=category,
             created_at=datetime.utcnow()
@@ -79,7 +78,7 @@ class OnePost(Resource):
         post_data = {
             'post_id': post.post_id,
             'post_user_id': post.user_id,
-            'post_user_name': post.author.username,
+            'post_user_name': post.author.user_name,
             'category': post.category.value,
             'post_content': post.content,
             'comments_count': post.comments.count(),
@@ -91,7 +90,7 @@ class OnePost(Resource):
             comment_data = {
                 'comment_id': comment.comment_id,
                 'user_id': comment.user_id,
-                'user_name': comment.author.username,
+                'user_name': comment.author.user_name,
                 'content': comment.content
             }
             post_data['the_comments'].append(comment_data)
@@ -105,30 +104,41 @@ class Comments(Resource):
             post_id=post_id,
             user_id=data['user_id'],
             user_name=data['user_name'],
-            cohort_id=data.get('cohort_id'),
+           
             content=data['content'],
             created_at=datetime.utcnow()
         )
         db.session.add(new_comment)
         db.session.commit()
-        return jsonify(new_comment.serialize()), 201
-    
-    def put(self, comment_id):
+        return make_response(jsonify({'message': 'Comment posted successfully'}), 201)
+
+class UpdateComment(Resource): 
+    def put(self, post_id, comment_id):
         data = request.json
+        if not data or 'user_id' not in data or 'content' not in data:
+            return make_response(jsonify({'error': 'Invalid input'}), 400)
+
         comment = Comment.query.get_or_404(comment_id)
         if comment.user_id != data['user_id']:
-            return jsonify({'error': 'You are not authorized to update this comment'}), 403
+            return make_response(jsonify({'error': 'You are not authorized to update this comment'}), 403)
+        
         comment.content = data['content']
         db.session.commit()
-        return jsonify({'message': 'Comment updated successfully'})
+        return make_response(jsonify({'message': 'Comment updated successfully'}), 201)
 
-    def delete(self, comment_id):
+class DeleteComment(Resource):
+    def delete(self,post_id, comment_id):
+        data = request.json
+        if not data or 'user_id' not in data:
+            return make_response(jsonify({'error': 'Invalid input'}), 400)
+
         comment = Comment.query.get_or_404(comment_id)
-        if comment.user_id != request.json['user_id']:
-            return jsonify({'error': 'You are not authorized to delete this comment'}), 403
+        if comment.user_id != data['user_id']:
+            return make_response(jsonify({'error': 'You are not authorized to delete this comment'}), 403)
+
         db.session.delete(comment)
         db.session.commit()
-        return jsonify({'message': 'Comment deleted successfully'})
+        return make_response(jsonify({'message': 'Comment deleted successfully'}), 201)
     
 class Likes(Resource):
     def post(self):

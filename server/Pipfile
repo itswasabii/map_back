@@ -8,6 +8,9 @@ flask = "*"
 sqlalchemy = "*"
 flask-login = "*"
 faker = "*"
+flask-mail = "*"
+sqlalchemy-serializer = "*"
+cloudinary = "*"
 
 [dev-packages]
 

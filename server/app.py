@@ -12,7 +12,7 @@ from routes import Home
 from routes.donation_routes import DonationResource
 from routes.user_routes import Users, Register, Login, Logout, ForgotPassword, ResetPassword, UserProfile
 from routes.cohort_routes import Cohorts, CohortMembers
-from routes.post_routes import Posts, Comments, Likes, Shares, OnePost
+from routes.post_routes import Posts, Comments, Likes, Shares, OnePost, UpdateComment, DeleteComment
 from routes.fundraiser_routes import FundraiserResource
 from models import db, login_manager
 
@@ -64,7 +64,9 @@ api.add_resource(Cohorts, '/cohorts')
 api.add_resource(CohortMembers, '/cohort_members')
 api.add_resource(Posts, '/posts')
 api.add_resource(OnePost,'/posts/<int:post_id>')
-api.add_resource(Comments, '/posts/<int:post_id>/comment', '/posts/<int:post_id>/comment/<int:comment_id>')
+api.add_resource(Comments, '/posts/<int:post_id>/comments')
+api.add_resource(UpdateComment, '/posts/<int:post_id>/comments/<int:comment_id>')
+api.add_resource(DeleteComment, '/posts/<int:post_id>/comments/<int:comment_id>')
 api.add_resource(Likes, '/likes')
 api.add_resource(Shares, '/shares')
 api.add_resource(DonationResource, '/donations/<int:donation_id>')

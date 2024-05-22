@@ -32,12 +32,13 @@ with app.app_context():
 
   def generate_fake_users(count=5):
       for _ in range(count):
+          
           course_names = ['Data Science', 'Software Engineering', 'DevOps']
           courses = [Course(course_name=course_name) for course_name in course_names]
           db.session.add_all(courses)
           db.session.commit()
           user = User(
-              username=fake.user_name(),
+              user_name=fake.user_name(),
               email=fake.email(),
               password_hash=generate_password_hash(fake.password()),
             #   role='normal',
@@ -65,9 +66,7 @@ with app.app_context():
                 course_id=fake.random_int(min=1, max=5),
                 type=CohortType.PRIVATE,
                 created_by=fake.random_int(min=1, max=5),
-                created_at=fake.date_time_this_decade(),
-                
-          
+                created_at=fake.date_time_this_decade(), 
             )
         else:
          
@@ -102,12 +101,12 @@ with app.app_context():
           cohort = random.choice(cohorts)
           post = Post(
               user_id=user.user_id,
-              cohort_id=cohort.cohort_id,
               content=fake.text(),
               category=random.choice(categories),
               created_at=fake.date_time_this_decade()
           )
           db.session.add(post)
+          db.session.commit()
 
           for _ in range(random.randint(1, 10)):
                 like = Like(user_id=random.choice(users).user_id, post_id=post.post_id)
@@ -119,7 +118,7 @@ with app.app_context():
                 random_user = random.choice(users)
                 comment = Comment(
                     user_id=random_user.user_id,
-                    user_name=random_user.username,
+                    user_name=random_user.user_name,
                     post_id=post.post_id,
                     content=fake.text(),
                     created_at=fake.date_time_this_decade()
@@ -132,6 +131,7 @@ with app.app_context():
                 share = Share(user_id=random.choice(users).user_id, post_id=post.post_id)
                 post.shares_count += 1
                 db.session.add(share)
+          db.session.commit()
 
   if __name__ == '__main__':
       generate_fake_users()

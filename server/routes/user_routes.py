@@ -29,7 +29,7 @@ class Users(Resource):
         for user in users:
             user_dict = {
                 'user_id': user.user_id,
-                'username': user.username,
+                'username': user.user_name,
                 'email': user.email,
                 'bio': user.bio,
                 'occupation': user.occupation,
@@ -38,8 +38,8 @@ class Users(Resource):
                 'profile_picture_url': user.profile_picture_url,
                 'cohorts': [
                     {
-                        'cohort_id': member.cohort.cohort_id,
-                        'cohort_name': member.cohort.cohort_name,
+                        'cohort_id': member.cohort.cohort_id if member.cohort else None,
+                        'cohort_name': member.cohort.cohort_name if member.cohort else None,
                     } for member in user.cohort_memberships
                 ],
                 'course': [course.course_name for course in user.courses],

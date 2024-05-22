@@ -28,7 +28,7 @@ class Cohort(db.Model, SerializerMixin):
     course_id = db.Column(db.Integer, db.ForeignKey('course.course_id'), nullable=True)
 
     members = db.relationship('CohortMember', backref='cohort', lazy='dynamic')
-    posts = db.relationship('Post', backref='cohort', lazy='dynamic')
+    # posts = db.relationship('Post', backref='cohort', lazy='dynamic')
     # fundraisers = db.relationship('Fundraiser', backref='cohort', lazy='dynamic')
     serialize_rules = ('-description', '-year_of_enrollment', 'course_id', 'members.cohort_id')
   
