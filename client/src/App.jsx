@@ -27,7 +27,6 @@ function App() {
     </Box>
   );
 }
-
 function AppContent() {
   const location = useLocation();
 

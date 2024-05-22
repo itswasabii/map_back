@@ -33,7 +33,7 @@ const ResetPasswordForm = () => {
           position: 'top-right',
           autoClose: 3000,
         });
-        setError("");
+        history.push(`/${data.reset_token}`);
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Failed to reset password. Please try again.");
@@ -64,29 +64,29 @@ const ResetPasswordForm = () => {
                   <ErrorMessage name="token" component={FormErrorMessage} />
                 </FormControl>
 
-                <FormControl isInvalid={errors.newPassword && touched.newPassword}>
-                  <FormLabel htmlFor="newPassword">New Password</FormLabel>
-                  <Field as={Input} id="newPassword" name="newPassword" type="password" />
-                  <ErrorMessage name="newPassword" component={FormErrorMessage} />
-                </FormControl>
+            <FormControl isInvalid={errors.newPassword && touched.newPassword}>
+              <FormLabel htmlFor="newPassword">New Password</FormLabel>
+              <Field as={Input} id="newPassword" name="newPassword" type="password" />
+              <ErrorMessage name="newPassword" component={FormErrorMessage} />
+            </FormControl>
 
-                <FormControl isInvalid={errors.confirmPassword && touched.confirmPassword}>
-                  <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
-                  <Field as={Input} id="confirmPassword" name="confirmPassword" type="password" />
-                  <ErrorMessage name="confirmPassword" component={FormErrorMessage} />
-                </FormControl>
+            <FormControl isInvalid={errors.confirmPassword && touched.confirmPassword}>
+              <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
+              <Field as={Input} id="confirmPassword" name="confirmPassword" type="password" />
+              <ErrorMessage name="confirmPassword" component={FormErrorMessage} />
+            </FormControl>
 
-                {error && <Text color="red.500">{error}</Text>}
+            {error && <Text color="red.500">{error}</Text>}
 
-                <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
-                  Submit
-                </Button>
-              </VStack>
-            </Form>
-          )}
-        </Formik>
-      </Box>
-    </Box>
+            <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
+              Submit
+            </Button>
+          </VStack>
+        </Form>
+      )}
+    </Formik>
+  </Box>
+</Box>
   );
 };
 

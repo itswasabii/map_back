@@ -23,7 +23,6 @@ const ForgotPassword = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        
         body: JSON.stringify({ email }),
       });
       if (response.ok) {
@@ -64,28 +63,28 @@ const ForgotPassword = () => {
                   <ErrorMessage name="email" component={FormErrorMessage} />
                 </FormControl>
 
-                {error && <Text color="red.500">{error}</Text>}
-                {resetToken && (
-                  <Text color="green.500">
-                    An email with reset instructions has been sent to <strong>{email}</strong>.
-                  </Text>
-                )}
+            {error && <Text color="red.500">{error}</Text>}
+            {resetToken && (
+              <Text color="green.500">
+                An email with reset instructions has been sent to <strong>{email}</strong>.
+              </Text>
+            )}
 
-                <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
-                  Submit
-                </Button>
-              </VStack>
-            </Form>
-          )}
-        </Formik>
-        <Text mt={4}>
-          Proceed to{" "}
-          <Link as={RouterLink} to="/reset-password" color="teal.500">
-            Reset Password
-          </Link>
-        </Text>
-      </Box>
-    </Box>
+            <Button type="submit" colorScheme="teal" isLoading={isSubmitting}>
+              Submit
+            </Button>
+          </VStack>
+        </Form>
+      )}
+    </Formik>
+    <Text mt={4}>
+      Proceed to{" "}
+      <Link as={RouterLink} to="/reset-password" color="teal.500">
+        Reset Password
+      </Link>
+    </Text>
+  </Box>
+</Box>
   );
 };
 
