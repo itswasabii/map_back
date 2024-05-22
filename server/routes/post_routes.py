@@ -23,16 +23,16 @@ class Posts(Resource):
                 'comments_count': post.comments.count(),
                 'likes_count': post.likes.count(),
                 'shares_count': post.shares.count(),
-                'the_comments': [
-                    {
-                        'comment_id': comment.comment_id,
-                        'user_id': comment.user_id,
-                        'user_name': comment.author.username,
-                        'content': comment.content
-                    }
-                    for comment in post.comments
-                ]
-            }
+                'the_comments': []
+                }
+            for comment in post.comments:
+                comment_data = {
+                    'comment_id': comment.comment_id,
+                    'user_id': comment.user_id,
+                    'user_name': comment.user_name,
+                    'content': comment.content
+                }
+                post_data['the_comments'].append(comment_data)
             posts_data.append(post_data)
         return jsonify(posts_data)
 
@@ -117,8 +117,10 @@ class Comments(Resource):
         """Create a new comment."""
         data = request.json
         new_comment = Comment(
-            user_id=data['user_id'],
             post_id=post_id,
+            user_id=data['user_id'],
+            user_name=data['user_name'],
+            cohort_id=data.get('cohort_id'),
             content=data['content'],
             created_at=datetime.utcnow()
         )
