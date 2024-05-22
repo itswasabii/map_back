@@ -1,5 +1,3 @@
-# routes/user_routes.py
-
 from flask_restful import Resource
 from flask import request, jsonify, make_response
 from models import db
@@ -141,7 +139,7 @@ class Login(Resource):
             access_token = create_access_token(identity=user.user_id, expires_delta=timedelta(hours=24))
             return jsonify({'message': 'User logged in successfully', 'access_token': access_token}), 200
         else:
-            return make_response({'error': 'Invalid username or password'}, 401)
+            return jsonify({'error': 'Invalid username or password'}), 401
 
 class Logout(Resource):
     def post(self):
@@ -180,7 +178,7 @@ class ResetPassword(Resource):
             if datetime.utcnow() > reset_token_entry.expires_at:
                 return jsonify({'error': 'Token has expired'}), 400
             user = User.query.filter_by(user_id=reset_token_entry.user_id).first()
-            user.password_hash = generate_password_hash(new_password, method='pbkdf:sha512')
+            user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha512')
             db.session.delete(reset_token_entry)
             db.session.commit()
             return jsonify({'message': 'Password has been reset successfully'}), 200
