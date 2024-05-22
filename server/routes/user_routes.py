@@ -3,7 +3,7 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response
 from models import db
-from models.user_model import User, ResetToken  # Ensure Course is imported if it's a model
+from models.user_model import User, ResetToken, Course  # Ensure Course is imported if it's a model
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
@@ -11,6 +11,7 @@ import secrets
 import jwt
 import os
 from flask_mail import Message
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app import mail  # Import the mail object from app.py
 from dotenv import load_dotenv
 
@@ -71,7 +72,9 @@ class Users(Resource):
             return {'error': f'Course "{course_name}" not found'}, 404
 
 class UserProfile(Resource):
-    def get(self, user_id):
+    @jwt_required()
+    def get(self):
+        user_id = get_jwt_identity()
         user = User.query.get_or_404(user_id)
         user_data = {
             'user_id': user.user_id,
@@ -99,7 +102,9 @@ class UserProfile(Resource):
         }
         return user_data, 200
 
-    def put(self, user_id):
+    @jwt_required()
+    def put(self):
+        user_id = get_jwt_identity()
         data = request.json
         user = User.query.get_or_404(user_id)
         user.bio = data.get('bio', user.bio)
@@ -133,13 +138,8 @@ class Login(Resource):
         password = data.get('password')
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password_hash, password):
-            token = jwt.encode({
-                'user_id': user.user_id,
-                'exp': datetime.utcnow() + timedelta(hours=24)
-            }, jwt_secret_key)
-            response = make_response({'message': 'User logged in successfully', 'token': token})
-            response.set_cookie('token', token, httponly=True, max_age=24*60*60)
-            return response
+            access_token = create_access_token(identity=user.user_id, expires_delta=timedelta(hours=24))
+            return jsonify({'message': 'User logged in successfully', 'access_token': access_token}), 200
         else:
             return make_response({'error': 'Invalid username or password'}, 401)
 
@@ -180,7 +180,7 @@ class ResetPassword(Resource):
             if datetime.utcnow() > reset_token_entry.expires_at:
                 return jsonify({'error': 'Token has expired'}), 400
             user = User.query.filter_by(user_id=reset_token_entry.user_id).first()
-            user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha512')
+            user.password_hash = generate_password_hash(new_password, method='pbkdf:sha512')
             db.session.delete(reset_token_entry)
             db.session.commit()
             return jsonify({'message': 'Password has been reset successfully'}), 200
