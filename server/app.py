@@ -7,6 +7,7 @@ from flask_mail import Mail
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
+import logging
 
 from routes import Home
 
@@ -43,6 +44,8 @@ api = Api(app)
 mail = Mail(app)
 jwt = JWTManager(app)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}}, supports_credentials=True)
+
+logging.basicConfig(level=logging.DEBUG)
 
 # Initialize login manager
 login_manager.init_app(app)
@@ -84,3 +87,4 @@ with app.app_context():
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+

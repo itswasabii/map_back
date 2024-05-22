@@ -1,7 +1,9 @@
+# routes/user_routes.py
+
 from flask_restful import Resource
 from flask import request, jsonify, make_response
 from models import db
-from models.user_model import User, ResetToken, Course  # Ensure Course is imported if it's a model
+from models.user_model import User, ResetToken # Ensure Course is imported if it's a model
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
@@ -47,7 +49,7 @@ class Users(Resource):
                 ]
             }
             user_data.append(user_dict)
-        return user_data, 200
+        return make_response(jsonify(user_data), 200)
 
     def post(self):
         data = request.json
@@ -65,9 +67,9 @@ class Users(Resource):
         if course:
             new_user.courses.append(course)
             db.session.commit()
-            return {'message': 'User created and associated with the course successfully'}, 201
+            return make_response(jsonify({'message': 'User created and associated with the course successfully'}), 201)
         else:
-            return {'error': f'Course "{course_name}" not found'}, 404
+            return make_response(jsonify({'error': f'Course "{course_name}" not found'}), 404)
 
 class UserProfile(Resource):
     @jwt_required()
@@ -98,7 +100,7 @@ class UserProfile(Resource):
                 } for post in user.posts
             ]
         }
-        return user_data, 200
+        return make_response(jsonify(user_data), 200)
 
     @jwt_required()
     def put(self):
@@ -111,7 +113,7 @@ class UserProfile(Resource):
         user.location = data.get('location', user.location)
         user.profile_picture_url = data.get('profile_picture_url', user.profile_picture_url)
         db.session.commit()
-        return {'message': 'User profile updated successfully'}, 200
+        return make_response(jsonify({'message': 'User profile updated successfully'}), 200)
 
 class Register(Resource):
     def post(self):
@@ -124,10 +126,10 @@ class Register(Resource):
             new_user = User(username=username, password_hash=hashed_pass, email=email, bio='', occupation='', qualification='', location='', profile_picture_url='', joined_at=datetime.utcnow())
             db.session.add(new_user)
             db.session.commit()
-            return make_response({'message': 'User has been registered'}, 200)
+            return make_response(jsonify({'message': 'User has been registered'}), 200)
         except IntegrityError:
             db.session.rollback()
-            return make_response({'error': 'Username or email already exists'}, 400)
+            return make_response(jsonify({'error': 'Username or email already exists'}), 400)
 
 class Login(Resource):
     def post(self):
@@ -136,14 +138,15 @@ class Login(Resource):
         password = data.get('password')
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password_hash, password):
-            access_token = create_access_token(identity=user.user_id, expires_delta=timedelta(hours=24))
-            return jsonify({'message': 'User logged in successfully', 'access_token': access_token}), 200
+            role = user.role
+            access_token = create_access_token(identity={'user_id': user.user_id, 'role': role}, expires_delta=timedelta(hours=24))
+            return make_response(jsonify({'message': 'User logged in successfully', 'access_token': access_token, 'role': role}), 200)
         else:
-            return jsonify({'error': 'Invalid username or password'}), 401
+            return make_response(jsonify({'error': 'Invalid username or password'}), 401)
 
 class Logout(Resource):
     def post(self):
-        response = make_response({'message': 'Logged out successfully'})
+        response = make_response(jsonify({'message': 'Logged out successfully'}))
         response.delete_cookie('token')
         return response
 
@@ -161,9 +164,9 @@ class ForgotPassword(Resource):
             msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
             msg.body = f"Your password reset token is: {reset_token}. It will expire in 1 hour."
             mail.send(msg)
-            return jsonify({'message': 'Password reset token sent to your email'}), 200
+            return make_response(jsonify({'message': 'Password reset token sent to your email'}), 200)
         else:
-            return jsonify({'error': 'Email not found'}), 404
+            return make_response(jsonify({'error': 'Email not found'}), 404)
 
 class ResetPassword(Resource):
     def post(self):
@@ -172,15 +175,15 @@ class ResetPassword(Resource):
         new_password = data.get('new_password')
         confirm_password = data.get('confirm_password')
         if new_password != confirm_password:
-            return jsonify({'error': 'Passwords do not match'}), 400
+            return make_response(jsonify({'error': 'Passwords do not match'}), 400)
         reset_token_entry = ResetToken.query.filter_by(token=token).first()
         if reset_token_entry:
             if datetime.utcnow() > reset_token_entry.expires_at:
-                return jsonify({'error': 'Token has expired'}), 400
+                return make_response(jsonify({'error': 'Token has expired'}), 400)
             user = User.query.filter_by(user_id=reset_token_entry.user_id).first()
-            user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha512')
+            user.password_hash = generate_password_hash(new_password, method='pbkdf:sha512')
             db.session.delete(reset_token_entry)
             db.session.commit()
-            return jsonify({'message': 'Password has been reset successfully'}), 200
+            return make_response(jsonify({'message': 'Password has been reset successfully'}), 200)
         else:
-            return jsonify({'error': 'Invalid or expired token'}), 400
+            return make_response(jsonify({'error': 'Invalid or expired token'}), 400)
