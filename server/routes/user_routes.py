@@ -1,6 +1,7 @@
-import logging
+# routes/user_routes.py
+
 from flask_restful import Resource
-from flask import  request, jsonify, make_response
+from flask import  request, jsonify, make_response,current_app
 from models import db
 from models.user_model import User, ResetToken
 from datetime import datetime, timedelta
@@ -11,10 +12,9 @@ import jwt
 import os
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -35,6 +35,7 @@ class Users(Resource):
                 'occupation': user.occupation,
                 'qualification': user.qualification,
                 'location': user.location,
+                'profile_picture_url': user.profile_picture_url,
                 'cohorts': [
                     {
                         'cohort_id': member.cohort.cohort_id,
@@ -65,7 +66,7 @@ class Users(Resource):
         db.session.add(new_user)
         db.session.commit()
         course_name = data['course']
-        course = course.query.filter_by(course_name=course_name).first()
+        course = Course.query.filter_by(course_name=course_name).first()
         if course:
             new_user.courses.append(course)
             db.session.commit()
@@ -73,13 +74,68 @@ class Users(Resource):
         else:
             return {'error': f'Course "{course_name}" not found'}, 404
 
+class UserProfile(Resource):
+    def get(self, user_id):
+        user = User.query.get_or_404(user_id)
+        user_data = {
+            'user_id': user.user_id,
+            'username': user.username,
+            'email': user.email,
+            'bio': user.bio,
+            'occupation': user.occupation,
+            'qualification': user.qualification,
+            'location': user.location,
+            'profile_picture_url': user.profile_picture_url,
+            'cohorts': [
+                {
+                    'cohort_id': member.cohort.cohort_id,
+                    'cohort_name': member.cohort.cohort_name,
+                } for member in user.cohort_memberships
+            ],
+            'course': [course.course_name for course in user.courses],
+            'joined_at': user.joined_at.isoformat(),
+            'posts': [
+                {
+                    'content': post.content,
+                    'created_at': post.created_at.isoformat(),
+                } for post in user.posts
+            ]
+        }
+        return user_data,200
+    
+
     def put(self, user_id):
+        
+        cloudinary.config(cloud_name = os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'), 
+        api_secret=os.getenv('API_SECRET'))
+
         data = request.json
         user = User.query.get_or_404(user_id)
         user.bio = data.get('bio', user.bio)
         user.occupation = data.get('occupation', user.occupation)
-        user.qualification = data.get('qualification', user.qualification)
+        user.qualification = data.get('qualifications', user.qualification)
         user.location = data.get('location', user.location)
+        # user.profile_picture_url = data.get('profile_picture_url', user.profile_picture_url)
+        
+        upload_result = None
+        file_to_upload = request.files.get('profilePic')
+        if file_to_upload:
+            print('Profile pic found in request files')  # Add this
+            file_to_upload = request.files['profilePic']
+            print('Image')  # Add this
+            print(file_to_upload)  # Add this
+            current_app.logger.info('File to upload: %s', file_to_upload)
+            if file_to_upload:
+                upload_result = cloudinary.uploader.upload(file_to_upload)
+                current_app.logger.info('Upload result: %s', upload_result)
+                user.profile_picture_url = upload_result.get('secure_url')
+            else:
+                print('No file to upload')  # Add this
+        else:
+            print('Profile pic not found in request files')  # Add this
+
+
+                        
         db.session.commit()
         return {'message': 'User profile updated successfully'}, 200
 
@@ -91,7 +147,7 @@ class Register(Resource):
         email = data.get('email')
         hashed_pass = generate_password_hash(password, method='pbkdf2:sha512')
         try:
-            new_user = User(username=username, password_hash=hashed_pass, email=email, bio='', occupation='', qualification='', location='', joined_at=datetime.utcnow())
+            new_user = User(username=username, password_hash=hashed_pass, email=email, bio='', occupation='', qualification='', location='', profile_picture_url='', joined_at=datetime.utcnow())
             db.session.add(new_user)
             db.session.commit()
             return make_response({'message': 'User has been registered'}, 200)
@@ -110,7 +166,7 @@ class Login(Resource):
                 'user_id': user.user_id,
                 'exp': datetime.utcnow() + timedelta(hours=24)
             }, jwt_secret_key)
-            response = make_response({'message': 'User logged in successfully', 'token': token})
+            response = make_response({'message': 'User logged in successfully', 'token': token,"userId":user.user_id})
             response.set_cookie('token', token, httponly=True, max_age=24*60*60)
             return response
         else:

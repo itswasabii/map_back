@@ -7,12 +7,21 @@ import {
 } from "@chakra-ui/icons";
 import { CgProfile } from "react-icons/cg";
 import { VscSignOut } from "react-icons/vsc";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 
 function Profilemodal({ nodeRef }) {
-    const {username} = useParams()
-    const user='lkbrian'
+  const { userId,logout } = useAuth();
+  const navigate = useNavigate();
+  
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/user/login");
+  };
+    
+    
   return (
     <div
       ref={nodeRef}
@@ -21,7 +30,7 @@ function Profilemodal({ nodeRef }) {
       <Box textAlign={"start"}>
         <Flex align={"center"} _hover={{ bg: "#EDF2F7" }} pl={3}>
           <CgProfile fontSize={'1.2rem'} mr={4} />
-          <Text lineHeight={"45px"}ml={2} cursor={'pointer'} as={Link} to={`/forum/userprofile/${user}`} >View Profile</Text>
+          <Text lineHeight={"45px"}ml={2} cursor={'pointer'} as={Link} to={`/forum/userprofile/${userId}`} >View Profile</Text>
         </Flex>
 
         <Flex align={"center"} _hover={{ bg: "#EDF2F7" }} pl={3}>
@@ -42,7 +51,7 @@ function Profilemodal({ nodeRef }) {
           <Switch />
         </Flex>
 
-        <Flex align={"center"} _hover={{ bg: "#EDF2F7" }} pl={3}>
+        <Flex align={"center"} _hover={{ bg: "#EDF2F7" }} onClick={handleLogout} pl={3} cursor={'pointer'}>
           <VscSignOut fontSize={'1.2rem'} />
           <Text lineHeight={"45px"} ml={2}>Logout</Text>
         </Flex>
