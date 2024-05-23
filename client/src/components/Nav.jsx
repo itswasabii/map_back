@@ -82,18 +82,8 @@ function Nav() {
           </Menu>
         </Box>
       </Flex>
-      {/* Admin portal button */}
-      <Box
-        as={Link}
-        bg={"#4CAF50"}
-        p={"4px"}
-        px={4}
-        borderRadius={"3rem"}
-        color={"#fff"}
-        to={"/admin"}
-      >
-        Admin Portal
-      </Box>
+     
+    
     </Flex>
   );
 }
