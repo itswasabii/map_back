@@ -39,7 +39,8 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}}, supports_cr
 
 # Register resources with Flask-RESTful
 api.add_resource(Home, '/')
-api.add_resource(AdminPost, '/admin/post')  # Add AdminPost resource
+api.add_resource(AdminPost, '/post') 
+ # Add AdminPost resource
 
 # Create the database tables on launch
 with app.app_context():
