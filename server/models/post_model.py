@@ -51,14 +51,15 @@ class Post(db.Model):
         return f'<Post {self.post_id}>'
 
 class Comment(db.Model):
-    comment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    __tablename__ = 'comment'
+    comment_id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    user_name = db.Column(db.String(255), nullable=False)
-    cohort_id = db.Column(db.Integer, db.ForeignKey('cohort.cohort_id'), nullable=False)
+    user_name = db.Column(db.String(64), nullable=False)
+    cohort_id = db.Column(db.Integer, db.ForeignKey('cohort.cohort_id'), nullable=True)  # Make it nullable
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
 class Like(db.Model):
     like_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
