@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -37,7 +37,7 @@ const Signup = () => {
   const handleSignup = async (values, { setSubmitting }) => {
     try {
       const { username, email, password } = values;
-      const response = await fetch("http://127.0.0.1:5555/register", {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -198,6 +198,21 @@ const Signup = () => {
             Opportunities to give back by mentoring current students.
           </ListItem>
         </List>
+        <Flex justify={"space-between"}>
+        <Box
+          cursor={"pointer"}
+          my={"20px"}
+          bg={"#FA510F"}
+          color={"#fff"}
+          w={"100px"}
+          borderRadius={"md"}
+          textAlign={"center"}
+          lineHeight={"40px"}
+          mx={{ base: 2, md: 8 }}
+          as={Link} to={'/'}
+        >
+        <ArrowBackIcon />  Home 
+        </Box>
         <Box
           cursor={"pointer"}
           my={"20px"}
@@ -209,8 +224,9 @@ const Signup = () => {
           lineHeight={"40px"}
           mx={{ base: 2, md: 8 }}
         >
-          Fill the form to signup <ArrowForwardIcon />
+          Fill the form to Signup <ArrowForwardIcon />
         </Box>
+        </Flex>
         <Image px={{ base: 2, md: 8 }} w={"400px"} />
       </Flex>
       

@@ -147,23 +147,29 @@ def seed_donations():
     
   with app.app_context():
     # Create fundraisers
+
+
     fundraisers = [
         {
             'user_id': 1,
-            'title': 'Fundraiser 1',
-            'description': 'Description for Fundraiser 1',
-            'goal_amount': 1000.0,
+            'title': 'Scholarship Fundraiser for Moringa School Students',
+            'description': 'Support Moringa School students by contributing to this scholarship fundraiser. '
+                            'Your donation will help talented individuals access quality tech education, '
+                            'empowering them to transform their lives and communities.',
+            'goal_amount': 10000.0,
             'end_date': datetime(2024, 6, 1)
         },
         {
             'user_id': 2,
-            'title': 'Fundraiser 2',
-            'description': 'Description for Fundraiser 2',
-            'goal_amount': 1500.0,
+            'title': 'Expansion Fundraiser for Moringa School',
+            'description': 'Help Moringa School expand its facilities and resources to accommodate more students '
+                            'and provide them with the best learning environment possible. Together, we can '
+                            'empower more individuals with the skills they need to succeed in tech.',
+            'goal_amount': 15000.0,
             'end_date': datetime(2024, 6, 15)
         }
-        # Add more fundraisers as needed
     ]
+
 
     # Create donations
     donations = [

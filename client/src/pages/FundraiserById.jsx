@@ -5,6 +5,7 @@ import Sidebar from "../components/Sidebar";
 import { Box, Flex, Heading, Input, Text, Button } from "@chakra-ui/react";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Donate from "../components/Donate";
 
 function FundraiserById() {
   const { id } = useParams();
@@ -36,10 +37,9 @@ function FundraiserById() {
     setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleFormSubmit = async (values) => {
     try {
-      const response = await fetch("http://127.0.0.1:5555/api/donations", {
+      const response = await fetch("/api/donations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -47,7 +47,7 @@ function FundraiserById() {
         body: JSON.stringify({
           fundraiser_id: id,
           user_id: 1,  // Replace with the actual user ID
-          amount: parseFloat(formData.amount)
+          amount: parseFloat(values.amount)
         })
       });
 
@@ -85,8 +85,8 @@ function FundraiserById() {
         {loading ? (
           <Text>Loading...</Text>
         ) : (
-          <Flex flexDir={{ base: "column", lg: "row" }} align={'stretch'}>
-            <Box px={"30px"} py={"10px"} w={{base:'100%',lg:'50%'}}>
+          <Flex >
+            <Box px={"30px"} py={"10px"} w={'100%'}>
               <Heading pb={"10px"}>{fundraiserById.title}</Heading>
               <Text maxW={"650px"}>{fundraiserById.description}</Text>
               <Flex
@@ -124,41 +124,10 @@ function FundraiserById() {
                   </Text>
                 </Box>
               </Flex>
-            </Box>
-            <Box w={{base:'100%',lg:'50%'}} px={5}>
-              <form onSubmit={handleSubmit}>
-                <Heading pt={'40px'}>Make a Donation</Heading>
-                <Input
-                  my={2}
-                  placeholder="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  variant={'filled'}
-                />
-                <Input
-                  my={2}
-                  placeholder="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  variant={'filled'}
-                />
-                <Input
-                  my={2}
-                  placeholder="amount"
-                  name="amount"
-                  value={formData.amount}
-                  onChange={handleChange}
-                  variant={'filled'}
-                />
-                <Button colorScheme="teal" my={2} type="submit">
-                  Submit
-                </Button>
-              </form>
-            </Box>
+            </Box>            
           </Flex>
         )}
+         <Donate onSubmit={handleFormSubmit} />
       </div>
     </>
   );

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Flex,
@@ -17,35 +18,30 @@ import {
   FormControl,
   FormErrorMessage,
   Input,
-  InputGroup,
-  InputLeftElement,
   NumberInput,
   NumberInputField,
 } from "@chakra-ui/react";
-import {
-  AtSignIcon,
-  EmailIcon,
-  PhoneIcon,
-  ViewIcon,
-  ViewOffIcon,
-} from "@chakra-ui/icons";
-import { useState } from "react";
-import IMGL0721 from "../assets/IMGL0721.jpeg";
-import IMGL0722 from "../assets/share_media.jpg";
-import IMGL0723 from "../assets/volunteer.jpg";
 import { Field, Form, Formik } from "formik";
 import {
   paypalValidation,
   creditCardValidation,
   mpesaValidation,
 } from "../utils/Schema";
+import { PropTypes } from "prop-types";
+import IMGL0721 from "../assets/IMGL0721.jpeg";
+import IMGL0722 from "../assets/share_media.jpg";
+import IMGL0723 from "../assets/volunteer.jpg";
+import paypal from '../assets/pay-pal.png'
+import mpesa from '../assets/m-pesa.png'
+import creditcard from '../assets/credit-card.png'
 
-function Donate() {
+function Donate({ onSubmit }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [activeForm, setActiveForm] = useState(null);
 
   const handleSubmit = async (values, actions) => {
     console.log("Form values:", values);
+    onSubmit(values);
     actions.resetForm();
     onClose();
   };
@@ -54,14 +50,10 @@ function Donate() {
     setActiveForm(formType);
     onOpen();
   };
+
   return (
-    <Flex
-      my={8}
-      ml={{ base: "2px", md: "50px", lg: "70px", xl: "100px" }}
-      mx={"auto"}
-      flexWrap="wrap"
-      gap={8}
-    >
+    <Flex my={8}  mx={"auto"} ml={'20px'} flexWrap="wrap" gap={8}>
+      
       <Box
         borderRadius={"lg"}
         maxW="md"
@@ -81,34 +73,27 @@ function Donate() {
               essential skills, access mentorship programs, and pursue their
               career aspirations with confidence.
             </Text>
-            {/* payment modals */}
             <Box>
-              <ButtonGroup>
-                <Button
-                  bg="#101f3c"
-                  color={"#fff"}
-                  _hover={{ bg: "#101f3c" }}
+              <Flex gap={4} align={'center'}>
+                <Image
+                  src={creditcard}
                   onClick={() => handleFormChange("creditCard")}
-                >
-                  Credit Card
-                </Button>
-                <Button
-                  bg="#101f3c"
-                  color={"#fff"}
-                  _hover={{ bg: "#101f3c" }}
+                  w={'100px'}
+                  cursor={'pointer'}
+                />
+                <Image
+                 src={mpesa}
                   onClick={() => handleFormChange("mpesa")}
-                >
-                  M-Pesa
-                </Button>
-                <Button
-                  bg="#101f3c"
-                  color={"#fff"}
-                  _hover={{ bg: "#101f3c" }}
+                  w={'80px'}
+                  cursor={'pointer'}
+                />
+                <Image
+                src={paypal}
                   onClick={() => handleFormChange("paypal")}
-                >
-                  PayPal
-                </Button>
-              </ButtonGroup>
+                  cursor={'pointer'}
+                  w={'100px'}
+                />
+              </Flex>
 
               <Modal isOpen={isOpen} onClose={onClose} alignItems={"center"}>
                 <ModalOverlay />
@@ -139,13 +124,6 @@ function Donate() {
                         amount: "",
                       }}
                       onSubmit={handleSubmit}
-                      validationSchema={
-                        activeForm === "creditCard"
-                          ? creditCardValidation
-                          : activeForm === "mpesa"
-                          ? mpesaValidation
-                          : paypalValidation
-                      }
                     >
                       {({ isSubmitting }) => (
                         <Form>
@@ -158,20 +136,28 @@ function Donate() {
                                   {({ field, form }) => (
                                     <FormControl
                                       isInvalid={
-                                        form.errors.username &&
-                                        form.touched.username
+                                        form.errors.amount &&
+                                        form.touched.amount
                                       }
                                     >
-                                      <Input
+                                      <NumberInput
                                         errorBorderColor="crimson"
                                         focusBorderColor={"#101f3c"}
-                                        placeholder="amount"
-                                        {...field}
-                                      />
+                                        value={field.value}
+                                        onChange={(value) =>
+                                          form.setFieldValue(field.name, value)
+                                        }
+                                      >
+                                        <NumberInputField
+                                          placeholder="Amount"
+                                          {...field}
+                                        />
+                                      </NumberInput>
+
                                       <FormErrorMessage color="crimson">
-                                        {form.errors.username &&
-                                          form.touched.username &&
-                                          form.errors.username}
+                                        {form.errors.amount &&
+                                          form.touched.amount &&
+                                          form.errors.amount}
                                       </FormErrorMessage>
                                     </FormControl>
                                   )}
@@ -180,44 +166,43 @@ function Donate() {
                                   {({ field, form }) => (
                                     <FormControl
                                       isInvalid={
-                                        form.errors.username &&
-                                        form.touched.username
+                                        form.errors.creditCardNumber &&
+                                        form.touched.creditCardNumber
                                       }
                                     >
                                       <Input
                                         errorBorderColor="crimson"
                                         focusBorderColor={"#101f3c"}
-                                        placeholder="account number"
+                                        placeholder="Credit Card Number"
                                         {...field}
                                       />
                                       <FormErrorMessage color="crimson">
-                                        {form.errors.username &&
-                                          form.touched.username &&
-                                          form.errors.username}
+                                        {form.errors.creditCardNumber &&
+                                          form.touched.creditCardNumber &&
+                                          form.errors.creditCardNumber}
                                       </FormErrorMessage>
                                     </FormControl>
                                   )}
                                 </Field>
                                 <Flex gap={2}>
-                                  <Field name="expirationDate">
+                                  <Field name="expiryDate">
                                     {({ field, form }) => (
                                       <FormControl
                                         isInvalid={
-                                          form.errors.username &&
-                                          form.touched.username
+                                          form.errors.expiryDate &&
+                                          form.touched.expiryDate
                                         }
                                       >
                                         <Input
-                                          type="year"
                                           errorBorderColor="crimson"
                                           focusBorderColor={"#101f3c"}
-                                          placeholder="expiration"
+                                          placeholder="MM/YY"
                                           {...field}
                                         />
                                         <FormErrorMessage color="crimson">
-                                          {form.errors.username &&
-                                            form.touched.username &&
-                                            form.errors.username}
+                                          {form.errors.expiryDate &&
+                                            form.touched.expiryDate &&
+                                            form.errors.expiryDate}
                                         </FormErrorMessage>
                                       </FormControl>
                                     )}
@@ -226,20 +211,19 @@ function Donate() {
                                     {({ field, form }) => (
                                       <FormControl
                                         isInvalid={
-                                          form.errors.username &&
-                                          form.touched.username
+                                          form.errors.cvv && form.touched.cvv
                                         }
                                       >
                                         <Input
                                           errorBorderColor="crimson"
                                           focusBorderColor={"#101f3c"}
-                                          placeholder="cvv"
+                                          placeholder="CVV"
                                           {...field}
                                         />
                                         <FormErrorMessage color="crimson">
-                                          {form.errors.username &&
-                                            form.touched.username &&
-                                            form.errors.username}
+                                          {form.errors.cvv &&
+                                            form.touched.cvv &&
+                                            form.errors.cvv}
                                         </FormErrorMessage>
                                       </FormControl>
                                     )}
@@ -256,51 +240,50 @@ function Donate() {
                                   {({ field, form }) => (
                                     <FormControl
                                       isInvalid={
-                                        form.errors.username &&
-                                        form.touched.username
+                                        form.errors.amount &&
+                                        form.touched.amount
                                       }
                                     >
                                       <NumberInput
                                         errorBorderColor="crimson"
-                                        focusBorderColor="#101f3c"
+                                        focusBorderColor={"#101f3c"}
                                         value={field.value}
                                         onChange={(value) =>
                                           form.setFieldValue(field.name, value)
                                         }
                                       >
                                         <NumberInputField
-                                          placeholder="amount"
+                                          placeholder="Amount"
                                           {...field}
                                         />
                                       </NumberInput>
 
                                       <FormErrorMessage color="crimson">
-                                        {form.errors.username &&
-                                          form.touched.username &&
-                                          form.errors.username}
+                                        {form.errors.amount &&
+                                          form.touched.amount &&
+                                          form.errors.amount}
                                       </FormErrorMessage>
                                     </FormControl>
                                   )}
                                 </Field>
-                                <Field name="phoneNumber">
+                                <Field name="mpesaNumber">
                                   {({ field, form }) => (
                                     <FormControl
                                       isInvalid={
-                                        form.errors.username &&
-                                        form.touched.username
+                                        form.errors.mpesaNumber &&
+                                        form.touched.mpesaNumber
                                       }
                                     >
                                       <Input
                                         errorBorderColor="crimson"
                                         focusBorderColor={"#101f3c"}
-                                        placeholder="mobile number"
-                                        type="numeric"
+                                        placeholder="M-Pesa Number"
                                         {...field}
                                       />
                                       <FormErrorMessage color="crimson">
-                                        {form.errors.username &&
-                                          form.touched.username &&
-                                          form.errors.username}
+                                        {form.errors.mpesaNumber &&
+                                          form.touched.mpesaNumber &&
+                                          form.errors.mpesaNumber}
                                       </FormErrorMessage>
                                     </FormControl>
                                   )}
@@ -312,48 +295,47 @@ function Donate() {
                             {activeForm === "paypal" && (
                               <>
                                 {/* PayPal fields */}
-
                                 <Field name="amount">
                                   {({ field, form }) => (
                                     <FormControl
                                       isInvalid={
-                                        form.errors.username &&
-                                        form.touched.username
+                                        form.errors.amount &&
+                                        form.touched.amount
                                       }
                                     >
                                       <Input
                                         errorBorderColor="crimson"
                                         focusBorderColor={"#101f3c"}
-                                        placeholder="amount"
+                                        placeholder="Amount"
                                         {...field}
                                       />
                                       <FormErrorMessage color="crimson">
-                                        {form.errors.username &&
-                                          form.touched.username &&
-                                          form.errors.username}
+                                        {form.errors.amount &&
+                                          form.touched.amount &&
+                                          form.errors.amount}
                                       </FormErrorMessage>
                                     </FormControl>
                                   )}
                                 </Field>
-                                <Field name="email">
+                                <Field name="paypalEmail">
                                   {({ field, form }) => (
                                     <FormControl
                                       isInvalid={
-                                        form.errors.username &&
-                                        form.touched.username
+                                        form.errors.paypalEmail &&
+                                        form.touched.paypalEmail
                                       }
                                     >
                                       <Input
                                         type="email"
                                         errorBorderColor="crimson"
                                         focusBorderColor={"#101f3c"}
-                                        placeholder="email"
+                                        placeholder="PayPal Email"
                                         {...field}
                                       />
                                       <FormErrorMessage color="crimson">
-                                        {form.errors.username &&
-                                          form.touched.username &&
-                                          form.errors.username}
+                                        {form.errors.paypalEmail &&
+                                          form.touched.paypalEmail &&
+                                          form.errors.paypalEmail}
                                       </FormErrorMessage>
                                     </FormControl>
                                   )}
@@ -450,5 +432,7 @@ function Donate() {
     </Flex>
   );
 }
-
+Donate.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
 export default Donate;
