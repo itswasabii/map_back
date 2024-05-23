@@ -55,6 +55,7 @@ export const AuthProvider = ({ children }) => {
       }
       const { token, userId, role } = await response.json();
       setAuthData(token, userId, role);
+      console.log(token,userId,role)
       return { success: true, message: "Login successful", role };
     } catch (error) {
       console.error("Error logging in:", error);

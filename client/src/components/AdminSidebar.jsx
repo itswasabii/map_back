@@ -2,8 +2,18 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import CreatePost from './CreatePost';
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 const AdminSidebar = () => {
+  const { userId,logout } = useAuth();
+  const navigate = useNavigate();
+  
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/user/login");
+  };
   return (
     <Box
       as="div"
@@ -31,7 +41,10 @@ const AdminSidebar = () => {
           <NavLink className="sidebar" to="/user/admin/send-mass-emails">Send Mass Emails</NavLink>
         </li>
         <li>
-          <NavLink className="sidebar" to="/user/admin/create-fundraiser">Create Fundraiser</NavLink>
+          <NavLink className="sidebar" to="/user/admin/create-fundraiser">Create Fundraiser</NavLink>          
+        </li>
+        <li>
+        <NavLink className="sidebar" onClick={handleLogout}>Logout</NavLink>
         </li>
       </ul>
       <div className=" w-[150px] mt-[50px]">
