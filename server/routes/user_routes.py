@@ -167,7 +167,7 @@ class Login(Resource):
                 'user_id': user.user_id,
                 'exp': datetime.utcnow() + timedelta(hours=24)
             }, jwt_secret_key)
-            response = make_response({'message': 'User logged in successfully', 'token': token,"userId":user.user_id})
+            response = make_response({'message': 'User logged in successfully', 'token': token,"userId":user.user_id,"role":user.role})
             response.set_cookie('token', token, httponly=True, max_age=24*60*60)
             return response
         else:
