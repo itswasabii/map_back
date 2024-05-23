@@ -39,34 +39,38 @@ function App() {
 
 function AppContent() {
   const location = useLocation();
-  const { token } = useAuth();
+  const { token, role } = useAuth();
 
   const shouldDisplayNav = () => {
     return !location.pathname.startsWith("/forum/") && !location.pathname.startsWith("/user/");
   };
+
+  if (token && role === "admin" && !location.pathname.startsWith("/user/admin")) {
+    return <Navigate to="/user/admin" />;
+  }
 
   return (
     <Box pos={"relative"}>
       {shouldDisplayNav() && <Nav />}
       <Routes>
         <Route path="/" element={<SuccessStories />} />
-        <Route path="/tech-news" element={<TechNews />} />      
-        <Route path="/about" element={<About />} />      
+        <Route path="/tech-news" element={<TechNews />} />
+        <Route path="/about" element={<About />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/forum" element={<Forum />} />
-          <Route path='/cohort' element={<Cohort/>} />
-          <Route path="/user/admin" element={<CreateCohort />} />          
+          <Route path="/cohort" element={<Cohort />} />
+          <Route path="/user/admin" element={<Admin />} />
           <Route path="/user/admin/view-all-users" element={<ViewAllUsers />} />
           <Route path="/user/admin/send-mass-emails" element={<SendMassEmails />} />
-          <Route path="/user/admin/create-fundraiser" element={<CreateFundraiser />} /> 
-          <Route path="/forum/userprofile/:id" element={<UserProfile />} />          
+          <Route path="/user/admin/create-fundraiser" element={<CreateFundraiser />} />
+          <Route path="/forum/userprofile/:id" element={<UserProfile />} />
           <Route path="/forum/fundraising-donations" element={<Fundraiser />} />
-          <Route path="/forum/fundraising-donations/:id" element={<FundraiserById />} />     
+          <Route path="/forum/fundraising-donations/:id" element={<FundraiserById />} />
         </Route>
-        <Route path="/user/login" element={token ? <Navigate to="/forum" /> : <Login />} />
-        <Route path="/user/signup" element={token ? <Navigate to="/forum" /> : <Signup />} />
-        <Route path="/user/forgot-password" element={token ? <Navigate to="/forum" /> : <ForgotPassword />} />        
-        <Route path="/user/reset-password" element={token ? <Navigate to="/forum" /> : <ResetPassword />} />
+        <Route path="/user/login" element={token ? <Navigate to={role === "admin" ? "/user/admin" : "/forum"} /> : <Login />} />
+        <Route path="/user/signup" element={token ? <Navigate to={role === "admin" ? "/user/admin" : "/forum"} /> : <Signup />} />
+        <Route path="/user/forgot-password" element={token ? <Navigate to={role === "admin" ? "/user/admin" : "/forum"} /> : <ForgotPassword />} />
+        <Route path="/user/reset-password" element={token ? <Navigate to={role === "admin" ? "/user/admin" : "/forum"} /> : <ResetPassword />} />
       </Routes>
     </Box>
   );
