@@ -24,7 +24,7 @@ function Sidebar({ nodeRef }) {
       }
     };
     getFundraiser();
-  }, [url]);  
+  }, [url]);
   return (
     <Box
       as="div"
@@ -37,47 +37,29 @@ function Sidebar({ nodeRef }) {
       zIndex="1"
       mt={"70px"}
       ref={nodeRef}
-      display={{ base: "none", xl: "block" }}
+      display={{ base: "none", xl: "flex" }}
       className={"border-r-[1px] border-[#e4e4e4]"}
       flexDir={"column"}
+      pt={'70px'}
     >
-      <NavLink className="leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]" to={"/forum"}>
+      <NavLink
+        className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
+        to={"/forum"}
+      >
         Home
       </NavLink>
-      <Flex
-        onClick={toggleDisclose}
-        cursor={"pointer"}
-        align={"center"}
-        px={4}
-        lineHeight={"40px"}
-        justify={"space-between"}
-        bg={"#e4e4e4"}
+      <NavLink
+        className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
+        to={"/cohort"}
       >
-        <Text>Fundraiser</Text>
-        <ChevronDownIcon
-          fontSize={"1.35rem"}
-          display={isOpen ? "none" : "block"}
-        />
-        <ChevronUpIcon
-          fontSize={"1.35rem"}
-          display={isOpen ? "block" : "none"}
-        />
-      </Flex>
-      <Flex
-        className={
-          "border-b-[1px] border-[#e4e4e4] overflow-y-scroll scrollbar overflow-x-hidden text-overflow-ellipsis whitespace-nowrap"
-        }
-        ref={navRef}
-        flexDir={"column"}
-        h={"500px"}
+        Cohorts
+      </NavLink>
+      <NavLink
+        className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
+        to={"/forum/fundraising-donations"}
       >
-        {fundraisers &&
-          fundraisers.map((fundraiser) => (
-            <Flex key={fundraiser.id}>              
-              <NavLink to={`/forum/fundraiser/${fundraiser.id}`} className="truncate leading-[40px] px-4 hover:bg-[#EDF2F7]">{fundraiser.title}</NavLink>
-            </Flex>
-          ))}
-      </Flex>
+        Fundraiser
+      </NavLink>
     </Box>
   );
 }

@@ -15,6 +15,7 @@ import { CgProfile } from "react-icons/cg";
 import TopNav from "../components/TopNav";
 import Sidebar from "../components/Sidebar";
 import { useAuth } from "../AuthContext";
+import useToggle from "../utils/useToggle";
 
 const UserPosts = React.lazy(() => import("../components/UserPosts"));
 const EditProfile = React.lazy(() => import("../components/EditProfile"));
@@ -23,6 +24,7 @@ const UserComments = React.lazy(() => import("../components/UserComments"));
 const UserProfile = () => {
   const [userData,setUserData] = useState([])
   const{userId} = useAuth()
+  const{nodeRef,toggleModal} = useToggle()
   const url =`/api/users/${userId}`
   useEffect(()=>{
     const getUser = async ()=>{
@@ -88,14 +90,14 @@ const UserProfile = () => {
         <Box mx={"auto"} maxW={"800px"}>
           <Tabs isFitted variant="enclosed">
             <TabList mb="1em">
-              <Tab>Edit Profile</Tab>
+              <Tab onClick={toggleModal}>Edit Profile</Tab>
               <Tab>Posts</Tab>
               <Tab>Comments</Tab>
             </TabList>
             <TabPanels>
-              <TabPanel>
+              <TabPanel >
                 <Suspense fallback={<Spinner />}>
-                  <EditProfile />
+                  <EditProfile nodeRef={nodeRef} />
                 </Suspense>
               </TabPanel>
               <TabPanel>

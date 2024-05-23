@@ -131,6 +131,69 @@ with app.app_context():
                 db.session.add(donation)
             db.session.commit()
 
+
+# Function to seed fundraiser and donation data
+def seed_donations():
+    
+  with app.app_context():
+    # Create fundraisers
+
+
+    fundraisers = [
+        {
+            'user_id': 1,
+            'title': 'Scholarship Fundraiser for Moringa School Students',
+            'description': 'Support Moringa School students by contributing to this scholarship fundraiser. '
+                            'Your donation will help talented individuals access quality tech education, '
+                            'empowering them to transform their lives and communities.',
+            'goal_amount': 10000.0,
+            'end_date': datetime(2024, 6, 1)
+        },
+        {
+            'user_id': 2,
+            'title': 'Expansion Fundraiser for Moringa School',
+            'description': 'Help Moringa School expand its facilities and resources to accommodate more students '
+                            'and provide them with the best learning environment possible. Together, we can '
+                            'empower more individuals with the skills they need to succeed in tech.',
+            'goal_amount': 15000.0,
+            'end_date': datetime(2024, 6, 15)
+        }
+    ]
+
+
+    # Create donations
+    donations = [
+        {
+            
+            'fundraiser_id': 1,
+            'user_id': 3,
+            'amount': 500.0,
+            'donation_date': datetime(2024, 5, 20)
+        },
+        {
+            'fundraiser_id': 2,
+            'user_id': 4,
+            'amount': 1000.0,
+            'donation_date': datetime(2024, 5, 25)
+        }
+        # Add more donations as needed
+    ]
+
+    # Seed fundraisers
+    for fundraiser_data in fundraisers:
+        fundraiser = Fundraiser(**fundraiser_data)
+        db.session.add(fundraiser)
+
+    # Seed donations
+    for donation_data in donations:
+        donation = Donation(**donation_data)
+        db.session.add(donation)
+
+    # Commit changes to the database
+    db.session.commit()
+
+if __name__ == '__main__':
+    seed_donations()
     if __name__ == '__main__':
         generate_fake_users()
         generate_fake_cohorts()

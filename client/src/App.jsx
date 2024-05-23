@@ -17,6 +17,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { AuthProvider, useAuth } from "./AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
+import Cohort from './components/Cohort'
+import About from './components/About'
 import "./App.css";
 
 import "./App.css";
@@ -46,23 +48,19 @@ function AppContent() {
       {shouldDisplayNav() && <Nav />}
       <Routes>
         <Route path="/" element={<SuccessStories />} />
-        <Route path="/tech-news" element={<TechNews />} />
-        <Route path="/fundraising&donations" element={<Fundraiser />} />
+        <Route path="/tech-news" element={<TechNews />} />      
+        <Route path="/about" element={<About />} />      
         <Route element={<ProtectedRoute />}>
-          <Route path="/forum/*" element={<Forum />} />
-          <Route path="/forum/userprofile/:id" element={<UserProfile />} />
-          <Route path="/forum/fundraiser/:id" element={<FundraiserById />} />
+          <Route path="/forum" element={<Forum />} />
+          <Route path='/cohort' element={<Cohort/>} />
+          <Route path="/forum/userprofile/:id" element={<UserProfile />} />          
+          <Route path="/forum/fundraising-donations" element={<Fundraiser />} />
+          <Route path="/forum/fundraising-donations/:id" element={<FundraiserById />} />
         </Route>
         <Route path="/user/login" element={token ? <Navigate to="/forum" /> : <Login />} />
         <Route path="/user/signup" element={token ? <Navigate to="/forum" /> : <Signup />} />
-        <Route path="/user/forgot-password" element={token ? <Navigate to="/forum" /> : <ForgotPassword />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-
-
-<Route path="/user/reset-password" element={token ? <Navigate to="/forum" /> : <ResetPassword />} />
+        <Route path="/user/forgot-password" element={token ? <Navigate to="/forum" /> : <ForgotPassword />} />        
+        <Route path="/user/reset-password" element={token ? <Navigate to="/forum" /> : <ResetPassword />} />
       </Routes>
     </Box>
   );

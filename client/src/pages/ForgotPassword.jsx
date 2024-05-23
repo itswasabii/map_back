@@ -19,8 +19,9 @@ import {
 } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
 import logo from "../assets/logo_black.png";
+import { Link } from "react-router-dom";
 
 const ForgotPasswordSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -108,7 +109,7 @@ const ForgotPassword = () => {
                     color={"#fff"}
                     isLoading={isSubmitting}
                   >
-                    Get reset link
+                   reset link
                   </Button>
                 </VStack>
               </Form>
@@ -160,6 +161,21 @@ const ForgotPassword = () => {
             Opportunities to give back by mentoring current students.
           </ListItem>
         </List>
+        <Flex justify={"space-between"}>
+        <Box
+          cursor={"pointer"}
+          my={"20px"}
+          bg={"#FA510F"}
+          color={"#fff"}
+          w={"100px"}
+          borderRadius={"md"}
+          textAlign={"center"}
+          lineHeight={"40px"}
+          mx={{ base: 2, md: 8 }}
+          as={Link} to={'/'}
+        >
+        <ArrowBackIcon />  Home 
+        </Box>
         <Box
           cursor={"pointer"}
           my={"20px"}
@@ -173,6 +189,7 @@ const ForgotPassword = () => {
         >
           Get reset link <ArrowForwardIcon />
         </Box>
+        </Flex>
         <Image px={{ base: 2, md: 8 }} w={"400px"} />
       </Flex>
     </Flex>

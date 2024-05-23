@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Input, Textarea, Button, Text, Flex, useToast } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useAuth } from '../AuthContext';
+import PropTypes from 'prop-types'
 
-const EditProfile = () => {
+
+const EditProfile = ({nodeRef}) => {
   const { userId } = useAuth();
+  
   const toast = useToast();
   const [formData, setFormData] = useState({
     username: '',
@@ -77,7 +80,7 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="p-6 mx-auto mt-8 bg-white">
+    <div ref={nodeRef} className="hidden p-6 mx-auto bg-white mt-8-">
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <Text fontSize="sm" fontWeight="medium" color="gray.700">
@@ -194,6 +197,11 @@ const EditProfile = () => {
       </form>
     </div>
   );
+};
+EditProfile.propTypes = {
+  nodeRef: PropTypes.shape({
+    current: PropTypes.instanceOf(Element),
+  }),
 };
 
 export default EditProfile;

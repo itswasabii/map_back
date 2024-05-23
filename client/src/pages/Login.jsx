@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ArrowForwardIcon, CheckIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon, ArrowLeftIcon, CheckIcon } from "@chakra-ui/icons";
 import { useAuth } from "../AuthContext";
 import logo from "../assets/logo_black.png"; // Hardcoded logo import
 
@@ -188,6 +188,21 @@ const Login = () => {
             Opportunities to give back by mentoring current students.
           </ListItem>
         </List>
+        <Flex justify={"space-between"}>
+        <Box
+          cursor={"pointer"}
+          my={"20px"}
+          bg={"#FA510F"}
+          color={"#fff"}
+          w={"100px"}
+          borderRadius={"md"}
+          textAlign={"center"}
+          lineHeight={"40px"}
+          mx={{ base: 2, md: 8 }}
+          as={Link} to={'/'}
+        >
+        <ArrowBackIcon />  Home 
+        </Box>
         <Box
           cursor={"pointer"}
           my={"20px"}
@@ -199,8 +214,10 @@ const Login = () => {
           lineHeight={"40px"}
           mx={{ base: 2, md: 8 }}
         >
-          Fill the form to login <ArrowForwardIcon />
+          Fill the form to Login <ArrowForwardIcon />
         </Box>
+        </Flex>
+       
         <Image px={{ base: 2, md: 8 }} w={"400px"} />
       </Flex>
     </Flex>

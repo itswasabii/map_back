@@ -220,8 +220,8 @@
 
 // export default App;
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Box,
   Heading,
@@ -244,16 +244,19 @@ import {
   ModalBody,
   ModalCloseButton,
   HStack,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
+import TopNav from "./TopNav";
+import Sidebar from "./Sidebar";
+import { VscSend } from "react-icons/vsc";
 
 function App() {
   const [cohorts, setCohorts] = useState([]);
-  const [newCohortName, setNewCohortName] = useState('');
-  const [newCohortType, setNewCohortType] = useState('');
-  const [newCohortYear, setNewCohortYear] = useState('');
-  const [newCohortCourseId, setNewCohortCourseId] = useState('');
+  const [newCohortName, setNewCohortName] = useState("");
+  const [newCohortType, setNewCohortType] = useState("");
+  const [newCohortYear, setNewCohortYear] = useState("");
+  const [newCohortCourseId, setNewCohortCourseId] = useState("");
   const [selectedCohort, setSelectedCohort] = useState(null);
-  const [messageInput, setMessageInput] = useState('');
+  const [messageInput, setMessageInput] = useState("");
   const [cohortMessages, setCohortMessages] = useState({});
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -261,10 +264,10 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/api/cohorts');
+        const response = await axios.get("/api/cohorts");
         setCohorts(response.data);
       } catch (error) {
-        console.error('Error fetching cohorts:', error);
+        console.error("Error fetching cohorts:", error);
       }
     };
 
@@ -283,12 +286,12 @@ function App() {
       };
 
       setCohorts([...cohorts, newCohort]);
-      setNewCohortName('');
-      setNewCohortType('');
-      setNewCohortYear('');
-      setNewCohortCourseId('');
+      setNewCohortName("");
+      setNewCohortType("");
+      setNewCohortYear("");
+      setNewCohortCourseId("");
     } catch (error) {
-      console.error('Error creating cohort:', error);
+      console.error("Error creating cohort:", error);
     }
   };
 
@@ -307,7 +310,7 @@ function App() {
       [cohortId]: [...(cohortMessages[cohortId] || []), message],
     };
     setCohortMessages(updatedMessages);
-    setMessageInput(''); // Clear message input after sending
+    setMessageInput(""); // Clear message input after sending
   };
 
   const handleChangeMessageInput = (e) => {
@@ -315,140 +318,187 @@ function App() {
   };
 
   return (
-    <Box p={8} bg="gray.100">
-      <Flex direction="column" align="center">
-        <Box bg="white" p={8} borderRadius="md" boxShadow="md" w="full" maxW="lg">
+    <>
+      <TopNav />
+      <Sidebar />
+      <Box
+        p={8}
+        className="relative w-full h-[calc(100vh-70px)] scrollbar-f xl:w-[calc(100vw-250px)] ml-[0px] xl:ml-[250px] overflow-y-scroll mt-[70px]"
+        bg="gray.100"
+      >
+        <Flex direction="column" align="center">
+          <Box
+            bg="white"
+            p={8}
+            borderRadius="md"
+            boxShadow="md"
+            w="full"
+            maxW="lg"
+          >
+            <Heading size="xl" mb={4}>
+              Create New Cohort
+            </Heading>
+            <Stack spacing={4}>
+              <Input
+                placeholder="Cohort Name"
+                value={newCohortName}
+                onChange={(e) => setNewCohortName(e.target.value)}
+              />
+              <Input
+                placeholder="Cohort Type (public or private)"
+                value={newCohortType}
+                onChange={(e) => setNewCohortType(e.target.value)}
+              />
+              <Input
+                placeholder="Year of Enrollment"
+                value={newCohortYear}
+                onChange={(e) => setNewCohortYear(e.target.value)}
+              />
+              <Input
+                placeholder="Course ID"
+                value={newCohortCourseId}
+                onChange={(e) => setNewCohortCourseId(e.target.value)}
+              />
+              <Button _hover={{bg:"#101f3a"}} color={'#fff'} bg="#101f3c" onClick={createCohort}>
+                Create Cohort
+              </Button>
+            </Stack>
+          </Box>
+        </Flex>
+
+        <Box mt={8}>
           <Heading size="xl" mb={4}>
-            Create New Cohort
+            Cohorts
           </Heading>
-          <Stack spacing={4}>
-            <Input
-              placeholder="Cohort Name"
-              value={newCohortName}
-              onChange={(e) => setNewCohortName(e.target.value)}
-            />
-            <Input
-              placeholder="Cohort Type (public or private)"
-              value={newCohortType}
-              onChange={(e) => setNewCohortType(e.target.value)}
-            />
-            <Input
-              placeholder="Year of Enrollment"
-              value={newCohortYear}
-              onChange={(e) => setNewCohortYear(e.target.value)}
-            />
-            <Input
-              placeholder="Course ID"
-              value={newCohortCourseId}
-              onChange={(e) => setNewCohortCourseId(e.target.value)}
-            />
-            <Button colorScheme="blue" onClick={createCohort}>
-              Create Cohort
-            </Button>
-          </Stack>
-        </Box>
-      </Flex>
-
-      <Box mt={8}>
-        <Heading size="xl" mb={4}>
-          Cohorts
-        </Heading>
-        <List spacing={4}>
-          {cohorts.map((cohort) => (
-            <ListItem key={cohort.cohort_id} bg="white" p={4} borderRadius="md" boxShadow="md">
-              <Flex align="center">
-                <Avatar size="sm" mr={4} />
-                <Box flex="1">
-                  <HStack justifyContent="space-between">
-                    <Text fontWeight="bold">{cohort.cohort_name}</Text>
+          <List spacing={4}>
+            {cohorts.map((cohort) => (
+              <ListItem
+                key={cohort.cohort_id}
+                bg="white"
+                p={4}
+                borderRadius="md"
+                boxShadow="md"
+              >
+                <Flex align="center">
+                  <Avatar size="sm" mr={4} />
+                  <Box flex="1">
+                    <HStack justifyContent="space-between">
+                      <Text fontWeight="bold">{cohort.cohort_name}</Text>
+                      <Text fontSize="sm" color="gray.500">
+                        {cohort.members} members
+                      </Text>
+                    </HStack>
                     <Text fontSize="sm" color="gray.500">
-                      {cohort.members} members
+                      {cohort.cohort_type} - {cohort.year}
                     </Text>
-                  </HStack>
-                  <Text fontSize="sm" color="gray.500">
-                    {cohort.cohort_type} - {cohort.year}
-                  </Text>
-                </Box>
-                <Button ml={4} colorScheme="blue" onClick={() => toggleChatVisibility(cohort)}>
-                  {selectedCohort === cohort ? 'Hide' : 'View'} Chat
-                </Button>
-              </Flex>
-              {selectedCohort === cohort && (
-                <>
-                  <Divider mt={2} mb={2} />
-                  <Box p={4} bg="gray.50" borderRadius="md" boxShadow="sm">
-                    <Flex mt={2}>
-                      <Input
-                        placeholder="Type your message..."
-                        value={messageInput}
-                        onChange={handleChangeMessageInput}
-                      />
-                      <Button
-                        ml={2}
-                        colorScheme="blue"
-                        onClick={() => handleSendMessage(cohort.cohort_id, messageInput)}
-                      >
-                        Send
-                      </Button>
-                    </Flex>
-                    <Box mt={4}>
-                      {cohortMessages[cohort.cohort_id]?.map((message, index) => (
-                        <Box key={index} p={2} bg="white" boxShadow="sm" borderRadius="md" mb={2}>
-                          <Text>{message}</Text>
-                        </Box>
-                      ))}
-                    </Box>
                   </Box>
-                </>
-              )}
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Group Chat</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {selectedCohort && (
-              <>
-                <Heading size="md" mb={2}>
-                  Group Chat for "{selectedCohort.cohort_name}"
-                </Heading>
-                <Box>
-                  {cohortMessages[selectedCohort.cohort_id]?.map((message, index) => (
-                    <Box key={index} p={2} bg="white" boxShadow="sm" borderRadius="md" mb={2}>
-                      <Text>{message}</Text>
-                    </Box>
-                  ))}
-                </Box>
-                <Flex mt={2}>
-                  <Input
-                    placeholder={`Type your message for "${selectedCohort.cohort_name}"...`}
-                    value={messageInput}
-                    onChange={handleChangeMessageInput}
-                  />
                   <Button
-                    ml={2}
-                    colorScheme="blue"
-                    onClick={() => handleSendMessage(selectedCohort.cohort_id, messageInput)}
+                    ml={4}
+                    _hover={{bg:"#101f3a"}} color={'#fff'} bg="#101f3c" 
+                    onClick={() => toggleChatVisibility(cohort)}
                   >
-                    Send
+                    {selectedCohort === cohort ? "Hide" : "View"} Chat
                   </Button>
                 </Flex>
-              </>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Box>
+                {selectedCohort === cohort && (
+                  <>
+                    <Divider mt={2} mb={2} />
+                    <Box p={4} bg="gray.50" borderRadius="md" boxShadow="sm">
+                      <Flex mt={2}>
+                        <Input
+                          placeholder="Type your message..."
+                          value={messageInput}
+                          onChange={handleChangeMessageInput}
+                        />
+                        <Button
+                          ml={2}
+                          _hover={{bg:"#101f3a"}} color={'#fff'} bg="#101f3c" 
+                          onClick={() =>
+                            handleSendMessage(cohort.cohort_id, messageInput)
+                          }
+                        >
+                          <VscSend />
+                        </Button>
+                      </Flex>
+                      <Box mt={4}>
+                        {cohortMessages[cohort.cohort_id]?.map(
+                          (message, index) => (
+                            <Box
+                              key={index}
+                              p={2}
+                              bg="white"
+                              boxShadow="sm"
+                              borderRadius="md"
+                              mb={2}
+                            >
+                              <Text>{message}</Text>
+                            </Box>
+                          )
+                        )}
+                      </Box>
+                    </Box>
+                  </>
+                )}
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Group Chat</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {selectedCohort && (
+                <>
+                  <Heading size="md" mb={2}>
+                    Group Chat for "{selectedCohort.cohort_name}"
+                  </Heading>
+                  <Box>
+                    {cohortMessages[selectedCohort.cohort_id]?.map(
+                      (message, index) => (
+                        <Box
+                          key={index}
+                          p={2}
+                          bg="white"
+                          boxShadow="sm"
+                          borderRadius="md"
+                          mb={2}
+                        >
+                          <Text>{message}</Text>
+                        </Box>
+                      )
+                    )}
+                  </Box>
+                  <Flex mt={2}>
+                    <Input
+                      placeholder={`Type your message for "${selectedCohort.cohort_name}"...`}
+                      value={messageInput}
+                      onChange={handleChangeMessageInput}
+                    />
+                    <Button
+                      ml={2}
+                      _hover={{bg:"#101f3a"}} color={'#fff'} bg="#101f3c" 
+                      onClick={() =>
+                        handleSendMessage(
+                          selectedCohort.cohort_id,
+                          messageInput
+                        )
+                      }
+                    >
+                      <VscSend />
+                    </Button>
+                  </Flex>
+                </>
+              )}
+            </ModalBody>
+            <ModalFooter>            
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Box>
+    </>
   );
 }
 

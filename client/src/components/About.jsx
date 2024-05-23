@@ -29,7 +29,7 @@ const About = () => {
   const textColor = useColorModeValue('gray.800', 'white');
 
   return (
-    <Box className="about-us-container" p={8} bg={bgColor} color={textColor}>
+    <Box className="about-us-container" mt={'70px'} p={8} bg={bgColor} color={textColor}>
       <Section
         title="WELCOME TO MORINGA ALUMNI PLATFORM"
         content="Since our establishment, the Moringa Alumni Platform has been dedicated to fostering connections and empowering the vibrant community of Moringa School alumni. With a focus on collaboration and growth, we aim to create opportunities for alumni to network, share experiences, and continue their professional development journey."
