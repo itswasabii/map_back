@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -19,9 +18,9 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
 import Cohort from './components/Cohort'
 import About from './components/About'
+import Admin from './components/Admin';
 import "./App.css";
 
-import "./App.css";
 function App() {
   return (
     <AuthProvider>
@@ -48,18 +47,19 @@ function AppContent() {
       {shouldDisplayNav() && <Nav />}
       <Routes>
         <Route path="/" element={<SuccessStories />} />
-        <Route path="/tech-news" element={<TechNews />} />      
-        <Route path="/about" element={<About />} />      
+        <Route path="/tech-news" element={<TechNews />} />
+        <Route path="/about" element={<About />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/forum" element={<Forum />} />
-          <Route path='/cohort' element={<Cohort/>} />
-          <Route path="/forum/userprofile/:id" element={<UserProfile />} />          
+          <Route path='/cohort' element={<Cohort />} />
+          <Route path="/forum/userprofile/:id" element={<UserProfile />} />
           <Route path="/forum/fundraising-donations" element={<Fundraiser />} />
           <Route path="/forum/fundraising-donations/:id" element={<FundraiserById />} />
+          <Route path="/admin/*" element={<Admin />} />
         </Route>
         <Route path="/user/login" element={token ? <Navigate to="/forum" /> : <Login />} />
         <Route path="/user/signup" element={token ? <Navigate to="/forum" /> : <Signup />} />
-        <Route path="/user/forgot-password" element={token ? <Navigate to="/forum" /> : <ForgotPassword />} />        
+        <Route path="/user/forgot-password" element={token ? <Navigate to="/forum" /> : <ForgotPassword />} />
         <Route path="/user/reset-password" element={token ? <Navigate to="/forum" /> : <ResetPassword />} />
       </Routes>
     </Box>
