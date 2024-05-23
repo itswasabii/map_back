@@ -75,6 +75,7 @@ api.add_resource(DonationResource, '/donations', '/donations/<int:donation_id>')
 # Create the database tables on launch
 with app.app_context():
     db.create_all()
+    
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
