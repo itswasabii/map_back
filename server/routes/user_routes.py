@@ -197,7 +197,7 @@ class ForgotPassword(Resource):
                 db.session.add(reset_token_entry)
                 db.session.commit()
                 
-                reset_link = f"http://localhost:5173/reset_password?token={reset_token}"
+                reset_link = f"http://localhost:5173/user/reset_password?token={reset_token}"
                 
                 # Plain text message
                 text_body = f"Click the following link to reset your password: {reset_link}"
