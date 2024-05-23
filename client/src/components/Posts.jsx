@@ -6,7 +6,7 @@ import { PiChatsLight } from "react-icons/pi";
 import { BsThreeDots } from "react-icons/bs";
 import CreatePost from "./CreatePost"; // Import the CreatePost component
 
-const Comments = lazy(() => import('./Comments'));
+const Comments = lazy(() => import("./Comments"));
 
 function Posts() {
   const [posts, setPosts] = useState([]);
@@ -16,10 +16,12 @@ function Posts() {
 
   const showComments = (index) => {
     if (commentsRefs.current[index]) {
-      commentsRefs.current[index].style.display = openIndexes.includes(index) ? "none" : "block";
-      setOpenIndexes(prev => 
-        prev.includes(index) 
-          ? prev.filter(i => i !== index) 
+      commentsRefs.current[index].style.display = openIndexes.includes(index)
+        ? "none"
+        : "block";
+      setOpenIndexes((prev) =>
+        prev.includes(index)
+          ? prev.filter((i) => i !== index)
           : [...prev, index]
       );
     }
@@ -31,7 +33,8 @@ function Posts() {
     const getData = async () => {
       try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP Error! status: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`HTTP Error! status: ${response.status}`);
         const data = await response.json();
         setPosts(data);
         setLoading(false);
@@ -41,17 +44,16 @@ function Posts() {
     };
     getData();
   }, []);
-
+  console.log(posts);
   return (
-    <>
-      <CreatePost />
+    <>      
       {loading ? (
         <Spinner />
       ) : (
         <div className="relative flex-1 w-full h-[calc(100vh-70px)] overflow-y-scroll mt-[70px] scrollbar">
           {posts.map((post, index) => (
             <Box
-              key={index} 
+              key={index}
               w={{ base: "100%", md: "80%", lg: "65%", xl: "50%" }}
               px={{ base: "5%", md: "3%" }}
               mt={"10px"}
@@ -93,7 +95,7 @@ function Posts() {
                     alignItems="center"
                     bg={"#e4e4e4"}
                     onClick={() => showComments(index)}
-                    cursor={'pointer'}
+                    cursor={"pointer"}
                   >
                     <PiChatsLight fontSize={"1.3rem"} />
                     <Text fontSize={"sm"} ml={1}>
@@ -113,16 +115,16 @@ function Posts() {
                   </Flex>
                 </Flex>
                 <Suspense fallback={<Text>Loading...</Text>}>
-  {post.the_comments !== undefined ? (
-    <Comments
-      nodeRef={(el) => (commentsRefs.current[index] = el)}
-      comments={post.the_comments} 
-      postId={post.post_id} // Pass postId correctly
-    />
-  ) : (
-    <Text p={4}>No comments yet...</Text>
-  )}
-</Suspense>
+                  {post.the_comments !== undefined ? (
+                    <Comments
+                      nodeRef={(el) => (commentsRefs.current[index] = el)}
+                      comments={post.the_comments}
+                      postId={post.post_id} // Pass postId correctly
+                    />
+                  ) : (
+                    <Text p={4}>No comments yet...</Text>
+                  )}
+                </Suspense>
               </Box>
             </Box>
           ))}

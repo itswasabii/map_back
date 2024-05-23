@@ -26,40 +26,41 @@ function Sidebar({ nodeRef }) {
     getFundraiser();
   }, [url]);
   return (
-    <Box
-      as="div"
-      bg="#fff"
-      w="250px"
-      h="100vh"
-      pos="fixed"
-      top="0"
-      left="0"
-      zIndex="1"
-      mt={"70px"}
-      ref={nodeRef}
-      display={{ base: "none", xl: "flex" }}
-      className={"border-r-[1px] border-[#e4e4e4]"}
-      flexDir={"column"}
-      pt={'70px'}
-    >
-      <NavLink
-        className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
-        to={"/forum"}
+    <Box ref={nodeRef} display={{ base: "none", xl: "flex" }}>
+      <Box
+        as="div"
+        bg="#fff"
+        w="250px"
+        h="100vh"
+        pos="fixed"
+        top="0"
+        left="0"
+        zIndex="1"
+        mt={"70px"}
+        className={"border-r-[1px] border-[#e4e4e4]"}
+        display={'flex'}
+        flexDir={"column"}
+        pt={"70px"}
       >
-        Home
-      </NavLink>
-      <NavLink
-        className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
-        to={"/cohort"}
-      >
-        Cohorts
-      </NavLink>
-      <NavLink
-        className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
-        to={"/forum/fundraising-donations"}
-      >
-        Fundraiser
-      </NavLink>
+        <NavLink
+          className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
+          to={"/forum"}
+        >
+          Home
+        </NavLink>
+        <NavLink
+          className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
+          to={"/cohort"}
+        >
+          Cohorts
+        </NavLink>
+        <NavLink
+          className=" sidebar leading-[40px] px-4 hover:bg-[#EDF2F7] w-[250px]"
+          to={"/forum/fundraising-donations"}
+        >
+          Fundraiser
+        </NavLink>
+      </Box>
     </Box>
   );
 }

@@ -141,7 +141,7 @@ function Fundraiser() {
             </Flex>
           </Flex>
           <Box p={4}>
-            <Text>Available Fundraisers</Text>
+            <Heading>Fundraisers Table</Heading>
             <TableContainer>
               <Table variant="striped" color={'#111'}>
                 <TableCaption>Fundraisers</TableCaption>
