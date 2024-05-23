@@ -7,7 +7,7 @@ from models.post_model import Post
 from models.user_model import User
 from models.fundraiser_model import Fundraiser
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import mail
+from flask_mail import Mail
 from datetime import datetime
 import os
 
@@ -93,7 +93,7 @@ class SendMassEmails(Resource):
                     recipients=[user.email],
                     body=data['message']
                 )
-                mail.send(msg)
+                Mail.send(msg)
             return make_response(jsonify({'message': 'Emails sent successfully'}), 200)
         except Exception as e:
             return make_response(jsonify({'error': str(e)}), 500)  # Error handling
