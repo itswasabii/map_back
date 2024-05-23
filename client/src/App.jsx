@@ -16,20 +16,23 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { AuthProvider, useAuth } from "./AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
-import Cohort from './components/Cohort'
-import About from './components/About'
+import Cohort from './components/Cohort';
+import About from './components/About';
+import Admin from './components/Admin';
+import CreateCohort from "./components/CreateCohort";
+import CreatePost from "./components/CreatePost";
+import ViewAllUsers from "./components/ViewAllUsers";
+import SendMassEmails from "./components/SendMassEmails";
+import CreateFundraiser from "./components/CreateFundraiser";
 import "./App.css";
 
-import "./App.css";
 function App() {
   return (
     <AuthProvider>
-      <Box pos={"relative"}>
-        <Router>
-          <AppContent />
-        </Router>
+      <Router>
+        <AppContent />
         <ToastContainer />
-      </Box>
+      </Router>
     </AuthProvider>
   );
 }
@@ -43,7 +46,7 @@ function AppContent() {
   };
 
   return (
-    <Box>
+    <Box pos={"relative"}>
       {shouldDisplayNav() && <Nav />}
       <Routes>
         <Route path="/" element={<SuccessStories />} />
@@ -52,9 +55,13 @@ function AppContent() {
         <Route element={<ProtectedRoute />}>
           <Route path="/forum" element={<Forum />} />
           <Route path='/cohort' element={<Cohort/>} />
+          <Route path="/user/admin" element={<CreateCohort />} />          
+          <Route path="/user/admin/view-all-users" element={<ViewAllUsers />} />
+          <Route path="/user/admin/send-mass-emails" element={<SendMassEmails />} />
+          <Route path="/user/admin/create-fundraiser" element={<CreateFundraiser />} /> 
           <Route path="/forum/userprofile/:id" element={<UserProfile />} />          
           <Route path="/forum/fundraising-donations" element={<Fundraiser />} />
-          <Route path="/forum/fundraising-donations/:id" element={<FundraiserById />} />
+          <Route path="/forum/fundraising-donations/:id" element={<FundraiserById />} />     
         </Route>
         <Route path="/user/login" element={token ? <Navigate to="/forum" /> : <Login />} />
         <Route path="/user/signup" element={token ? <Navigate to="/forum" /> : <Signup />} />
