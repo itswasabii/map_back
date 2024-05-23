@@ -3,6 +3,8 @@ from flask_restful import Resource
 from datetime import datetime
 from models import db
 from models.post_model import Post, Comment, PostCategory, Like, Share
+import cloudinary
+import cloudinary.uploader
 
 class Posts(Resource):
     """
@@ -37,25 +39,33 @@ class Posts(Resource):
         return jsonify(posts_data)
 
     def post(self):
-        """Create a new post."""
         data = request.form
-        content = data.get("content")
-        category = data.get("category")
-        media = request.files.get("media")
+        content = data.get('content')
+        user_id = data.get('user_id')
+        cohort_id = data.get('cohort_id')
+        category = data.get('category')
+        media_file = request.files.get('media')
+       
+        # Upload media to Cloudinary
+        if media_file:
+            upload_result = cloudinary.uploader.upload(media_file)
+            media_url = upload_result['url']
 
-        # Ensure required fields are present
-        if not content:
-            return jsonify({'error': 'Content is required'}), 400
-
-        new_post = Post(
-            content=content,
-            category=category,
-            media=media,
-            created_at=datetime.utcnow()
-        )
-        db.session.add(new_post)
+        else:
+            media_url = None
+       
+        # Create post
+        post = Post(content=content, user_id=user_id, cohort_id=cohort_id, category=category)
+        db.session.add(post)
         db.session.commit()
-        return jsonify({'message': 'Post created successfully'}), 201
+       
+        # If media attached, create Media record and associate with post
+        if media_url:
+            media = media(url=media_url, post_id=post.post_id)
+            db.session.add(media)
+            db.session.commit()
+       
+        return {'message': 'Post created successfully'}, 201
 
     def put(self, post_id):
         """Update an existing post."""
