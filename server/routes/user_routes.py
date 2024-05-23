@@ -1,5 +1,6 @@
 # routes/user_routes.py
 
+from venv import logger
 from flask_restful import Resource
 from flask import  request, jsonify, make_response,current_app
 from models import db
@@ -14,6 +15,8 @@ from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
+
+from models.cohort_model import Course
 
 
 load_dotenv()

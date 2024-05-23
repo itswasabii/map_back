@@ -77,4 +77,3 @@ class Share(db.Model):
     def __repr__(self):
 
         return f'<Share {self.share_id}>'
-
