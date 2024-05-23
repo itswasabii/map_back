@@ -1,6 +1,8 @@
+import { Box } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
+import AdminSidebar from './AdminSidebar';
 
-const API_URL = 'http://localhost:5555';
+const API_URL = '/api';
 
 const SendMassEmails = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +15,7 @@ const SendMassEmails = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(${API_URL}/users);
+        const response = await fetch(`${API_URL}/users`);
         const data = await response.json();
         setUsers(data);
       } catch (error) {
@@ -21,7 +23,7 @@ const SendMassEmails = () => {
       }
     };
 
-fetchUsers();
+    fetchUsers();
   }, []);
 
   const handleChange = (e) => {
@@ -44,8 +46,7 @@ fetchUsers();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send mass email to selected users using fetch
-      await fetch(${API_URL}/notifications, {
+      await fetch(`${API_URL}/notifications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,6 +66,8 @@ fetchUsers();
 
   return (
     <div>
+      <AdminSidebar />
+      <Box p={8} className="relative scrollbar-f w-[calc(100vw-250px)] ml-[250px] overflow-y-scroll">
       <form onSubmit={handleSubmit}>
         <input type="text" name="subject" placeholder="Subject" onChange={handleChange} required />
         <textarea name="message" placeholder="Message" onChange={handleChange} required />
@@ -83,6 +86,7 @@ fetchUsers();
         ))}
         <button type="submit">Send Emails</button>
       </form>
+    </Box>
     </div>
   );
 };

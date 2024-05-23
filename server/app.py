@@ -10,12 +10,6 @@ import os
 import logging
 
 from routes import Home
-from routes.donation_routes import DonationResource
-from routes.user_routes import Users, Register, Login, Logout, ForgotPassword, ResetPassword, UserProfile
-from routes.cohort_routes import Cohorts, CohortMembers
-from routes.post_routes import Posts, Comments, Likes, Shares, OnePost
-from routes.fundraiser_routes import FundraiserResource
-from models import db, login_manager
 
 # Load environment variables from .env file
 load_dotenv()
@@ -42,6 +36,8 @@ print(f"MAIL_USERNAME: {os.getenv('MAIL_USERNAME')}")
 print(f"MAIL_PASSWORD: {os.getenv('MAIL_PASSWORD')}")
 
 # Initialize extensions
+from models import db, login_manager
+
 db.init_app(app)
 migrate = Migrate(app, db)
 api = Api(app)
@@ -49,8 +45,18 @@ mail = Mail(app)
 jwt = JWTManager(app)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}}, supports_credentials=True)
 
+logging.basicConfig(level=logging.DEBUG)
+
 # Initialize login manager
 login_manager.init_app(app)
+
+# Import routes
+from routes.user_routes import Users, Register, Login, Logout, ForgotPassword, ResetPassword, UserProfile
+from routes.cohort_routes import Cohorts, CohortMembers
+from routes.post_routes import Posts, Comments
+from routes.donation_routes import DonationResource
+from routes.fundraiser_routes import FundraiserResource
+from routes.admin_routes import CreateCohort, CreatePost, ViewAllUsers, SendMassEmails, CreateFundraiser
 
 # Register resources with Flask-RESTful
 api.add_resource(Home, '/')
@@ -63,14 +69,17 @@ api.add_resource(ResetPassword, '/reset_password')
 api.add_resource(UserProfile, '/users/<int:user_id>')
 api.add_resource(Cohorts, '/cohorts')
 api.add_resource(CohortMembers, '/cohort_members')
-api.add_resource(Posts, '/posts', '/posts/<int:post_id>')
-api.add_resource(OnePost, '/post/<int:post_id>')
-api.add_resource(Comments, '/comments/<int:post_id>', '/comments/<int:comment_id>')
-api.add_resource(Likes, '/likes')
-api.add_resource(Shares, '/shares')
-# api.add_resource(DonationResource, '/donations/<int:donation_id>')
+api.add_resource(Posts, '/posts')
+api.add_resource(Comments, '/comments')
 api.add_resource(FundraiserResource, '/fundraisers', '/fundraisers/<int:fundraiser_id>')
-api.add_resource(DonationResource, '/donations', '/donations/<int:donation_id>')
+api.add_resource(DonationResource, '/api/donations', '/api/donations/<int:donation_id>')
+
+# Admin routes
+api.add_resource(CreateCohort, '/admin/create_cohort')
+api.add_resource(CreatePost, '/admin/create_post')
+api.add_resource(ViewAllUsers, '/admin/view_all_users')
+api.add_resource(SendMassEmails, '/admin/send_mass_emails')
+api.add_resource(CreateFundraiser, '/admin/create_fundraiser')
 
 # Create the database tables on launch
 with app.app_context():
@@ -79,3 +88,4 @@ with app.app_context():
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+

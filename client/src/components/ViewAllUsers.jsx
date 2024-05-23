@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import { Box } from '@chakra-ui/react';
+import AdminSidebar from './AdminSidebar';
 
 const API_URL = 'http://localhost:5555';
 const api = axios.create({
@@ -27,13 +29,17 @@ const ViewAllUsers = () => {
 
   return (
     <div>
+      <AdminSidebar/>
+      <Box p={8} className="relative scrollbar-f w-[calc(100vw-250px)] ml-[250px] overflow-y-scroll">
       <h2>All Users</h2>
       <ul>
         {users.map((user) => (
           <li key={user.user_id}>{user.username} - {user.email}</li>
         ))}
       </ul>
+    </Box>
     </div>
+    
   );
 };
 
