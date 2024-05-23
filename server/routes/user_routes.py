@@ -1,6 +1,7 @@
 # routes/user_routes.py
 
 from venv import logger
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restful import Resource
 from flask import  request, jsonify, make_response,current_app
 from models import db
@@ -55,7 +56,7 @@ class Users(Resource):
                 ]
             }
             user_data.append(user_dict)
-        return user_data, 200
+        return make_response(jsonify(user_data), 200)
 
     def post(self):
         data = request.json
@@ -73,12 +74,14 @@ class Users(Resource):
         if course:
             new_user.courses.append(course)
             db.session.commit()
-            return {'message': 'User created and associated with the course successfully'}, 201
+            return make_response(jsonify({'message': 'User created and associated with the course successfully'}), 201)
         else:
-            return {'error': f'Course "{course_name}" not found'}, 404
+            return make_response(jsonify({'error': f'Course "{course_name}" not found'}), 404)
 
 class UserProfile(Resource):
-    def get(self, user_id):
+    @jwt_required()
+    def get(self):
+        user_id = get_jwt_identity()
         user = User.query.get_or_404(user_id)
         user_data = {
             'user_id': user.user_id,
@@ -151,10 +154,10 @@ class Register(Resource):
             new_user = User(username=username, password_hash=hashed_pass, email=email, bio='', occupation='', qualification='', location='', profile_picture_url='', joined_at=datetime.utcnow())
             db.session.add(new_user)
             db.session.commit()
-            return make_response({'message': 'User has been registered'}, 200)
+            return make_response(jsonify({'message': 'User has been registered'}), 200)
         except IntegrityError:
             db.session.rollback()
-            return make_response({'error': 'Username or email already exists'}, 400)
+            return make_response(jsonify({'error': 'Username or email already exists'}), 400)
 
 class Login(Resource):
     def post(self):
@@ -171,11 +174,11 @@ class Login(Resource):
             response.set_cookie('token', token, httponly=True, max_age=24*60*60)
             return response
         else:
-            return make_response({'error': 'Invalid username or password'}, 401)
+            return make_response(jsonify({'error': 'Invalid username or password'}), 401)
 
 class Logout(Resource):
     def post(self):
-        response = make_response({'message': 'Logged out successfully'})
+        response = make_response(jsonify({'message': 'Logged out successfully'}))
         response.delete_cookie('token')
         return response
 
@@ -234,7 +237,7 @@ class ResetPassword(Resource):
         reset_token_entry = ResetToken.query.filter_by(token=token).first()
         if reset_token_entry:
             user = User.query.filter_by(user_id=reset_token_entry.user_id).first()
-            user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha512')
+            user.password_hash = generate_password_hash(new_password, method='pbkdf:sha512')
             db.session.delete(reset_token_entry)
             db.session.commit()
             return make_response(jsonify({'message': 'Password has been reset successfully'}), 200)

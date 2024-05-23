@@ -21,6 +21,7 @@ class User(UserMixin, db.Model, SerializerMixin):
     location = db.Column(db.String(50))
     profile_picture_url = db.Column(db.String(255))
     joined_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    role = db.Column(db.String(50), nullable=False, default='user')  # Add this line
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')

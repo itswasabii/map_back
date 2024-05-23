@@ -7,6 +7,7 @@ from flask_mail import Mail
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
+import logging
 
 from routes import Home
 from routes.donation_routes import DonationResource
