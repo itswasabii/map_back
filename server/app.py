@@ -15,6 +15,7 @@ from routes.cohort_routes import Cohorts, CohortMembers
 from routes.post_routes import Posts, Comments, Likes, Shares, OnePost, UpdateComment, DeleteComment
 from routes.fundraiser_routes import FundraiserResource
 from models import db, login_manager
+from routes.admin_routes import admin_bp  # Import admin routes
 
 # Load environment variables from .env file
 load_dotenv()
@@ -71,6 +72,9 @@ api.add_resource(Likes, '/likes')
 api.add_resource(Shares, '/shares')
 api.add_resource(FundraiserResource, '/fundraisers', '/fundraisers/<int:fundraiser_id>')
 api.add_resource(DonationResource, '/api/donations', '/api/donations/<int:donation_id>')
+
+# Register the admin blueprint
+app.register_blueprint(admin_bp)
 
 # Create the database tables on launch
 with app.app_context():
